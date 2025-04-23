@@ -4,6 +4,7 @@ namespace WechatWorkExternalContactBundle\MessageHandler;
 
 use Carbon\Carbon;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
@@ -24,7 +25,7 @@ class SyncGroupChatDetailHandler
         private readonly GroupChatRepository $groupChatRepository,
         private readonly WorkService $workService,
         private readonly UserRepository $userRepository,
-        private readonly PropertyAccessor $propertyAccessor,
+        #[Autowire(service: 'wechat-work-external-contact-bundle.property-accessor')] private readonly PropertyAccessor $propertyAccessor,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }

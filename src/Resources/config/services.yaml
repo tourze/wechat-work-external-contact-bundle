@@ -18,3 +18,7 @@ services:
     resource: '../../Repository/'
   WechatWorkExternalContactBundle\Service\:
     resource: '../../Service/'
+
+  wechat-work-external-contact-bundle.property-accessor:
+    class: Symfony\Component\PropertyAccess\PropertyAccessor
+    factory: [ 'Symfony\Component\PropertyAccess\PropertyAccess', 'createPropertyAccessor' ]
