@@ -3,13 +3,13 @@
 namespace WechatWorkExternalContactBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use FileSystemBundle\Service\MountManager;
-use HttpClientBundle\Service\SmartHttpClient;
+use League\Flysystem\FilesystemOperator;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 use WechatWorkExternalContactBundle\Entity\ExternalUser;
 use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
@@ -20,8 +20,8 @@ class CheckUserAvatarCommand extends Command
 {
     public function __construct(
         private readonly ExternalUserRepository $externalUserRepository,
-        private readonly SmartHttpClient $httpClient,
-        private readonly MountManager $mountManager,
+        private readonly HttpClientInterface $httpClient,
+        private readonly FilesystemOperator $mountManager,
         private readonly LoggerInterface $logger,
         private readonly EntityManagerInterface $entityManager,
     ) {
