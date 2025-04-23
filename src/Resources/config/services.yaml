@@ -1,0 +1,20 @@
+services:
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+  WechatWorkExternalContactBundle\Command\:
+    resource: '../../Command/'
+  WechatWorkExternalContactBundle\Controller\:
+    resource: '../../Controller/'
+  WechatWorkExternalContactBundle\EventSubscriber\:
+    resource: '../../EventSubscriber/'
+  WechatWorkExternalContactBundle\MessageHandler\:
+    resource: '../../MessageHandler/'
+  WechatWorkExternalContactBundle\Procedure\:
+    resource: '../../Procedure/'
+  WechatWorkExternalContactBundle\Repository\:
+    resource: '../../Repository/'
+  WechatWorkExternalContactBundle\Service\:
+    resource: '../../Service/'
