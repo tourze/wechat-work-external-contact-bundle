@@ -1,0 +1,1 @@
+# wechat-work-external-contact-bundle
