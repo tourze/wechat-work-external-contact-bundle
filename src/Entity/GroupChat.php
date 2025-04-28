@@ -31,7 +31,7 @@ class GroupChat
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
     #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = '0';
+    private ?string $id = null;
 
     #[ORM\Column(length: 64, options: ['comment' => '客户群ID'])]
     private ?string $chatId = null;
