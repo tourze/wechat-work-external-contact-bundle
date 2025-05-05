@@ -22,7 +22,7 @@
     "symfony/http-kernel": "^6.4",
     "symfony/framework-bundle": "^6.4",
     "tourze/json-rpc-core": "^0.0.6",
-    "tourze/wechat-work-bundle": "0.0.*",
+    "tourze/wechat-work-bundle": "0.1.*",
     "tourze/wechat-work-media-bundle": "0.0.*",
     "tourze/enum-extra": "~0.0.5",
     "tourze/arrayable": "0.0.*",
