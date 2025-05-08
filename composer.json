@@ -38,10 +38,10 @@
     "tourze/http-client-bundle": "0.1.*",
     "tourze/json-rpc-core": "^0.0.6",
     "tourze/json-rpc-lock-bundle": "0.1.*",
-    "tourze/wechat-work-bundle": "0.1.*",
-    "tourze/wechat-work-media-bundle": "0.1.*",
+    "tourze/symfony-async-bundle": "0.0.*",
     "tourze/symfony-cron-job-bundle": "0.1.*",
-    "tourze/symfony-async-bundle": "0.0.*"
+    "tourze/wechat-work-bundle": "0.1.*",
+    "tourze/wechat-work-media-bundle": "0.1.*"
   },
   "require-dev": {
     "phpstan/phpstan": "^2.1",
