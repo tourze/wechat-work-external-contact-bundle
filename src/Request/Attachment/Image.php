@@ -34,7 +34,7 @@ class Image extends BaseAttachment
 
     public static function createFromMediaId(string $mediaId): static
     {
-        $image = new static();
+        $image = new self();
         $image->setMediaId($mediaId);
 
         return $image;

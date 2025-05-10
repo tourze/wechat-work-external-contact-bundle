@@ -78,7 +78,7 @@ trait ContactWayField
 
     public static function createFromObject(ContactWay $object): static
     {
-        $request = new static();
+        $request = new self();
         $request->setType($object->getType());
         $request->setScene($object->getScene());
         $request->setSkipVerify($object->isSkipVerify());
