@@ -18,6 +18,7 @@ use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 use Tourze\EasyAdmin\Attribute\Column\PictureColumn;
 use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
+use Tourze\WechatWorkExternalContactModel\ExternalContactInterface;
 use WechatWorkBundle\Entity\Corp;
 use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
 
@@ -30,7 +31,7 @@ use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
 #[BatchDeletable]
 #[ORM\Entity(repositoryClass: ExternalUserRepository::class)]
 #[ORM\Table(name: 'wechat_work_external_user', options: ['comment' => '外部联系人'])]
-class ExternalUser implements \Stringable, PlainArrayInterface, ApiArrayInterface
+class ExternalUser implements \Stringable, PlainArrayInterface, ApiArrayInterface, ExternalContactInterface
 {
     #[ListColumn(order: -1)]
     #[ExportColumn]
