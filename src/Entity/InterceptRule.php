@@ -22,13 +22,13 @@ use Tourze\EasyAdmin\Attribute\Field\FormField;
 use Tourze\EasyAdmin\Attribute\Field\SelectField;
 use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
+use Tourze\WechatWorkStaffModel\UserInterface;
 use WechatWorkBundle\Entity\Agent;
 use WechatWorkBundle\Entity\Corp;
 use WechatWorkExternalContactBundle\Enum\InterceptType;
 use WechatWorkExternalContactBundle\Repository\InterceptRuleRepository;
 use WechatWorkJssdkBundle\Semantics\SemanticsList;
 use WechatWorkStaffBundle\Entity\Department;
-use WechatWorkStaffBundle\Entity\User;
 
 /**
  * 敏感词规则
@@ -96,7 +96,7 @@ class InterceptRule
     #[Groups(['admin_curd'])]
     #[ListColumn]
     #[FormField]
-    #[SelectField(targetEntity: User::class, mode: 'multiple', idColumn: 'user_id')]
+    #[SelectField(targetEntity: UserInterface::class, mode: 'multiple', idColumn: 'user_id')]
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '可使用的userid列表'])]
     private array $applicableUserList = [];
 

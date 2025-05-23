@@ -12,8 +12,8 @@ use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
 use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
+use Tourze\WechatWorkStaffModel\UserInterface;
 use WechatWorkExternalContactBundle\Repository\UserBehaviorDataByUserRepository;
-use WechatWorkStaffBundle\Entity\User;
 
 /**
  * @see https://developer.work.weixin.qq.com/document/path/92132
@@ -35,7 +35,7 @@ class UserBehaviorDataByUser
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    private ?UserInterface $user = null;
 
     #[Filterable]
     #[IndexColumn]
@@ -57,12 +57,12 @@ class UserBehaviorDataByUser
         return $this->id;
     }
 
-    public function getUser(): ?User
+    public function getUser(): ?UserInterface
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): static
+    public function setUser(?UserInterface $user): static
     {
         $this->user = $user;
 

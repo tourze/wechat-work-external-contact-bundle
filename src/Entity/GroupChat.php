@@ -12,11 +12,11 @@ use Tourze\DoctrineTimestampBundle\Attribute\CreateTimeColumn;
 use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
 use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
+use Tourze\WechatWorkStaffModel\UserInterface;
 use WechatWorkBundle\Entity\Agent;
 use WechatWorkBundle\Entity\Corp;
 use WechatWorkExternalContactBundle\Enum\GroupChatStatus;
 use WechatWorkExternalContactBundle\Repository\GroupChatRepository;
-use WechatWorkStaffBundle\Entity\User;
 
 #[AsPermission(title: '客户群')]
 #[ORM\Entity(repositoryClass: GroupChatRepository::class)]
@@ -57,12 +57,12 @@ class GroupChat
     private ?Corp $corp = null;
 
     #[ORM\ManyToOne]
-    private ?User $owner = null;
+    private ?UserInterface $owner = null;
 
-    #[ORM\ManyToMany(targetEntity: User::class, fetch: 'EXTRA_LAZY')]
+    #[ORM\ManyToMany(targetEntity: UserInterface::class, fetch: 'EXTRA_LAZY')]
     private Collection $admins;
 
-    #[ORM\OneToMany(mappedBy: 'groupChat', targetEntity: GroupMember::class, orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: GroupMember::class, mappedBy: 'groupChat', orphanRemoval: true)]
     private Collection $members;
 
     public function __construct()
@@ -160,12 +160,12 @@ class GroupChat
         return $this;
     }
 
-    public function getOwner(): ?User
+    public function getOwner(): ?UserInterface
     {
         return $this->owner;
     }
 
-    public function setOwner(?User $owner): static
+    public function setOwner(?UserInterface $owner): static
     {
         $this->owner = $owner;
 
@@ -173,14 +173,14 @@ class GroupChat
     }
 
     /**
-     * @return Collection<int, User>
+     * @return Collection<int, UserInterface>
      */
     public function getAdmins(): Collection
     {
         return $this->admins;
     }
 
-    public function addAdmin(User $admin): static
+    public function addAdmin(UserInterface $admin): static
     {
         if (!$this->admins->contains($admin)) {
             $this->admins->add($admin);
@@ -189,7 +189,7 @@ class GroupChat
         return $this;
     }
 
-    public function removeAdmin(User $admin): static
+    public function removeAdmin(UserInterface $admin): static
     {
         $this->admins->removeElement($admin);
 

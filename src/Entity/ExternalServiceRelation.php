@@ -11,9 +11,9 @@ use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
 use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
+use Tourze\WechatWorkStaffModel\UserInterface;
 use WechatWorkBundle\Entity\Corp;
 use WechatWorkExternalContactBundle\Repository\ExternalServiceRelationRepository;
-use WechatWorkStaffBundle\Entity\User;
 
 /**
  * @see https://developer.work.weixin.qq.com/document/path/92277
@@ -37,7 +37,7 @@ class ExternalServiceRelation
     private ?Corp $corp = null;
 
     #[ORM\ManyToOne]
-    private ?User $user = null;
+    private ?UserInterface $user = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
@@ -87,12 +87,12 @@ class ExternalServiceRelation
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): ?UserInterface
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): static
+    public function setUser(?UserInterface $user): static
     {
         $this->user = $user;
 
