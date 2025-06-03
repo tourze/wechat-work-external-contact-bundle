@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Tourze\Symfony\CronJob\Attribute\AsCronTask;
+use Tourze\WechatWorkContracts\UserLoaderInterface;
 use WechatWorkBundle\Repository\AgentRepository;
 use WechatWorkBundle\Service\WorkService;
 use WechatWorkExternalContactBundle\Entity\GroupChat;
@@ -17,7 +18,6 @@ use WechatWorkExternalContactBundle\Message\SyncGroupChatDetailMessage;
 use WechatWorkExternalContactBundle\Repository\GroupChatRepository;
 use WechatWorkExternalContactBundle\Request\GetFollowUserListRequest;
 use WechatWorkExternalContactBundle\Request\GetGroupChatListRequest;
-use WechatWorkStaffBundle\Repository\UserRepository;
 
 /**
  * @see https://developer.work.weixin.qq.com/document/path/92120
@@ -29,7 +29,7 @@ class SyncGroupChatListCommand extends Command
     public function __construct(
         private readonly AgentRepository $agentRepository,
         private readonly WorkService $workService,
-        private readonly UserRepository $userRepository,
+        private readonly UserLoaderInterface $userLoader,
         private readonly GroupChatRepository $groupChatRepository,
         private readonly MessageBusInterface $messageBus,
         private readonly EntityManagerInterface $entityManager,
@@ -48,10 +48,7 @@ class SyncGroupChatListCommand extends Command
             }
 
             foreach ($userListResponse['follow_user'] as $userId) {
-                $user = $this->userRepository->findOneBy([
-                    'userId' => $userId,
-                    'corp' => $agent->getCorp(),
-                ]);
+                $user = $this->userLoader->loadUserByUserIdAndCorp($userId, $agent->getCorp());
                 if (!$user) {
                     continue;
                 }

@@ -5,6 +5,7 @@ namespace WechatWorkExternalContactBundle\MessageHandler;
 use Carbon\Carbon;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Tourze\WechatWorkContracts\UserLoaderInterface;
 use WechatWorkBundle\Repository\AgentRepository;
 use WechatWorkExternalContactBundle\Entity\ExternalServiceRelation;
 use WechatWorkExternalContactBundle\Entity\ExternalUser;
@@ -12,14 +13,13 @@ use WechatWorkExternalContactBundle\Message\SaveExternalContactListItemMessage;
 use WechatWorkExternalContactBundle\Repository\ExternalServiceRelationRepository;
 use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
 use WechatWorkStaffBundle\Entity\User;
-use WechatWorkStaffBundle\Repository\UserRepository;
 
 #[AsMessageHandler]
 class SaveExternalContactListItemHandler
 {
     public function __construct(
         private readonly ExternalUserRepository $externalUserRepository,
-        private readonly UserRepository $userRepository,
+        private readonly UserLoaderInterface $userLoader,
         private readonly ExternalServiceRelationRepository $externalServiceRelationRepository,
         private readonly AgentRepository $agentRepository,
         private readonly EntityManagerInterface $entityManager,
@@ -75,10 +75,7 @@ class SaveExternalContactListItemHandler
         $this->entityManager->flush();
 
         if (isset($item['follow_userid'])) {
-            $user = $this->userRepository->findOneBy([
-                'corp' => $agent->getCorp(),
-                'userId' => $item['follow_userid'],
-            ]);
+            $user = $this->userLoader->loadUserByUserIdAndCorp($item['follow_userid'], $agent->getCorp());
             if (!$user) {
                 $user = new User();
                 $user->setCorp($agent->getCorp());

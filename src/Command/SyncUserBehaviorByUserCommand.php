@@ -9,13 +9,13 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tourze\Symfony\CronJob\Attribute\AsCronTask;
+use Tourze\WechatWorkContracts\UserLoaderInterface;
 use WechatWorkBundle\Repository\AgentRepository;
 use WechatWorkBundle\Service\WorkService;
 use WechatWorkExternalContactBundle\Entity\UserBehaviorDataByUser;
 use WechatWorkExternalContactBundle\Repository\UserBehaviorDataByUserRepository;
 use WechatWorkExternalContactBundle\Request\GetFollowUserListRequest;
 use WechatWorkExternalContactBundle\Request\GetUserBehaviorDataRequest;
-use WechatWorkStaffBundle\Repository\UserRepository;
 
 #[AsCronTask('14 6 * * *')]
 #[AsCommand(name: 'wechat-work:SyncUserBehaviorByUserCommand', description: '获取「联系客户统计」数据-单用户的数据')]
@@ -24,7 +24,7 @@ class SyncUserBehaviorByUserCommand extends Command
     public function __construct(
         private readonly AgentRepository $agentRepository,
         private readonly WorkService $workService,
-        private readonly UserRepository $userRepository,
+        private readonly UserLoaderInterface $userLoader,
         private readonly UserBehaviorDataByUserRepository $dataByUserRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
@@ -45,10 +45,7 @@ class SyncUserBehaviorByUserCommand extends Command
             }
 
             foreach ($userListResponse['follow_user'] as $userId) {
-                $user = $this->userRepository->findOneBy([
-                    'userId' => $userId,
-                    'corp' => $agent->getCorp(),
-                ]);
+                $user = $this->userLoader->loadUserByUserIdAndCorp($userId, $agent->getCorp());
                 if (!$user) {
                     continue;
                 }

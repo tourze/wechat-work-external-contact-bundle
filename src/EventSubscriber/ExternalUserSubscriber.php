@@ -3,8 +3,10 @@
 namespace WechatWorkExternalContactBundle\EventSubscriber;
 
 use Carbon\Carbon;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Tourze\WechatWorkContracts\UserLoaderInterface;
 use WechatWorkBundle\Entity\Agent;
 use WechatWorkBundle\Service\WorkService;
 use WechatWorkExternalContactBundle\Entity\ExternalServiceRelation;
@@ -14,7 +16,6 @@ use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
 use WechatWorkExternalContactBundle\Request\GetExternalContactRequest;
 use WechatWorkServerBundle\Event\WechatWorkServerMessageRequestEvent;
 use WechatWorkStaffBundle\Entity\User;
-use WechatWorkStaffBundle\Repository\UserRepository;
 
 /**
  * 外部联系人相关的处理逻辑
@@ -26,10 +27,10 @@ class ExternalUserSubscriber
     public function __construct(
         private readonly ExternalUserRepository $externalUserRepository,
         private readonly WorkService $workService,
-        private readonly UserRepository $userRepository,
+        private readonly UserLoaderInterface $userLoader,
         private readonly ExternalServiceRelationRepository $externalServiceRelationRepository,
         private readonly LoggerInterface $logger,
-        private readonly \Doctrine\ORM\EntityManagerInterface $entityManager,
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -46,10 +47,7 @@ class ExternalUserSubscriber
         }
 
         // 查找对应的服务人员信息
-        $user = $this->userRepository->findOneBy([
-            'userId' => $message['UserID'],
-            'corp' => $event->getMessage()->getCorp(),
-        ]);
+        $user = $this->userLoader->loadUserByUserIdAndCorp($message['UserID'], $event->getMessage()->getCorp());
         if (!$user) {
             // 从逻辑上来讲，到这里的数据，UserID都应该存在的
             $user = new User();

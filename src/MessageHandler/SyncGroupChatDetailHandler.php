@@ -8,12 +8,12 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Tourze\WechatWorkContracts\UserLoaderInterface;
 use WechatWorkBundle\Service\WorkService;
 use WechatWorkExternalContactBundle\Entity\GroupMember;
 use WechatWorkExternalContactBundle\Message\SyncGroupChatDetailMessage;
 use WechatWorkExternalContactBundle\Repository\GroupChatRepository;
 use WechatWorkExternalContactBundle\Request\GetGroupChatDetailRequest;
-use WechatWorkStaffBundle\Repository\UserRepository;
 
 /**
  * @see https://developer.work.weixin.qq.com/document/path/92122
@@ -24,7 +24,7 @@ class SyncGroupChatDetailHandler
     public function __construct(
         private readonly GroupChatRepository $groupChatRepository,
         private readonly WorkService $workService,
-        private readonly UserRepository $userRepository,
+        private readonly UserLoaderInterface $userLoader,
         #[Autowire(service: 'wechat-work-external-contact-bundle.property-accessor')] private readonly PropertyAccessor $propertyAccessor,
         private readonly EntityManagerInterface $entityManager,
     ) {
@@ -51,10 +51,7 @@ class SyncGroupChatDetailHandler
         $group->setCreateTime(Carbon::createFromTimestamp($response['group_chat']['create_time'], date_default_timezone_get()));
 
         // 拥有者
-        $user = $this->userRepository->findOneBy([
-            'userId' => $response['group_chat']['owner'],
-            'corp' => $group->getCorp(),
-        ]);
+        $user = $this->userLoader->loadUserByUserIdAndCorp($response['group_chat']['owner'], $group->getCorp());
         if ($user) {
             $group->setOwner($user);
         }
@@ -62,10 +59,7 @@ class SyncGroupChatDetailHandler
         // 群管理员列表
         $admins = [];
         foreach ($response['group_chat']['admin_list'] as $item) {
-            $user = $this->userRepository->findOneBy([
-                'userId' => $item['userid'],
-                'corp' => $group->getCorp(),
-            ]);
+            $user = $this->userLoader->loadUserByUserIdAndCorp($item['userid'], $group->getCorp());
             if (!$user) {
                 continue;
             }
