@@ -2,13 +2,9 @@
 
 namespace WechatWorkExternalContactBundle\Entity;
 
-use AntdCpBundle\Builder\Action\ModalFormAction;
-use AntdCpBundle\Service\FormFieldBuilder;
-use Carbon\Carbon;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineIpBundle\Attribute\CreateIpColumn;
@@ -21,7 +17,6 @@ use Tourze\EasyAdmin\Attribute\Action\Creatable;
 use Tourze\EasyAdmin\Attribute\Action\CurdAction;
 use Tourze\EasyAdmin\Attribute\Action\Deletable;
 use Tourze\EasyAdmin\Attribute\Action\Editable;
-use Tourze\EasyAdmin\Attribute\Action\HeaderAction;
 use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
 use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 use Tourze\EasyAdmin\Attribute\Field\FormField;
@@ -29,11 +24,7 @@ use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 use WechatWorkBundle\Entity\Agent;
 use WechatWorkBundle\Entity\Corp;
-use WechatWorkBundle\Repository\AgentRepository;
-use WechatWorkBundle\Service\WorkService;
 use WechatWorkExternalContactBundle\Repository\CorpTagGroupRepository;
-use WechatWorkExternalContactBundle\Repository\CorpTagItemRepository;
-use WechatWorkExternalContactBundle\Request\Tag\GetCorpTagListRequest;
 
 /**
  * @see https://developer.work.weixin.qq.com/document/path/92117
@@ -130,93 +121,6 @@ class CorpTagGroup
         $this->name = $name;
 
         return $this;
-    }
-
-    #[HeaderAction(title: '从企业微信服务器同步', featureKey: 'WECHAT_WORK_CORP_TAG_GROUP_SYNC_FROM_AGENT')]
-    public function renderSyncFromAgentButton(FormFieldBuilder $fieldHelper): ModalFormAction
-    {
-        return ModalFormAction::gen()
-            ->setFormTitle('从企业微信服务器同步')
-            ->setLabel('从企业微信服务器同步')
-            ->setFormWidth(600)
-            ->setFormFields([
-                $fieldHelper->createSelectFromEntityClass(Agent::class)
-                    ->setSpan(12)
-                    ->setId('from_agent')
-                    ->setLabel('同步应用'),
-            ])
-            ->setCallback(function (
-                array $form,
-                array $record,
-                CorpTagGroupRepository $groupRepository,
-                CorpTagItemRepository $itemRepository,
-                AgentRepository $agentRepository,
-                WorkService $workService,
-                EntityManagerInterface $entityManager,
-            ) {
-                $agent = $agentRepository->find($form['from_agent']);
-                $request = new GetCorpTagListRequest();
-                $request->setAgent($agent);
-                $remoteTags = $workService->request($request)['tag_group'];
-
-                // 放到一个事务内
-                $entityManager->wrapInTransaction(function () use ($remoteTags, $agent, $groupRepository, $itemRepository, $entityManager) {
-                    foreach ($remoteTags as $groupInfo) {
-                        // 保存分组
-                        $group = $groupRepository->findOneBy([
-                            'corp' => $agent->getCorp(),
-                            'remoteId' => $groupInfo['group_id'],
-                        ]);
-                        if (!$group) {
-                            $group = new CorpTagGroup();
-                            $group->setCorp($agent->getCorp());
-                            $group->setRemoteId($groupInfo['group_id']);
-                        }
-
-                        $group->setAgent($agent);
-                        $group->setName($groupInfo['group_name']);
-                        $group->setCreateTime(Carbon::createFromTimestamp($groupInfo['create_time'], date_default_timezone_get()));
-                        $entityManager->persist($group);
-                        $entityManager->flush();
-
-                        // 将现在数据库里带有远程ID的标签删除
-                        foreach ($group->getItems() as $item) {
-                            if ($item->getRemoteId()) {
-                                $entityManager->remove($item);
-                            }
-                        }
-                        $entityManager->flush();
-
-                        if (isset($groupInfo['tag']) && is_array($groupInfo['tag'])) {
-                            foreach ($groupInfo['tag'] as $tagInfo) {
-                                $tag = $itemRepository->findOneBy([
-                                    'corp' => $agent->getCorp(),
-                                    'remoteId' => $tagInfo['id'],
-                                ]);
-                                if (!$tag) {
-                                    $tag = new CorpTagItem();
-                                    $tag->setCorp($agent->getCorp());
-                                    $tag->setRemoteId($tagInfo['id']);
-                                }
-
-                                $tag->setAgent($agent);
-                                $tag->setTagGroup($group);
-                                $tag->setName($tagInfo['name']);
-                                $tag->setCreateTime(Carbon::createFromTimestamp($tagInfo['create_time'], date_default_timezone_get()));
-                                $entityManager->persist($tag);
-                                $entityManager->flush();
-                            }
-                        }
-                    }
-                });
-
-                return [
-                    '__message' => '同步成功',
-                    'form' => $form,
-                    'record' => $record,
-                    // 'list' => $list,
-                ];
-            });
     }
 
     public function getRemoteId(): ?string
