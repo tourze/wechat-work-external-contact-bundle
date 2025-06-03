@@ -2,7 +2,7 @@
 
 namespace WechatWorkExternalContactBundle\Message;
 
-use Tourze\Symfony\Async\Message\AsyncMessageInterface;
+use Tourze\AsyncContracts\AsyncMessageInterface;
 
 class SyncGroupChatDetailMessage implements AsyncMessageInterface
 {

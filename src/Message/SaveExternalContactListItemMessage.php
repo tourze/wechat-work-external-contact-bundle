@@ -2,7 +2,7 @@
 
 namespace WechatWorkExternalContactBundle\Message;
 
-use Tourze\Symfony\Async\Message\AsyncMessageInterface;
+use Tourze\AsyncContracts\AsyncMessageInterface;
 
 /**
  * @see https://developer.work.weixin.qq.com/document/path/99434
