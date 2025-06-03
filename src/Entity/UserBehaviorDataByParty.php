@@ -12,8 +12,8 @@ use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
 use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
+use Tourze\WechatWorkContracts\DepartmentInterface;
 use WechatWorkExternalContactBundle\Repository\UserBehaviorDataByPartyRepository;
-use WechatWorkStaffBundle\Entity\Department;
 
 /**
  * @see https://developer.work.weixin.qq.com/document/path/92132
@@ -35,7 +35,7 @@ class UserBehaviorDataByParty
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Department $party = null;
+    private ?DepartmentInterface $party = null;
 
     #[Filterable]
     #[IndexColumn]
@@ -57,12 +57,12 @@ class UserBehaviorDataByParty
         return $this->id;
     }
 
-    public function getParty(): ?Department
+    public function getParty(): ?DepartmentInterface
     {
         return $this->party;
     }
 
-    public function setParty(?Department $party): static
+    public function setParty(?DepartmentInterface $party): static
     {
         $this->party = $party;
 

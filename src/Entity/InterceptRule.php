@@ -22,13 +22,13 @@ use Tourze\EasyAdmin\Attribute\Field\FormField;
 use Tourze\EasyAdmin\Attribute\Field\SelectField;
 use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
+use Tourze\WechatWorkContracts\DepartmentInterface;
 use Tourze\WechatWorkContracts\UserInterface;
 use WechatWorkBundle\Entity\Agent;
 use WechatWorkBundle\Entity\Corp;
 use WechatWorkExternalContactBundle\Enum\InterceptType;
 use WechatWorkExternalContactBundle\Repository\InterceptRuleRepository;
 use WechatWorkJssdkBundle\Semantics\SemanticsList;
-use WechatWorkStaffBundle\Entity\Department;
 
 /**
  * 敏感词规则
@@ -103,7 +103,7 @@ class InterceptRule
     #[Groups(['admin_curd'])]
     #[ListColumn]
     #[FormField]
-    #[SelectField(targetEntity: Department::class, mode: 'multiple', idColumn: 'id')]
+    #[SelectField(targetEntity: DepartmentInterface::class, mode: 'multiple', idColumn: 'id')]
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '可使用的部门列表'])]
     private array $applicableDepartmentList = [];
 
