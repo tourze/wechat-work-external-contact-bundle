@@ -26,8 +26,8 @@ use Tourze\EasyAdmin\Attribute\Event\AfterEdit;
 use Tourze\EasyAdmin\Attribute\Field\FormField;
 use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
-use WechatWorkBundle\Entity\Agent;
-use WechatWorkBundle\Entity\Corp;
+use Tourze\WechatWorkContracts\AgentInterface;
+use Tourze\WechatWorkContracts\CorpInterface;
 use WechatWorkBundle\Service\WorkService;
 use WechatWorkExternalContactBundle\Repository\CorpTagGroupRepository;
 use WechatWorkExternalContactBundle\Repository\CorpTagItemRepository;
@@ -55,9 +55,9 @@ class CorpTagItem implements \Stringable
     private ?string $id = null;
 
     #[Ignore]
-    #[ORM\ManyToOne(targetEntity: Corp::class)]
+    #[ORM\ManyToOne(targetEntity: CorpInterface::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Corp $corp = null;
+    private ?CorpInterface $corp = null;
 
     #[Ignore]
     #[ORM\ManyToOne(targetEntity: CorpTagGroup::class, inversedBy: 'items')]
@@ -79,9 +79,9 @@ class CorpTagItem implements \Stringable
     private ?int $sortNumber = null;
 
     #[Ignore]
-    #[ORM\ManyToOne(targetEntity: Agent::class)]
+    #[ORM\ManyToOne(targetEntity: AgentInterface::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Agent $agent = null;
+    private ?AgentInterface $agent = null;
 
     #[CreateIpColumn]
     #[ORM\Column(length: 128, nullable: true, options: ['comment' => '创建时IP'])]
@@ -164,12 +164,12 @@ class CorpTagItem implements \Stringable
         return $this;
     }
 
-    public function getCorp(): ?Corp
+    public function getCorp(): ?CorpInterface
     {
         return $this->corp;
     }
 
-    public function setCorp(?Corp $corp): self
+    public function setCorp(?CorpInterface $corp): self
     {
         $this->corp = $corp;
 
@@ -188,12 +188,12 @@ class CorpTagItem implements \Stringable
         return $this;
     }
 
-    public function getAgent(): ?Agent
+    public function getAgent(): ?AgentInterface
     {
         return $this->agent;
     }
 
-    public function setAgent(?Agent $agent): self
+    public function setAgent(?AgentInterface $agent): self
     {
         $this->agent = $agent;
 

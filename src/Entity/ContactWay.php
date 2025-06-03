@@ -20,8 +20,8 @@ use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
 use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
-use WechatWorkBundle\Entity\Agent;
-use WechatWorkBundle\Entity\Corp;
+use Tourze\WechatWorkContracts\AgentInterface;
+use Tourze\WechatWorkContracts\CorpInterface;
 use WechatWorkExternalContactBundle\Repository\ContactWayRepository;
 
 /**
@@ -46,11 +46,11 @@ class ContactWay implements PlainArrayInterface
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Corp $corp = null;
+    private ?CorpInterface $corp = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Agent $agent = null;
+    private ?AgentInterface $agent = null;
 
     #[ORM\Column(length: 128, unique: true, nullable: false, options: ['comment' => 'ConfigID'])]
     private ?string $configId = null;
@@ -137,24 +137,24 @@ class ContactWay implements PlainArrayInterface
         return $this->id;
     }
 
-    public function getCorp(): ?Corp
+    public function getCorp(): ?CorpInterface
     {
         return $this->corp;
     }
 
-    public function setCorp(?Corp $corp): static
+    public function setCorp(?CorpInterface $corp): static
     {
         $this->corp = $corp;
 
         return $this;
     }
 
-    public function getAgent(): ?Agent
+    public function getAgent(): ?AgentInterface
     {
         return $this->agent;
     }
 
-    public function setAgent(?Agent $agent): static
+    public function setAgent(?AgentInterface $agent): static
     {
         $this->agent = $agent;
 

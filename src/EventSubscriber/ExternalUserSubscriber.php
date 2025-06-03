@@ -6,8 +6,8 @@ use Carbon\Carbon;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Tourze\WechatWorkContracts\AgentInterface;
 use Tourze\WechatWorkContracts\UserLoaderInterface;
-use WechatWorkBundle\Entity\Agent;
 use WechatWorkBundle\Service\WorkService;
 use WechatWorkExternalContactBundle\Entity\ExternalServiceRelation;
 use WechatWorkExternalContactBundle\Entity\ExternalUser;
@@ -15,7 +15,6 @@ use WechatWorkExternalContactBundle\Repository\ExternalServiceRelationRepository
 use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
 use WechatWorkExternalContactBundle\Request\GetExternalContactRequest;
 use WechatWorkServerBundle\Event\WechatWorkServerMessageRequestEvent;
-use WechatWorkStaffBundle\Entity\User;
 
 /**
  * 外部联系人相关的处理逻辑
@@ -50,13 +49,12 @@ class ExternalUserSubscriber
         $user = $this->userLoader->loadUserByUserIdAndCorp($message['UserID'], $event->getMessage()->getCorp());
         if (!$user) {
             // 从逻辑上来讲，到这里的数据，UserID都应该存在的
-            $user = new User();
-            $user->setCorp($event->getMessage()->getCorp());
-            $user->setAgent($event->getMessage()->getAgent());
-            $user->setUserId($message['UserID']);
-            $user->setName($message['UserID']);
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
+            $this->userLoader->createUser(
+                $event->getMessage()->getCorp(),
+                $event->getMessage()->getAgent(),
+                $message['UserID'],
+                $message['UserID'],
+            );
         }
 
         // 先保存最基础的外部联系人信息
@@ -109,7 +107,7 @@ class ExternalUserSubscriber
         $this->fetchExternalUserDetail($externalUser, $event->getMessage()->getAgent());
     }
 
-    private function fetchExternalUserDetail(ExternalUser $externalUser, Agent $agent): void
+    private function fetchExternalUserDetail(ExternalUser $externalUser, AgentInterface $agent): void
     {
         // 查找和保存其他用户信息
         $request = new GetExternalContactRequest();

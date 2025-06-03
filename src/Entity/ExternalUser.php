@@ -18,8 +18,8 @@ use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 use Tourze\EasyAdmin\Attribute\Column\PictureColumn;
 use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
+use Tourze\WechatWorkContracts\CorpInterface;
 use Tourze\WechatWorkExternalContactModel\ExternalContactInterface;
-use WechatWorkBundle\Entity\Corp;
 use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
 
 /**
@@ -40,8 +40,8 @@ class ExternalUser implements \Stringable, PlainArrayInterface, ApiArrayInterfac
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
     private ?int $id = 0;
 
-    #[ORM\ManyToOne(targetEntity: Corp::class)]
-    private ?Corp $corp = null;
+    #[ORM\ManyToOne(targetEntity: CorpInterface::class)]
+    private ?CorpInterface $corp = null;
 
     #[ListColumn]
     #[Groups(['admin_curd'])]
@@ -191,12 +191,12 @@ class ExternalUser implements \Stringable, PlainArrayInterface, ApiArrayInterfac
         return $this;
     }
 
-    public function getCorp(): ?Corp
+    public function getCorp(): ?CorpInterface
     {
         return $this->corp;
     }
 
-    public function setCorp(?Corp $corp): self
+    public function setCorp(?CorpInterface $corp): self
     {
         $this->corp = $corp;
 

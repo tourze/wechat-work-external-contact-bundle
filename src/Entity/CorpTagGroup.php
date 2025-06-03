@@ -22,8 +22,8 @@ use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 use Tourze\EasyAdmin\Attribute\Field\FormField;
 use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
-use WechatWorkBundle\Entity\Agent;
-use WechatWorkBundle\Entity\Corp;
+use Tourze\WechatWorkContracts\AgentInterface;
+use Tourze\WechatWorkContracts\CorpInterface;
 use WechatWorkExternalContactBundle\Repository\CorpTagGroupRepository;
 
 /**
@@ -45,14 +45,14 @@ class CorpTagGroup
     private ?int $id = 0;
 
     #[ListColumn(title: '所属企业')]
-    #[ORM\ManyToOne(targetEntity: Corp::class)]
+    #[ORM\ManyToOne(targetEntity: CorpInterface::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Corp $corp = null;
+    private ?CorpInterface $corp = null;
 
     #[ListColumn(title: '同步应用')]
-    #[ORM\ManyToOne(targetEntity: Agent::class)]
+    #[ORM\ManyToOne(targetEntity: AgentInterface::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Agent $agent = null;
+    private ?AgentInterface $agent = null;
 
     #[FormField]
     #[ListColumn]
@@ -165,24 +165,24 @@ class CorpTagGroup
         return $this;
     }
 
-    public function getCorp(): ?Corp
+    public function getCorp(): ?CorpInterface
     {
         return $this->corp;
     }
 
-    public function setCorp(?Corp $corp): self
+    public function setCorp(?CorpInterface $corp): self
     {
         $this->corp = $corp;
 
         return $this;
     }
 
-    public function getAgent(): ?Agent
+    public function getAgent(): ?AgentInterface
     {
         return $this->agent;
     }
 
-    public function setAgent(?Agent $agent): self
+    public function setAgent(?AgentInterface $agent): self
     {
         $this->agent = $agent;
 

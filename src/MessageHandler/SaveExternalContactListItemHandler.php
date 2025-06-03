@@ -12,7 +12,6 @@ use WechatWorkExternalContactBundle\Entity\ExternalUser;
 use WechatWorkExternalContactBundle\Message\SaveExternalContactListItemMessage;
 use WechatWorkExternalContactBundle\Repository\ExternalServiceRelationRepository;
 use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
-use WechatWorkStaffBundle\Entity\User;
 
 #[AsMessageHandler]
 class SaveExternalContactListItemHandler
@@ -77,13 +76,12 @@ class SaveExternalContactListItemHandler
         if (isset($item['follow_userid'])) {
             $user = $this->userLoader->loadUserByUserIdAndCorp($item['follow_userid'], $agent->getCorp());
             if (!$user) {
-                $user = new User();
-                $user->setCorp($agent->getCorp());
-                $user->setAgent($agent);
-                $user->setUserId($item['follow_userid']);
-                $user->setName($item['follow_userid']);
-                $this->entityManager->persist($user);
-                $this->entityManager->flush();
+                $user = $this->userLoader->createUser(
+                    $agent->getCorp(),
+                    $agent,
+                    $item['follow_userid'],
+                    $item['follow_userid'],
+                );
             }
             // 保存关系
             $relation = $this->externalServiceRelationRepository->findOneBy([

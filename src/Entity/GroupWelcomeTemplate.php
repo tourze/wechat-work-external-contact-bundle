@@ -21,7 +21,7 @@ use Tourze\EasyAdmin\Attribute\Column\BoolColumn;
 use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
 use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 use Tourze\EasyAdmin\Attribute\Filter\Filterable;
-use WechatWorkBundle\Entity\Agent;
+use Tourze\WechatWorkContracts\AgentInterface;
 use WechatWorkExternalContactBundle\Repository\GroupWelcomeTemplateRepository;
 use WechatWorkMediaBundle\Entity\TempMedia;
 
@@ -53,7 +53,7 @@ class GroupWelcomeTemplate
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Agent $agent = null;
+    private ?AgentInterface $agent = null;
 
     #[ORM\Column(length: 120, nullable: true, options: ['comment' => '欢迎语素材id'])]
     private ?string $templateId = null;
@@ -160,12 +160,12 @@ class GroupWelcomeTemplate
         return $this->updatedBy;
     }
 
-    public function getAgent(): ?Agent
+    public function getAgent(): ?AgentInterface
     {
         return $this->agent;
     }
 
-    public function setAgent(?Agent $agent): static
+    public function setAgent(?AgentInterface $agent): static
     {
         $this->agent = $agent;
 

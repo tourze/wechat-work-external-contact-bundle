@@ -11,8 +11,8 @@ use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
 use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
+use Tourze\WechatWorkContracts\CorpInterface;
 use Tourze\WechatWorkContracts\UserInterface;
-use WechatWorkBundle\Entity\Corp;
 use WechatWorkExternalContactBundle\Repository\ExternalServiceRelationRepository;
 
 /**
@@ -32,9 +32,9 @@ class ExternalServiceRelation
     private ?int $id = 0;
 
     #[ListColumn(title: '所属企业')]
-    #[ORM\ManyToOne(targetEntity: Corp::class)]
+    #[ORM\ManyToOne(targetEntity: CorpInterface::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Corp $corp = null;
+    private ?CorpInterface $corp = null;
 
     #[ORM\ManyToOne]
     private ?UserInterface $user = null;
@@ -75,12 +75,12 @@ class ExternalServiceRelation
         return $this->id;
     }
 
-    public function getCorp(): ?Corp
+    public function getCorp(): ?CorpInterface
     {
         return $this->corp;
     }
 
-    public function setCorp(?Corp $corp): self
+    public function setCorp(?CorpInterface $corp): self
     {
         $this->corp = $corp;
 

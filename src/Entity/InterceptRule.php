@@ -22,10 +22,10 @@ use Tourze\EasyAdmin\Attribute\Field\FormField;
 use Tourze\EasyAdmin\Attribute\Field\SelectField;
 use Tourze\EasyAdmin\Attribute\Filter\Filterable;
 use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
+use Tourze\WechatWorkContracts\AgentInterface;
+use Tourze\WechatWorkContracts\CorpInterface;
 use Tourze\WechatWorkContracts\DepartmentInterface;
 use Tourze\WechatWorkContracts\UserInterface;
-use WechatWorkBundle\Entity\Agent;
-use WechatWorkBundle\Entity\Corp;
 use WechatWorkExternalContactBundle\Enum\InterceptType;
 use WechatWorkExternalContactBundle\Repository\InterceptRuleRepository;
 use WechatWorkJssdkBundle\Semantics\SemanticsList;
@@ -55,13 +55,13 @@ class InterceptRule
     #[FormField(title: '企业')]
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Corp $corp = null;
+    private ?CorpInterface $corp = null;
 
     #[ListColumn(title: '应用')]
     #[FormField(title: '应用')]
-    #[ORM\ManyToOne(targetEntity: Agent::class)]
+    #[ORM\ManyToOne(targetEntity: AgentInterface::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Agent $agent = null;
+    private ?AgentInterface $agent = null;
 
     #[ORM\Column(length: 60, nullable: true, options: ['comment' => '规则ID'])]
     private ?string $ruleId = null;
@@ -142,24 +142,24 @@ class InterceptRule
         return $this->id;
     }
 
-    public function getCorp(): ?Corp
+    public function getCorp(): ?CorpInterface
     {
         return $this->corp;
     }
 
-    public function setCorp(?Corp $corp): self
+    public function setCorp(?CorpInterface $corp): self
     {
         $this->corp = $corp;
 
         return $this;
     }
 
-    public function getAgent(): ?Agent
+    public function getAgent(): ?AgentInterface
     {
         return $this->agent;
     }
 
-    public function setAgent(?Agent $agent): self
+    public function setAgent(?AgentInterface $agent): self
     {
         $this->agent = $agent;
 
