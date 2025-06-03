@@ -2,9 +2,9 @@
 
 namespace WechatWorkExternalContactBundle\EventSubscriber;
 
-use AppBundle\Service\TwigService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Tourze\TextManageBundle\Service\TextFormatter;
 use WechatWorkBundle\Service\WorkService;
 use WechatWorkExternalContactBundle\Request\SendWelcomeMessageRequest;
 use WechatWorkServerBundle\Event\WechatWorkServerMessageRequestEvent;
@@ -14,7 +14,7 @@ class WelcomeMessageSubscriber
     public function __construct(
         private readonly WorkService $workService,
         private readonly LoggerInterface $logger,
-        private readonly TwigService $messageVariableParser,
+        private readonly TextFormatter $textFormatter,
     ) {
     }
 
@@ -32,7 +32,7 @@ class WelcomeMessageSubscriber
         $request = new SendWelcomeMessageRequest();
         $request->setAgent($event->getMessage()->getAgent());
         $request->setWelcomeCode($message['WelcomeCode']);
-        $request->setTextContent($this->messageVariableParser->parseString($event->getMessage()->getAgent()->getWelcomeText(), [
+        $request->setTextContent($this->textFormatter->formatText($event->getMessage()->getAgent()->getWelcomeText(), [
             'message' => $message,
         ]));
         try {
