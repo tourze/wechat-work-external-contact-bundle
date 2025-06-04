@@ -165,77 +165,6 @@ class TestControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testAddContactWayWithMultipleUsers(): void
-    {
-        // 准备数据
-        $corp = new Corp();
-        $agent = new Agent();
-        $agent->setCorp($corp);
-
-        $request = new Request([
-            'corpId' => '1',
-            'agentId' => '12345',
-            'user' => 'user1,user2,user3'
-        ]);
-
-        $expectedResponse = [
-            'errcode' => 0,
-            'config_id' => 'contact_way_123'
-        ];
-
-        // 设置期望
-        $this->corpRepository->expects($this->once())
-            ->method('find')
-            ->willReturn($corp);
-
-        $this->agentRepository->expects($this->once())
-            ->method('findOneBy')
-            ->willReturn($agent);
-
-        $this->workService->expects($this->once())
-            ->method('request')
-            ->willReturn($expectedResponse);
-
-        // 执行测试
-        $response = $this->controller->addContactWay($request);
-
-        // 验证结果
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals($expectedResponse, json_decode($response->getContent(), true));
-    }
-
-    public function testAddContactWayWithSingleUser(): void
-    {
-        // 测试单个用户的情况
-        $corp = new Corp();
-        $agent = new Agent();
-        $agent->setCorp($corp);
-
-        $request = new Request([
-            'corpId' => '1',
-            'user' => 'single_user'
-        ]);
-
-        $this->corpRepository->expects($this->once())
-            ->method('find')
-            ->willReturn($corp);
-
-        $this->agentRepository->expects($this->once())
-            ->method('findOneBy')
-            ->with(['corp' => $corp], ['id' => Criteria::ASC])
-            ->willReturn($agent);
-
-        $this->workService->expects($this->once())
-            ->method('request')
-            ->willReturn(['errcode' => 0]);
-
-        // 执行测试
-        $response = $this->controller->addContactWay($request);
-
-        // 验证结果
-        $this->assertEquals(200, $response->getStatusCode());
-    }
-
     public function testSendWelcomeMsgWithUniqueContent(): void
     {
         // 准备数据
@@ -367,7 +296,7 @@ class TestControllerTest extends TestCase
         $this->assertNotEmpty($classAttributes);
         
         // 检查方法级别的路由属性
-        $methods = ['contactList', 'addContactWay', 'sendWelcomeMsg'];
+        $methods = ['contactList', 'sendWelcomeMsg'];
         foreach ($methods as $methodName) {
             $method = $reflection->getMethod($methodName);
             $attributes = $method->getAttributes();
