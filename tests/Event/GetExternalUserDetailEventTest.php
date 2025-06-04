@@ -105,19 +105,6 @@ class GetExternalUserDetailEventTest extends TestCase
         $this->assertCount(1, $retrievedResult['follow_info']);
     }
 
-    public function testUserProperty(): void
-    {
-        // 创建用户mock
-        /** @var UserInterface&\PHPUnit\Framework\MockObject\MockObject $user */
-        $user = $this->createMock(UserInterface::class);
-        $user->method('getUserIdentifier')->willReturn('test_user_123');
-        
-        // 测试设置和获取用户
-        $this->event->setUser($user);
-        $this->assertSame($user, $this->event->getUser());
-        $this->assertEquals('test_user_123', $this->event->getUser()->getUserIdentifier());
-    }
-
     public function testExternalUserProperty(): void
     {
         // 创建外部用户
@@ -158,12 +145,10 @@ class GetExternalUserDetailEventTest extends TestCase
         ];
         
         // 设置所有属性
-        $this->event->setUser($user);
         $this->event->setExternalUser($externalUser);
         $this->event->setResult($result);
         
         // 验证所有属性
-        $this->assertSame($user, $this->event->getUser());
         $this->assertSame($externalUser, $this->event->getExternalUser());
         $this->assertEquals($result, $this->event->getResult());
         
@@ -198,12 +183,10 @@ class GetExternalUserDetailEventTest extends TestCase
         $result = ['test' => 'data'];
         
         // 验证setter方法返回void（不支持链式调用）
-        $this->assertNull($this->event->setUser($user));
         $this->assertNull($this->event->setExternalUser($externalUser));
         $this->assertNull($this->event->setResult($result));
         
         // 验证设置成功
-        $this->assertSame($user, $this->event->getUser());
         $this->assertSame($externalUser, $this->event->getExternalUser());
         $this->assertEquals($result, $this->event->getResult());
     }

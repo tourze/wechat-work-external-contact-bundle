@@ -11,7 +11,6 @@ use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPC\Core\Procedure\BaseProcedure;
 use WechatWorkExternalContactBundle\Event\GetExternalUserDetailEvent;
 use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
-use WechatWorkStaffBundle\Service\BizUserService;
 
 /**
  * @see https://developer.work.weixin.qq.com/document/path/94315
@@ -33,7 +32,6 @@ class GetWechatWorkExternalUserDetail extends BaseProcedure
 
     public function __construct(
         private readonly ExternalUserRepository $externalUserRepository,
-        private readonly BizUserService $bizUserService,
         private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
@@ -65,7 +63,6 @@ class GetWechatWorkExternalUserDetail extends BaseProcedure
         // 这里分发一个事件出去，是为了方便后续我们给第三方系统补充信息
         $event = new GetExternalUserDetailEvent();
         $event->setExternalUser($externalUser);
-        $event->setUser($this->bizUserService->transformFromExternalUser($externalUser));
         $event->setResult($externalUser->retrieveApiArray());
         $this->eventDispatcher->dispatch($event);
 

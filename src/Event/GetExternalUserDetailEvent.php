@@ -2,7 +2,6 @@
 
 namespace WechatWorkExternalContactBundle\Event;
 
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 use WechatWorkExternalContactBundle\Entity\ExternalUser;
 
@@ -23,18 +22,6 @@ class GetExternalUserDetailEvent extends Event
     public function setResult(array $result): void
     {
         $this->result = $result;
-    }
-
-    private UserInterface $user;
-
-    public function getUser(): UserInterface
-    {
-        return $this->user;
-    }
-
-    public function setUser(UserInterface $user): void
-    {
-        $this->user = $user;
     }
 
     private ExternalUser $externalUser;
