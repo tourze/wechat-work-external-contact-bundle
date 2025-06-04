@@ -48,7 +48,6 @@
     "tourze/wechat-work-bundle": "0.1.*",
     "tourze/wechat-work-contracts": "0.0.*",
     "tourze/wechat-work-external-contact-model": "0.0.*",
-    "tourze/wechat-work-jssdk-bundle": "0.1.*",
     "tourze/wechat-work-server-bundle": "0.0.*"
   },
   "require-dev": {
