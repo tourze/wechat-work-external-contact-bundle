@@ -2,10 +2,10 @@
 
 namespace WechatWorkExternalContactBundle\Tests\Entity;
 
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use WechatWorkExternalContactBundle\Entity\GroupWelcomeTemplate;
+use PHPUnit\Framework\TestCase;
 use Tourze\WechatWorkContracts\AgentInterface;
+use WechatWorkExternalContactBundle\Entity\GroupWelcomeTemplate;
 use WechatWorkMediaBundle\Entity\TempMedia;
 
 /**

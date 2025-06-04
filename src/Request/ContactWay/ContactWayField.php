@@ -19,12 +19,12 @@ trait ContactWayField
     /**
      * @var int|null 在小程序中联系时使用的控件样式，详见附表
      */
-    private ?int $style;
+    private ?int $style = null;
 
     /**
      * @var array|null 使用该联系方式的用户userID列表，在type为1时为必填，且只能有一个
      */
-    private ?array $user;
+    private ?array $user = null;
 
     /**
      * @var bool 外部客户添加时是否无需验证，默认为true
@@ -32,7 +32,7 @@ trait ContactWayField
     private bool $skipVerify = true;
 
     /**
-     * @var string|null 企业自定义的state参数，用于区分不同的添加渠道，在调用“获取外部联系人详情”时会返回该参数值，不超过30个字符
+     * @var string|null 企业自定义的state参数，用于区分不同的添加渠道，在调用"获取外部联系人详情"时会返回该参数值，不超过30个字符
      */
     private ?string $state = null;
 
@@ -67,7 +67,7 @@ trait ContactWayField
     private bool $exclusive = false;
 
     /**
-     * @var array|null 结束语，会话结束时自动发送给客户，可参考“结束语定义”，仅在is_temp为true时有效
+     * @var array|null 结束语，会话结束时自动发送给客户，可参考"结束语定义"，仅在is_temp为true时有效
      */
     private ?array $conclusions = null;
 
@@ -240,14 +240,21 @@ trait ContactWayField
 
     protected function getFieldJson(): array
     {
-        $json = [
-            'type' => $this->getType(),
-            'scene' => $this->getScene(),
-            'skip_verify' => $this->isSkipVerify(),
-            'is_temp' => $this->isTemp(),
-            'is_exclusive' => $this->isExclusive(),
-        ];
-        if (null !== $this->getStyle()) {
+        $json = [];
+        
+        // 只有在属性已设置时才添加到json中
+        if (isset($this->type)) {
+            $json['type'] = $this->getType();
+        }
+        if (isset($this->scene)) {
+            $json['scene'] = $this->getScene();
+        }
+        
+        $json['skip_verify'] = $this->isSkipVerify();
+        $json['is_temp'] = $this->isTemp();
+        $json['is_exclusive'] = $this->isExclusive();
+        
+        if (null !== $this->style) {
             $json['style'] = $this->getStyle();
         }
         if (null !== $this->getState()) {
@@ -257,13 +264,13 @@ trait ContactWayField
             $json['remark'] = $this->getRemark();
         }
 
-        if (1 === $this->getType()) {
-            if (!empty($this->getUser())) {
+        if (isset($this->type) && 1 === $this->getType()) {
+            if (!empty($this->user)) {
                 $json['user'] = $this->getUser();
             }
         }
-        if (2 === $this->getType()) {
-            if (!empty($this->getUser())) {
+        if (isset($this->type) && 2 === $this->getType()) {
+            if (!empty($this->user)) {
                 $json['user'] = $this->getUser();
             }
             if (!empty($this->getParty())) {

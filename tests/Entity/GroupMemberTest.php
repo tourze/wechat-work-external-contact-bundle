@@ -2,10 +2,10 @@
 
 namespace WechatWorkExternalContactBundle\Tests\Entity;
 
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use WechatWorkExternalContactBundle\Entity\GroupMember;
+use PHPUnit\Framework\TestCase;
 use WechatWorkExternalContactBundle\Entity\GroupChat;
+use WechatWorkExternalContactBundle\Entity\GroupMember;
 
 /**
  * GroupMember 实体测试用例

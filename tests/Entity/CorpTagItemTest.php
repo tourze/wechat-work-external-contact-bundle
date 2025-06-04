@@ -2,10 +2,10 @@
 
 namespace WechatWorkExternalContactBundle\Tests\Entity;
 
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use WechatWorkExternalContactBundle\Entity\CorpTagItem;
+use PHPUnit\Framework\TestCase;
 use WechatWorkExternalContactBundle\Entity\CorpTagGroup;
+use WechatWorkExternalContactBundle\Entity\CorpTagItem;
 
 /**
  * CorpTagItem 实体测试用例

@@ -2,12 +2,12 @@
 
 namespace WechatWorkExternalContactBundle\Tests\Entity;
 
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use WechatWorkExternalContactBundle\Entity\ExternalServiceRelation;
-use WechatWorkExternalContactBundle\Entity\ExternalUser;
+use PHPUnit\Framework\TestCase;
 use Tourze\WechatWorkContracts\CorpInterface;
 use Tourze\WechatWorkContracts\UserInterface;
+use WechatWorkExternalContactBundle\Entity\ExternalServiceRelation;
+use WechatWorkExternalContactBundle\Entity\ExternalUser;
 
 /**
  * ExternalServiceRelation 实体测试用例

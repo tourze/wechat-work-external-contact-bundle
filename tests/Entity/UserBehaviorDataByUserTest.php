@@ -2,10 +2,10 @@
 
 namespace WechatWorkExternalContactBundle\Tests\Entity;
 
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use WechatWorkExternalContactBundle\Entity\UserBehaviorDataByUser;
+use PHPUnit\Framework\TestCase;
 use Tourze\WechatWorkContracts\UserInterface;
+use WechatWorkExternalContactBundle\Entity\UserBehaviorDataByUser;
 
 /**
  * UserBehaviorDataByUser 实体测试用例

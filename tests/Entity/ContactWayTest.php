@@ -3,8 +3,8 @@
 namespace WechatWorkExternalContactBundle\Tests\Entity;
 
 use PHPUnit\Framework\TestCase;
-use WechatWorkExternalContactBundle\Entity\ContactWay;
 use Tourze\Arrayable\PlainArrayInterface;
+use WechatWorkExternalContactBundle\Entity\ContactWay;
 
 /**
  * ContactWay 实体测试用例

@@ -2,12 +2,12 @@
 
 namespace WechatWorkExternalContactBundle\Tests\Entity;
 
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use WechatWorkExternalContactBundle\Entity\InterceptRule;
-use WechatWorkExternalContactBundle\Enum\InterceptType;
+use PHPUnit\Framework\TestCase;
 use Tourze\WechatWorkContracts\AgentInterface;
 use Tourze\WechatWorkContracts\CorpInterface;
+use WechatWorkExternalContactBundle\Entity\InterceptRule;
+use WechatWorkExternalContactBundle\Enum\InterceptType;
 
 /**
  * InterceptRule 实体测试用例

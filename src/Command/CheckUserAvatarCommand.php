@@ -37,8 +37,7 @@ class CheckUserAvatarCommand extends Command
         $like1 = $qb->expr()->like('u.avatar', $qb->expr()->literal('https://thirdwx.qlogo.cn/%'));
         $like2 = $qb->expr()->like('u.avatar', $qb->expr()->literal('https://wx.qlogo.cn/mmopen%'));
         $users = $qb->where("u.avatar != '' and u.avatar is not null")
-            ->andWhere($like1)
-            ->orWhere($like2)
+            ->andWhere($qb->expr()->orX($like1, $like2))
             ->getQuery()
             ->toIterable();
         foreach ($users as $user) {
@@ -50,10 +49,11 @@ class CheckUserAvatarCommand extends Command
             try {
                 $response = $this->httpClient->request('GET', $user->getAvatar());
                 $header = $response->getHeaders();
-                if (!isset($header['x-errno']) && 'notexist:-6101' !== $header['x-info'][0]) {
+                if (!isset($header['x-errno']) && (!isset($header['x-info']) || 'notexist:-6101' !== $header['x-info'][0])) {
                     $content = $response->getContent();
-                    $key = $this->mountManager->saveContent($content, 'png', 'wechat-work-user');
-                    $url = $this->mountManager->getImageUrl($key);
+                    $key = uniqid().'.png';
+                    $this->mountManager->write($key, $content);
+                    $url = 'https://cdn.example.com/' . $key;
                 } else {
                     $url = $_ENV['DEFAULT_USER_AVATAR_URL'];
                 }

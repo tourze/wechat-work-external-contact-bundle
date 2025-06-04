@@ -2,11 +2,11 @@
 
 namespace WechatWorkExternalContactBundle\Tests\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use PHPUnit\Framework\TestCase;
 use WechatWorkExternalContactBundle\Entity\CorpTagGroup;
 use WechatWorkExternalContactBundle\Entity\CorpTagItem;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 
 /**
  * CorpTagGroup 实体测试用例

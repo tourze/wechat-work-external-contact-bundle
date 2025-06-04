@@ -48,19 +48,21 @@ class UpdateInterceptRuleRequest extends ApiRequest
             'rule_id' => $this->getRuleId(),
         ];
 
-        if (null !== $this->getRuleName()) {
+        if (isset($this->ruleName)) {
             $json['rule_name'] = $this->getRuleName();
         }
-        if (null !== $this->getWordList()) {
+        if (isset($this->wordList)) {
             $json['word_list'] = $this->getWordList();
         }
-        if (null !== $this->getInterceptType()) {
+        if (isset($this->interceptType)) {
             $json['intercept_type'] = $this->getInterceptType();
         }
 
-        $json['extra_rule'] = [
-            'semantics_list' => $this->getSemanticsList(),
-        ];
+        if (isset($this->semanticsList)) {
+            $json['extra_rule'] = [
+                'semantics_list' => $this->getSemanticsList(),
+            ];
+        }
 
         if (!empty($this->getAddApplicableUserList())) {
             $json['add_applicable_range']['user_list'] = $this->getAddApplicableUserList();
@@ -69,10 +71,10 @@ class UpdateInterceptRuleRequest extends ApiRequest
             $json['add_applicable_range']['department_list'] = $this->getAddApplicableDepartmentList();
         }
         if (!empty($this->getRemoveApplicableUserList())) {
-            $json['add_applicable_range']['user_list'] = $this->getRemoveApplicableUserList();
+            $json['remove_applicable_range']['user_list'] = $this->getRemoveApplicableUserList();
         }
         if (!empty($this->getRemoveApplicableDepartmentList())) {
-            $json['add_applicable_range']['department_list'] = $this->getRemoveApplicableDepartmentList();
+            $json['remove_applicable_range']['department_list'] = $this->getRemoveApplicableDepartmentList();
         }
 
         return [

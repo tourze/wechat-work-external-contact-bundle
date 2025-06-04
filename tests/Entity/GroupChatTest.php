@@ -2,16 +2,16 @@
 
 namespace WechatWorkExternalContactBundle\Tests\Entity;
 
-use PHPUnit\Framework\TestCase;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use PHPUnit\Framework\MockObject\MockObject;
-use WechatWorkExternalContactBundle\Entity\GroupChat;
-use WechatWorkExternalContactBundle\Entity\GroupMember;
-use WechatWorkExternalContactBundle\Enum\GroupChatStatus;
+use PHPUnit\Framework\TestCase;
 use Tourze\WechatWorkContracts\AgentInterface;
 use Tourze\WechatWorkContracts\CorpInterface;
 use Tourze\WechatWorkContracts\UserInterface;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use WechatWorkExternalContactBundle\Entity\GroupChat;
+use WechatWorkExternalContactBundle\Entity\GroupMember;
+use WechatWorkExternalContactBundle\Enum\GroupChatStatus;
 
 /**
  * GroupChat 实体测试用例

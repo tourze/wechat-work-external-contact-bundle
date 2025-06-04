@@ -3,10 +3,10 @@
 namespace WechatWorkExternalContactBundle\Tests\Entity;
 
 use PHPUnit\Framework\TestCase;
-use WechatWorkExternalContactBundle\Entity\ExternalUser;
 use Tourze\Arrayable\ApiArrayInterface;
 use Tourze\Arrayable\PlainArrayInterface;
 use Tourze\WechatWorkExternalContactModel\ExternalContactInterface;
+use WechatWorkExternalContactBundle\Entity\ExternalUser;
 
 /**
  * ExternalUser 实体测试用例
