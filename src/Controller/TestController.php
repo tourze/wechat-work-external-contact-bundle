@@ -11,7 +11,6 @@ use WechatWorkBundle\Entity\AccessTokenAware;
 use WechatWorkBundle\Repository\AgentRepository;
 use WechatWorkBundle\Repository\CorpRepository;
 use WechatWorkBundle\Service\WorkService;
-use WechatWorkExternalContactBundle\Request\ContactWay\AddContactWayRequest;
 use WechatWorkExternalContactBundle\Request\GetExternalContactListRequest;
 use WechatWorkExternalContactBundle\Request\SendWelcomeMessageRequest;
 
@@ -35,24 +34,6 @@ class TestController extends AbstractController
         $request = new GetExternalContactListRequest();
         $request->setAgent($agent);
         $request->setUserId($userId);
-        $response = $this->workService->request($request);
-
-        return $this->json($response);
-    }
-
-    #[Route('/add_contact_way')]
-    public function addContactWay(Request $request): Response
-    {
-        $agent = $this->getAgent($request);
-
-        $user = $request->query->get('user');
-        $user = explode(',', $user);
-
-        $request = new AddContactWayRequest();
-        $request->setAgent($agent);
-        $request->setType(1);
-        $request->setScene(2);
-        $request->setUser($user);
         $response = $this->workService->request($request);
 
         return $this->json($response);
