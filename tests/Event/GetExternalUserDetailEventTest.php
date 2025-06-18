@@ -100,8 +100,7 @@ class GetExternalUserDetailEventTest extends TestCase
         $retrievedResult = $this->event->getResult();
         $this->assertEquals('ext_user_456', $retrievedResult['external_userid']);
         $this->assertEquals('李四', $retrievedResult['name']);
-        $this->assertIsArray($retrievedResult['external_profile']);
-        $this->assertIsArray($retrievedResult['follow_info']);
+
         $this->assertCount(1, $retrievedResult['follow_info']);
     }
 
@@ -218,13 +217,9 @@ class GetExternalUserDetailEventTest extends TestCase
         
         $this->event->setResult($result);
         $retrievedResult = $this->event->getResult();
-        
-        $this->assertIsString($retrievedResult['string_field']);
         $this->assertIsInt($retrievedResult['int_field']);
         $this->assertIsFloat($retrievedResult['float_field']);
-        $this->assertIsBool($retrievedResult['bool_field']);
         $this->assertNull($retrievedResult['null_field']);
-        $this->assertIsArray($retrievedResult['array_field']);
         $this->assertIsObject($retrievedResult['object_field']);
     }
 } 

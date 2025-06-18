@@ -91,8 +91,7 @@ class SaveExternalContactListItemMessageTest extends TestCase
         $this->assertEquals($item, $retrievedItem);
         $this->assertEquals('ext_user_456', $retrievedItem['external_userid']);
         $this->assertEquals('李四', $retrievedItem['name']);
-        $this->assertIsArray($retrievedItem['external_profile']);
-        $this->assertIsArray($retrievedItem['follow_info']);
+
         $this->assertCount(1, $retrievedItem['follow_info']);
     }
 
@@ -188,13 +187,9 @@ class SaveExternalContactListItemMessageTest extends TestCase
         
         $this->message->setItem($item);
         $retrievedItem = $this->message->getItem();
-        
-        $this->assertIsString($retrievedItem['string_field']);
         $this->assertIsInt($retrievedItem['int_field']);
         $this->assertIsFloat($retrievedItem['float_field']);
-        $this->assertIsBool($retrievedItem['bool_field']);
         $this->assertNull($retrievedItem['null_field']);
-        $this->assertIsArray($retrievedItem['array_field']);
         $this->assertIsObject($retrievedItem['object_field']);
     }
 

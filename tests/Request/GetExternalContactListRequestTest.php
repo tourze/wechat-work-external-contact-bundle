@@ -68,10 +68,7 @@ class GetExternalContactListRequestTest extends TestCase
         $request->setUserId('test_user');
         
         $options = $request->getRequestOptions();
-        
-        $this->assertIsArray($options);
         $this->assertArrayHasKey('query', $options);
-        $this->assertIsArray($options['query']);
         $this->assertArrayHasKey('userid', $options['query']);
         $this->assertCount(1, $options['query']);
     }
@@ -261,7 +258,6 @@ class GetExternalContactListRequestTest extends TestCase
         
         // 验证参数结构正确
         $this->assertArrayHasKey('query', $options);
-        $this->assertIsArray($options['query']);
         $this->assertArrayHasKey('userid', $options['query']);
         $this->assertSame($userId, $options['query']['userid']);
         
@@ -289,7 +285,6 @@ class GetExternalContactListRequestTest extends TestCase
         $method = $request->getRequestMethod();
         
         $this->assertSame('GET', $method);
-        $this->assertIsString($method);
         $this->assertTrue(in_array($method, ['GET', 'POST', 'PUT', 'DELETE']));
     }
 

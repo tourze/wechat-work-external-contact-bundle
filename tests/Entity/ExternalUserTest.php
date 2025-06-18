@@ -294,7 +294,7 @@ class ExternalUserTest extends TestCase
 
     public function test_setAddTime_withValidDateTime_setsTimeCorrectly(): void
     {
-        $addTime = new \DateTime('2024-01-15 10:30:00');
+        $addTime = new \DateTimeImmutable('2024-01-15 10:30:00');
         
         $result = $this->externalUser->setAddTime($addTime);
         
@@ -304,7 +304,7 @@ class ExternalUserTest extends TestCase
 
     public function test_setAddTime_withNull_setsNull(): void
     {
-        $this->externalUser->setAddTime(new \DateTime());
+        $this->externalUser->setAddTime(new \DateTimeImmutable());
         
         $result = $this->externalUser->setAddTime(null);
         
@@ -338,7 +338,7 @@ class ExternalUserTest extends TestCase
 
     public function test_setCreateTime_withValidDateTime_setsTimeCorrectly(): void
     {
-        $createTime = new \DateTime('2024-01-01 00:00:00');
+        $createTime = new \DateTimeImmutable('2024-01-01 00:00:00');
         
         $this->externalUser->setCreateTime($createTime);
         
@@ -347,7 +347,7 @@ class ExternalUserTest extends TestCase
 
     public function test_setCreateTime_withNull_setsNull(): void
     {
-        $this->externalUser->setCreateTime(new \DateTime());
+        $this->externalUser->setCreateTime(new \DateTimeImmutable());
         
         $this->externalUser->setCreateTime(null);
         
@@ -356,7 +356,7 @@ class ExternalUserTest extends TestCase
 
     public function test_setUpdateTime_withValidDateTime_setsTimeCorrectly(): void
     {
-        $updateTime = new \DateTime('2024-01-15 12:00:00');
+        $updateTime = new \DateTimeImmutable('2024-01-15 12:00:00');
         
         $this->externalUser->setUpdateTime($updateTime);
         
@@ -365,7 +365,7 @@ class ExternalUserTest extends TestCase
 
     public function test_setUpdateTime_withNull_setsNull(): void
     {
-        $this->externalUser->setUpdateTime(new \DateTime());
+        $this->externalUser->setUpdateTime(new \DateTimeImmutable());
         
         $this->externalUser->setUpdateTime(null);
         
@@ -444,8 +444,8 @@ class ExternalUserTest extends TestCase
         $idProperty->setAccessible(true);
         $idProperty->setValue($this->externalUser, 789);
         
-        $createTime = new \DateTime('2024-01-01 10:00:00');
-        $updateTime = new \DateTime('2024-01-15 15:30:00');
+        $createTime = new \DateTimeImmutable('2024-01-01 10:00:00');
+        $updateTime = new \DateTimeImmutable('2024-01-15 15:30:00');
         
         $this->externalUser->setCreateTime($createTime);
         $this->externalUser->setUpdateTime($updateTime);
@@ -489,8 +489,8 @@ class ExternalUserTest extends TestCase
      */
     public function test_chainedSetters_returnSameInstance(): void
     {
-        $createTime = new \DateTime('2024-01-01');
-        $addTime = new \DateTime('2024-01-15');
+        $createTime = new \DateTimeImmutable('2024-01-01');
+        $addTime = new \DateTimeImmutable('2024-01-15');
         
         $result = $this->externalUser
             ->setNickname('测试用户')

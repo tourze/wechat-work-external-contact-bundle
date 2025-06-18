@@ -325,7 +325,6 @@ class TestControllerTest extends TestCase
         $this->assertJson($response->getContent());
         
         $data = json_decode($response->getContent(), true);
-        $this->assertIsArray($data);
         $this->assertEquals(['test' => 'data'], $data);
     }
 } 

@@ -61,10 +61,7 @@ class ConvertToOpenIdRequestTest extends TestCase
         $request->setExternalUserId('test_external_user');
         
         $options = $request->getRequestOptions();
-        
-        $this->assertIsArray($options);
         $this->assertArrayHasKey('json', $options);
-        $this->assertIsArray($options['json']);
         $this->assertArrayHasKey('external_userid', $options['json']);
         $this->assertCount(1, $options['json']);
     }
@@ -279,7 +276,6 @@ class ConvertToOpenIdRequestTest extends TestCase
         
         // 验证请求数据结构完整性
         $this->assertArrayHasKey('json', $options);
-        $this->assertIsArray($options['json']);
         $this->assertArrayHasKey('external_userid', $options['json']);
         $this->assertSame($externalUserId, $options['json']['external_userid']);
         

@@ -9,12 +9,8 @@ use Tourze\Arrayable\ApiArrayInterface;
 use Tourze\Arrayable\PlainArrayInterface;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\EasyAdmin\Attribute\Action\BatchDeletable;
-use Tourze\EasyAdmin\Attribute\Action\Deletable;
 use Tourze\EasyAdmin\Attribute\Action\Listable;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 use Tourze\EasyAdmin\Attribute\Column\PictureColumn;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 use Tourze\WechatWorkContracts\CorpInterface;
 use Tourze\WechatWorkExternalContactModel\ExternalContactInterface;
 use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
@@ -22,17 +18,13 @@ use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
 /**
  * @see https://developer.work.weixin.qq.com/document/path/95149
  */
-#[AsPermission(title: '外部联系人')]
 #[Listable]
-#[Deletable]
 #[BatchDeletable]
 #[ORM\Entity(repositoryClass: ExternalUserRepository::class)]
 #[ORM\Table(name: 'wechat_work_external_user', options: ['comment' => '外部联系人'])]
 class ExternalUser implements \Stringable, PlainArrayInterface, ApiArrayInterface, ExternalContactInterface
 {
     use TimestampableAware;
-    #[ListColumn(order: -1)]
-    #[ExportColumn]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
@@ -41,28 +33,23 @@ class ExternalUser implements \Stringable, PlainArrayInterface, ApiArrayInterfac
     #[ORM\ManyToOne(targetEntity: CorpInterface::class)]
     private ?CorpInterface $corp = null;
 
-    #[ListColumn]
     #[Groups(['admin_curd'])]
     #[ORM\Column(type: Types::STRING, length: 120, nullable: true, options: ['comment' => '昵称'])]
     private ?string $nickname = null;
 
-    #[ListColumn]
     #[Groups(['admin_curd'])]
     #[ORM\Column(type: Types::STRING, length: 120, unique: true, options: ['comment' => '外部UserID'])]
     private ?string $externalUserId = null;
 
-    #[ListColumn]
     #[Groups(['admin_curd'])]
     #[ORM\Column(type: Types::STRING, length: 120, nullable: true, options: ['comment' => 'UnionID'])]
     private ?string $unionId = null;
 
     #[PictureColumn]
-    #[ListColumn]
     #[Groups(['admin_curd'])]
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '头像'])]
     private ?string $avatar = null;
 
-    #[ListColumn]
     #[Groups(['admin_curd'])]
     #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['comment' => '性别'])]
     private ?int $gender = null;

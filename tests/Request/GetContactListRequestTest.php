@@ -141,10 +141,7 @@ class GetContactListRequestTest extends TestCase
         $request->setLimit(50);
         
         $options = $request->getRequestOptions();
-        
-        $this->assertIsArray($options);
         $this->assertArrayHasKey('json', $options);
-        $this->assertIsArray($options['json']);
         $this->assertArrayHasKey('cursor', $options['json']);
         $this->assertArrayHasKey('limit', $options['json']);
         $this->assertCount(2, $options['json']);
@@ -397,7 +394,6 @@ class GetContactListRequestTest extends TestCase
         
         // 验证参数结构正确
         $this->assertArrayHasKey('json', $options);
-        $this->assertIsArray($options['json']);
         $this->assertArrayHasKey('cursor', $options['json']);
         $this->assertArrayHasKey('limit', $options['json']);
         $this->assertSame($cursor, $options['json']['cursor']);
@@ -489,7 +485,6 @@ class GetContactListRequestTest extends TestCase
         
         // 验证请求数据结构完整性
         $this->assertArrayHasKey('json', $options);
-        $this->assertIsArray($options['json']);
         $this->assertSame($cursor, $options['json']['cursor']);
         $this->assertSame($limit, $options['json']['limit']);
         

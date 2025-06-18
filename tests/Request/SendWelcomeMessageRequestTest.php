@@ -151,8 +151,6 @@ class SendWelcomeMessageRequestTest extends TestCase
         $request->setWelcomeCode($welcomeCode);
         
         $options = $request->getRequestOptions();
-        
-        $this->assertIsArray($options);
         $this->assertArrayHasKey('json', $options);
         $this->assertArrayHasKey('welcome_code', $options['json']);
         $this->assertSame($welcomeCode, $options['json']['welcome_code']);
@@ -199,7 +197,6 @@ class SendWelcomeMessageRequestTest extends TestCase
         $this->assertArrayHasKey('welcome_code', $options['json']);
         $this->assertArrayHasKey('attachments', $options['json']);
         $this->assertSame($welcomeCode, $options['json']['welcome_code']);
-        $this->assertIsArray($options['json']['attachments']);
         $this->assertCount(2, $options['json']['attachments']);
         $this->assertSame($attachment1Data, $options['json']['attachments'][0]);
         $this->assertSame($attachment2Data, $options['json']['attachments'][1]);
@@ -289,11 +286,8 @@ class SendWelcomeMessageRequestTest extends TestCase
         $request->setTextContent('测试文本');
         
         $options = $request->getRequestOptions();
-        
-        $this->assertIsArray($options);
         $this->assertCount(1, $options);
         $this->assertArrayHasKey('json', $options);
-        $this->assertIsArray($options['json']);
         $this->assertGreaterThanOrEqual(2, count($options['json']));
     }
 

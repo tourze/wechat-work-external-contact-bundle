@@ -110,7 +110,7 @@ class ExternalServiceRelationTest extends TestCase
 
     public function test_setAddExternalContactTime_withValidDateTime_setsTimeCorrectly(): void
     {
-        $addTime = new \DateTime('2024-01-15 10:30:00');
+        $addTime = new \DateTimeImmutable('2024-01-15 10:30:00');
         
         $result = $this->relation->setAddExternalContactTime($addTime);
         
@@ -120,7 +120,7 @@ class ExternalServiceRelationTest extends TestCase
 
     public function test_setAddExternalContactTime_withNull_setsNull(): void
     {
-        $this->relation->setAddExternalContactTime(new \DateTime());
+        $this->relation->setAddExternalContactTime(new \DateTimeImmutable());
         
         $result = $this->relation->setAddExternalContactTime(null);
         
@@ -130,7 +130,7 @@ class ExternalServiceRelationTest extends TestCase
 
     public function test_setAddHalfExternalContactTime_withValidDateTime_setsTimeCorrectly(): void
     {
-        $addHalfTime = new \DateTime('2024-01-16 14:20:00');
+        $addHalfTime = new \DateTimeImmutable('2024-01-16 14:20:00');
         
         $result = $this->relation->setAddHalfExternalContactTime($addHalfTime);
         
@@ -140,7 +140,7 @@ class ExternalServiceRelationTest extends TestCase
 
     public function test_setAddHalfExternalContactTime_withNull_setsNull(): void
     {
-        $this->relation->setAddHalfExternalContactTime(new \DateTime());
+        $this->relation->setAddHalfExternalContactTime(new \DateTimeImmutable());
         
         $result = $this->relation->setAddHalfExternalContactTime(null);
         
@@ -150,7 +150,7 @@ class ExternalServiceRelationTest extends TestCase
 
     public function test_setDelExternalContactTime_withValidDateTime_setsTimeCorrectly(): void
     {
-        $delTime = new \DateTime('2024-01-20 09:15:00');
+        $delTime = new \DateTimeImmutable('2024-01-20 09:15:00');
         
         $result = $this->relation->setDelExternalContactTime($delTime);
         
@@ -160,7 +160,7 @@ class ExternalServiceRelationTest extends TestCase
 
     public function test_setDelExternalContactTime_withNull_setsNull(): void
     {
-        $this->relation->setDelExternalContactTime(new \DateTime());
+        $this->relation->setDelExternalContactTime(new \DateTimeImmutable());
         
         $result = $this->relation->setDelExternalContactTime(null);
         
@@ -170,7 +170,7 @@ class ExternalServiceRelationTest extends TestCase
 
     public function test_setDelFollowUserTime_withValidDateTime_setsTimeCorrectly(): void
     {
-        $delFollowTime = new \DateTime('2024-01-25 16:45:00');
+        $delFollowTime = new \DateTimeImmutable('2024-01-25 16:45:00');
         
         $result = $this->relation->setDelFollowUserTime($delFollowTime);
         
@@ -180,7 +180,7 @@ class ExternalServiceRelationTest extends TestCase
 
     public function test_setDelFollowUserTime_withNull_setsNull(): void
     {
-        $this->relation->setDelFollowUserTime(new \DateTime());
+        $this->relation->setDelFollowUserTime(new \DateTimeImmutable());
         
         $result = $this->relation->setDelFollowUserTime(null);
         
@@ -190,7 +190,7 @@ class ExternalServiceRelationTest extends TestCase
 
     public function test_setCreateTime_withValidDateTime_setsTimeCorrectly(): void
     {
-        $createTime = new \DateTime('2024-01-01 08:00:00');
+        $createTime = new \DateTimeImmutable('2024-01-01 08:00:00');
         
         $this->relation->setCreateTime($createTime);
         
@@ -199,7 +199,7 @@ class ExternalServiceRelationTest extends TestCase
 
     public function test_setCreateTime_withNull_setsNull(): void
     {
-        $this->relation->setCreateTime(new \DateTime());
+        $this->relation->setCreateTime(new \DateTimeImmutable());
         
         $this->relation->setCreateTime(null);
         
@@ -208,7 +208,7 @@ class ExternalServiceRelationTest extends TestCase
 
     public function test_setUpdateTime_withValidDateTime_setsTimeCorrectly(): void
     {
-        $updateTime = new \DateTime('2024-01-30 18:30:00');
+        $updateTime = new \DateTimeImmutable('2024-01-30 18:30:00');
         
         $this->relation->setUpdateTime($updateTime);
         
@@ -217,7 +217,7 @@ class ExternalServiceRelationTest extends TestCase
 
     public function test_setUpdateTime_withNull_setsNull(): void
     {
-        $this->relation->setUpdateTime(new \DateTime());
+        $this->relation->setUpdateTime(new \DateTimeImmutable());
         
         $this->relation->setUpdateTime(null);
         
@@ -236,12 +236,12 @@ class ExternalServiceRelationTest extends TestCase
         /** @var ExternalUser&MockObject $externalUser */
         $externalUser = $this->createMock(ExternalUser::class);
         
-        $addTime = new \DateTime('2024-01-15 10:00:00');
-        $addHalfTime = new \DateTime('2024-01-16 11:00:00');
-        $delTime = new \DateTime('2024-01-20 12:00:00');
-        $delFollowTime = new \DateTime('2024-01-25 13:00:00');
-        $createTime = new \DateTime('2024-01-01 08:00:00');
-        $updateTime = new \DateTime('2024-01-30 18:00:00');
+        $addTime = new \DateTimeImmutable('2024-01-15 10:00:00');
+        $addHalfTime = new \DateTimeImmutable('2024-01-16 11:00:00');
+        $delTime = new \DateTimeImmutable('2024-01-20 12:00:00');
+        $delFollowTime = new \DateTimeImmutable('2024-01-25 13:00:00');
+        $createTime = new \DateTimeImmutable('2024-01-01 08:00:00');
+        $updateTime = new \DateTimeImmutable('2024-01-30 18:00:00');
         
         $result = $this->relation
             ->setCorp($corp)
@@ -272,9 +272,9 @@ class ExternalServiceRelationTest extends TestCase
      */
     public function test_timeSequence_addFollowDelete(): void
     {
-        $addTime = new \DateTime('2024-01-15 10:00:00');
-        $addHalfTime = new \DateTime('2024-01-15 10:05:00'); // 5分钟后对方主动添加
-        $delTime = new \DateTime('2024-01-20 15:30:00'); // 5天后删除
+        $addTime = new \DateTimeImmutable('2024-01-15 10:00:00');
+        $addHalfTime = new \DateTimeImmutable('2024-01-15 10:05:00'); // 5分钟后对方主动添加
+        $delTime = new \DateTimeImmutable('2024-01-20 15:30:00'); // 5天后删除
         
         $this->relation
             ->setAddExternalContactTime($addTime)
@@ -293,9 +293,9 @@ class ExternalServiceRelationTest extends TestCase
 
     public function test_timeSequence_mutualDeletion(): void
     {
-        $addTime = new \DateTime('2024-01-15 10:00:00');
-        $delTime = new \DateTime('2024-01-20 15:30:00'); // 成员删除外部联系人
-        $delFollowTime = new \DateTime('2024-01-25 14:20:00'); // 外部联系人删除成员
+        $addTime = new \DateTimeImmutable('2024-01-15 10:00:00');
+        $delTime = new \DateTimeImmutable('2024-01-20 15:30:00'); // 成员删除外部联系人
+        $delFollowTime = new \DateTimeImmutable('2024-01-25 14:20:00'); // 外部联系人删除成员
         
         $this->relation
             ->setAddExternalContactTime($addTime)
@@ -318,7 +318,7 @@ class ExternalServiceRelationTest extends TestCase
     public function test_edgeCases_dateTimeTypes(): void
     {
         // 测试DateTime
-        $dateTime = new \DateTime('2024-01-15 12:30:45');
+        $dateTime = new \DateTimeImmutable('2024-01-15 12:30:45');
         $this->relation->setAddExternalContactTime($dateTime);
         $this->assertSame($dateTime, $this->relation->getAddExternalContactTime());
         
@@ -328,7 +328,7 @@ class ExternalServiceRelationTest extends TestCase
         $this->assertSame($dateTimeImmutable, $this->relation->getAddHalfExternalContactTime());
         
         // 测试不同时区的DateTime
-        $dateTimeUtc = new \DateTime('2024-03-15 14:30:00', new \DateTimeZone('UTC'));
+        $dateTimeUtc = new \DateTimeImmutable('2024-03-15 14:30:00', new \DateTimeZone('UTC'));
         $this->relation->setDelExternalContactTime($dateTimeUtc);
         $this->assertSame($dateTimeUtc, $this->relation->getDelExternalContactTime());
         $this->assertEquals('UTC', $dateTimeUtc->getTimezone()->getName());
@@ -337,12 +337,12 @@ class ExternalServiceRelationTest extends TestCase
     public function test_edgeCases_extremeDateTimes(): void
     {
         // 测试极端早期时间
-        $earlyDate = new \DateTime('1970-01-01 00:00:01');
+        $earlyDate = new \DateTimeImmutable('1970-01-01 00:00:01');
         $this->relation->setAddExternalContactTime($earlyDate);
         $this->assertSame($earlyDate, $this->relation->getAddExternalContactTime());
         
         // 测试未来时间
-        $futureDate = new \DateTime('2099-12-31 23:59:59');
+        $futureDate = new \DateTimeImmutable('2099-12-31 23:59:59');
         $this->relation->setDelFollowUserTime($futureDate);
         $this->assertSame($futureDate, $this->relation->getDelFollowUserTime());
     }
@@ -387,9 +387,9 @@ class ExternalServiceRelationTest extends TestCase
         /** @var ExternalUser&MockObject $externalUser */
         $externalUser = $this->createMock(ExternalUser::class);
         
-        $createTime = new \DateTime('2024-01-01 00:00:00');
-        $addTime = new \DateTime('2024-01-15 10:30:00');
-        $updateTime = new \DateTime('2024-01-15 10:30:01');
+        $createTime = new \DateTimeImmutable('2024-01-01 00:00:00');
+        $addTime = new \DateTimeImmutable('2024-01-15 10:30:00');
+        $updateTime = new \DateTimeImmutable('2024-01-15 10:30:01');
         
         // 模拟正常的联系流程：创建关系 -> 添加联系人 -> 更新记录
         $this->relation->setCreateTime($createTime);
@@ -417,8 +417,8 @@ class ExternalServiceRelationTest extends TestCase
 
     public function test_businessScenario_bidirectionalConnection(): void
     {
-        $addTime = new \DateTime('2024-01-15 10:00:00');
-        $addHalfTime = new \DateTime('2024-01-15 10:05:00');
+        $addTime = new \DateTimeImmutable('2024-01-15 10:00:00');
+        $addHalfTime = new \DateTimeImmutable('2024-01-15 10:05:00');
         
         // 模拟双向添加：成员添加外部联系人 -> 外部联系人确认添加
         $this->relation
@@ -435,8 +435,8 @@ class ExternalServiceRelationTest extends TestCase
 
     public function test_businessScenario_oneSidedDeletion(): void
     {
-        $addTime = new \DateTime('2024-01-15 10:00:00');
-        $delTime = new \DateTime('2024-01-20 15:30:00');
+        $addTime = new \DateTimeImmutable('2024-01-15 10:00:00');
+        $delTime = new \DateTimeImmutable('2024-01-20 15:30:00');
         
         // 模拟单方面删除：只有成员删除外部联系人
         $this->relation

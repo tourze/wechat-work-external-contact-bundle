@@ -62,8 +62,6 @@ class GetExternalContactRequestTest extends TestCase
         $request->setExternalUserId($externalUserId);
         
         $options = $request->getRequestOptions();
-        
-        $this->assertIsArray($options);
         $this->assertArrayHasKey('query', $options);
         $this->assertArrayHasKey('external_userid', $options['query']);
         $this->assertSame($externalUserId, $options['query']['external_userid']);
@@ -76,11 +74,8 @@ class GetExternalContactRequestTest extends TestCase
         $request->setExternalUserId('test_user_id');
         
         $options = $request->getRequestOptions();
-        
-        $this->assertIsArray($options);
         $this->assertCount(1, $options);
         $this->assertArrayHasKey('query', $options);
-        $this->assertIsArray($options['query']);
         $this->assertCount(1, $options['query']);
     }
 

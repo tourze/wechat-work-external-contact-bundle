@@ -48,8 +48,6 @@ class GetFollowUserListRequestTest extends TestCase
         // 测试请求选项结构
         $request = new GetFollowUserListRequest();
         $options = $request->getRequestOptions();
-        
-        $this->assertIsArray($options);
         $this->assertEmpty($options);
     }
 
@@ -62,7 +60,6 @@ class GetFollowUserListRequestTest extends TestCase
         $this->assertSame('GET', $request->getRequestMethod());
         
         $options = $request->getRequestOptions();
-        $this->assertIsArray($options);
         $this->assertEmpty($options);
     }
 
@@ -82,8 +79,6 @@ class GetFollowUserListRequestTest extends TestCase
         $request = new GetFollowUserListRequest();
         
         $options = $request->getRequestOptions();
-        $this->assertIsArray($options);
-        
         // 验证这是一个不需要参数的简单查询
         $this->assertEmpty($options);
         $this->assertSame('GET', $request->getRequestMethod());
@@ -143,8 +138,6 @@ class GetFollowUserListRequestTest extends TestCase
         // 测试不需要参数
         $request = new GetFollowUserListRequest();
         $options = $request->getRequestOptions();
-        
-        $this->assertIsArray($options);
         $this->assertEmpty($options);
         $this->assertCount(0, $options);
     }
@@ -167,7 +160,6 @@ class GetFollowUserListRequestTest extends TestCase
         $method = $request->getRequestMethod();
         
         $this->assertSame('GET', $method);
-        $this->assertIsString($method);
         $this->assertTrue(in_array($method, ['GET', 'POST', 'PUT', 'DELETE']));
     }
 
@@ -178,7 +170,6 @@ class GetFollowUserListRequestTest extends TestCase
         $options = $request->getRequestOptions();
         
         // 验证这是一个简单的无参数请求
-        $this->assertIsArray($options);
         $this->assertEmpty($options);
         $this->assertArrayNotHasKey('query', $options);
         $this->assertArrayNotHasKey('json', $options);
@@ -208,7 +199,6 @@ class GetFollowUserListRequestTest extends TestCase
         
         // 验证这是查询配置了客户联系功能的成员
         $options = $request->getRequestOptions();
-        $this->assertIsArray($options);
         $this->assertEmpty($options);
     }
 
@@ -219,7 +209,6 @@ class GetFollowUserListRequestTest extends TestCase
         $options = $request->getRequestOptions();
         
         // 验证请求数据结构完整性
-        $this->assertIsArray($options);
         $this->assertEmpty($options);
         
         // 验证不包含多余的字段

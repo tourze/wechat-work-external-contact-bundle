@@ -5,9 +5,6 @@ namespace WechatWorkExternalContactBundle\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 use Tourze\WechatWorkContracts\CorpInterface;
 use Tourze\WechatWorkContracts\UserInterface;
 use WechatWorkExternalContactBundle\Repository\ExternalServiceRelationRepository;
@@ -15,21 +12,17 @@ use WechatWorkExternalContactBundle\Repository\ExternalServiceRelationRepository
 /**
  * @see https://developer.work.weixin.qq.com/document/path/92277
  */
-#[AsPermission(title: '外部联系人服务关系')]
 #[ORM\Entity(repositoryClass: ExternalServiceRelationRepository::class)]
 #[ORM\Table(name: 'wechat_work_external_service_relation', options: ['comment' => '外部联系人服务关系'])]
 #[ORM\UniqueConstraint(name: 'wechat_work_external_service_relation_idx_uniq', columns: ['user_id', 'external_user_id'])]
 class ExternalServiceRelation
 {
     use TimestampableAware;
-    #[ListColumn(order: -1)]
-    #[ExportColumn]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
     private ?int $id = 0;
 
-    #[ListColumn(title: '所属企业')]
     #[ORM\ManyToOne(targetEntity: CorpInterface::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?CorpInterface $corp = null;
