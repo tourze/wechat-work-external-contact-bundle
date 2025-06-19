@@ -15,7 +15,7 @@ use WechatWorkExternalContactBundle\Repository\ExternalServiceRelationRepository
 #[ORM\Entity(repositoryClass: ExternalServiceRelationRepository::class)]
 #[ORM\Table(name: 'wechat_work_external_service_relation', options: ['comment' => '外部联系人服务关系'])]
 #[ORM\UniqueConstraint(name: 'wechat_work_external_service_relation_idx_uniq', columns: ['user_id', 'external_user_id'])]
-class ExternalServiceRelation
+class ExternalServiceRelation implements \Stringable
 {
     use TimestampableAware;
     #[ORM\Id]
@@ -133,4 +133,9 @@ class ExternalServiceRelation
         $this->delFollowUserTime = $delFollowUserTime;
 
         return $this;
-    }}
+    }
+    public function __toString(): string
+    {
+        return (string) $this->getId();
+    }
+}

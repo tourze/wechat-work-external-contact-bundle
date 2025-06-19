@@ -18,6 +18,8 @@ use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
 #[AsCommand(name: 'wechat-work:external-contact:check-user-avatar', description: '检查用户头像并保存')]
 class CheckUserAvatarCommand extends Command
 {
+    public const NAME = 'check-user-avatar';
+
     public function __construct(
         private readonly ExternalUserRepository $externalUserRepository,
         private readonly HttpClientInterface $httpClient,

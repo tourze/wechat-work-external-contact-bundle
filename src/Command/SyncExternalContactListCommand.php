@@ -17,6 +17,8 @@ use WechatWorkExternalContactBundle\Request\GetContactListRequest;
 #[AsCommand(name: 'wechat-work:sync-external-contact-list', description: '同步获取已服务的外部联系人')]
 class SyncExternalContactListCommand extends Command
 {
+    public const NAME = 'sync-external-contact-list';
+
     public function __construct(
         private readonly AgentRepository $agentRepository,
         private readonly WorkService $workService,
