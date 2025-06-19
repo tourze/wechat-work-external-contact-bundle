@@ -8,7 +8,6 @@ use Symfony\Component\Serializer\Attribute\Groups;
 use Tourze\Arrayable\ApiArrayInterface;
 use Tourze\Arrayable\PlainArrayInterface;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Action\BatchDeletable;
 use Tourze\EasyAdmin\Attribute\Action\Listable;
 use Tourze\EasyAdmin\Attribute\Column\PictureColumn;
 use Tourze\WechatWorkContracts\CorpInterface;
@@ -19,7 +18,6 @@ use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
  * @see https://developer.work.weixin.qq.com/document/path/95149
  */
 #[Listable]
-#[BatchDeletable]
 #[ORM\Entity(repositoryClass: ExternalUserRepository::class)]
 #[ORM\Table(name: 'wechat_work_external_user', options: ['comment' => '外部联系人'])]
 class ExternalUser implements \Stringable, PlainArrayInterface, ApiArrayInterface, ExternalContactInterface
