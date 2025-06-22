@@ -34,16 +34,16 @@ class ExternalServiceRelation implements \Stringable
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?ExternalUser $externalUser = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '成员添加外部联系人时间'])]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '成员添加外部联系人时间'])]
     private ?\DateTimeInterface $addExternalContactTime = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '外部联系人主动添加时间'])]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '外部联系人主动添加时间'])]
     private ?\DateTimeInterface $addHalfExternalContactTime = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '成员删除外部联系人时间'])]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '成员删除外部联系人时间'])]
     private ?\DateTimeInterface $delExternalContactTime = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '成员被外部联系人删除时间'])]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '成员被外部联系人删除时间'])]
     private ?\DateTimeInterface $delFollowUserTime = null;
 
     public function getId(): ?int

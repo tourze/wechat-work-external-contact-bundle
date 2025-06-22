@@ -42,7 +42,7 @@ class SaveExternalContactListItemMessageTest extends TestCase
             'gender' => 1,
             'unionid' => 'union_123'
         ];
-        
+
         $this->message->setItem($item);
         $this->assertEquals($item, $this->message->getItem());
     }
@@ -84,10 +84,10 @@ class SaveExternalContactListItemMessageTest extends TestCase
                 ]
             ]
         ];
-        
+
         $this->message->setItem($item);
         $retrievedItem = $this->message->getItem();
-        
+
         $this->assertEquals($item, $retrievedItem);
         $this->assertEquals('ext_user_456', $retrievedItem['external_userid']);
         $this->assertEquals('李四', $retrievedItem['name']);
@@ -99,7 +99,7 @@ class SaveExternalContactListItemMessageTest extends TestCase
     {
         // 测试代理ID属性
         $agentId = 'agent_123';
-        
+
         $this->message->setAgentId($agentId);
         $this->assertEquals($agentId, $this->message->getAgentId());
     }
@@ -114,7 +114,7 @@ class SaveExternalContactListItemMessageTest extends TestCase
             'agent-with-dashes',
             'agent.with.dots'
         ];
-        
+
         foreach ($agentIds as $agentId) {
             $this->message->setAgentId($agentId);
             $this->assertEquals($agentId, $this->message->getAgentId());
@@ -139,17 +139,17 @@ class SaveExternalContactListItemMessageTest extends TestCase
                 ]
             ]
         ];
-        
+
         $agentId = 'complete_agent_123';
-        
+
         // 设置所有属性
         $this->message->setItem($item);
         $this->message->setAgentId($agentId);
-        
+
         // 验证所有属性
         $this->assertEquals($item, $this->message->getItem());
         $this->assertEquals($agentId, $this->message->getAgentId());
-        
+
         // 验证数据一致性
         $this->assertEquals(
             $this->message->getItem()['external_userid'],
@@ -165,10 +165,9 @@ class SaveExternalContactListItemMessageTest extends TestCase
     {
         // 测试空数据项处理
         $emptyItem = [];
-        
+
         $this->message->setItem($emptyItem);
         $this->assertEquals([], $this->message->getItem());
-        $this->assertIsArray($this->message->getItem());
         $this->assertEmpty($this->message->getItem());
     }
 
@@ -184,7 +183,7 @@ class SaveExternalContactListItemMessageTest extends TestCase
             'array_field' => ['nested', 'array'],
             'object_field' => (object)['key' => 'value']
         ];
-        
+
         $this->message->setItem($item);
         $retrievedItem = $this->message->getItem();
         $this->assertIsInt($retrievedItem['int_field']);
@@ -198,11 +197,11 @@ class SaveExternalContactListItemMessageTest extends TestCase
         // 测试setter方法的返回类型
         $item = ['test' => 'data'];
         $agentId = 'test_agent';
-        
+
         // 验证setter方法返回void
-        $this->assertNull($this->message->setItem($item));
-        $this->assertNull($this->message->setAgentId($agentId));
-        
+        $this->message->setItem($item);
+        $this->message->setAgentId($agentId);
+
         // 验证设置成功
         $this->assertEquals($item, $this->message->getItem());
         $this->assertEquals($agentId, $this->message->getAgentId());
@@ -212,11 +211,11 @@ class SaveExternalContactListItemMessageTest extends TestCase
     {
         // 测试异步消息接口实现
         $this->assertInstanceOf(AsyncMessageInterface::class, $this->message);
-        
+
         // 验证接口方法存在（通过反射）
         $reflection = new \ReflectionClass($this->message);
         $interfaces = $reflection->getInterfaceNames();
-        
+
         $this->assertContains(AsyncMessageInterface::class, $interfaces);
     }
-} 
+}

@@ -36,7 +36,7 @@ class GetExternalUserDetailEventTest extends TestCase
     {
         // 测试结果属性的默认值
         $this->assertEquals([], $this->event->getResult());
-        
+
         // 测试设置和获取结果
         $result = [
             'external_userid' => 'ext_user_123',
@@ -46,7 +46,7 @@ class GetExternalUserDetailEventTest extends TestCase
             'gender' => 1,
             'unionid' => 'union_123'
         ];
-        
+
         $this->event->setResult($result);
         $this->assertEquals($result, $this->event->getResult());
     }
@@ -92,10 +92,10 @@ class GetExternalUserDetailEventTest extends TestCase
                 ]
             ]
         ];
-        
+
         $this->event->setResult($result);
         $this->assertEquals($result, $this->event->getResult());
-        
+
         // 验证特定字段
         $retrievedResult = $this->event->getResult();
         $this->assertEquals('ext_user_456', $retrievedResult['external_userid']);
@@ -112,7 +112,7 @@ class GetExternalUserDetailEventTest extends TestCase
         $externalUser->setNickname('王五');
         $externalUser->setAvatar('https://example.com/avatar3.png');
         $externalUser->setGender(1);
-        
+
         // 测试设置和获取外部用户
         $this->event->setExternalUser($externalUser);
         $this->assertSame($externalUser, $this->event->getExternalUser());
@@ -126,11 +126,11 @@ class GetExternalUserDetailEventTest extends TestCase
         /** @var UserInterface&\PHPUnit\Framework\MockObject\MockObject $user */
         $user = $this->createMock(UserInterface::class);
         $user->method('getUserIdentifier')->willReturn('internal_user_123');
-        
+
         $externalUser = new ExternalUser();
         $externalUser->setExternalUserId('ext_user_complete');
         $externalUser->setNickname('完整测试用户');
-        
+
         $result = [
             'external_userid' => 'ext_user_complete',
             'name' => '完整测试用户',
@@ -142,15 +142,15 @@ class GetExternalUserDetailEventTest extends TestCase
                 ]
             ]
         ];
-        
+
         // 设置所有属性
         $this->event->setExternalUser($externalUser);
         $this->event->setResult($result);
-        
+
         // 验证所有属性
         $this->assertSame($externalUser, $this->event->getExternalUser());
         $this->assertEquals($result, $this->event->getResult());
-        
+
         // 验证数据一致性
         $this->assertEquals(
             $this->event->getExternalUser()->getExternalUserId(),
@@ -166,7 +166,7 @@ class GetExternalUserDetailEventTest extends TestCase
     {
         // 测试事件继承关系
         $this->assertInstanceOf(\Symfony\Contracts\EventDispatcher\Event::class, $this->event);
-        
+
         // 测试是否可以停止传播（继承自基类的功能）
         $this->assertFalse($this->event->isPropagationStopped());
         $this->event->stopPropagation();
@@ -180,11 +180,11 @@ class GetExternalUserDetailEventTest extends TestCase
         $user = $this->createMock(UserInterface::class);
         $externalUser = new ExternalUser();
         $result = ['test' => 'data'];
-        
+
         // 验证setter方法返回void（不支持链式调用）
-        $this->assertNull($this->event->setExternalUser($externalUser));
-        $this->assertNull($this->event->setResult($result));
-        
+        $this->event->setExternalUser($externalUser);
+        $this->event->setResult($result);
+
         // 验证设置成功
         $this->assertSame($externalUser, $this->event->getExternalUser());
         $this->assertEquals($result, $this->event->getResult());
@@ -194,11 +194,10 @@ class GetExternalUserDetailEventTest extends TestCase
     {
         // 测试空结果处理
         $this->assertEquals([], $this->event->getResult());
-        
+
         // 设置空数组
         $this->event->setResult([]);
         $this->assertEquals([], $this->event->getResult());
-        $this->assertIsArray($this->event->getResult());
         $this->assertEmpty($this->event->getResult());
     }
 
@@ -214,7 +213,7 @@ class GetExternalUserDetailEventTest extends TestCase
             'array_field' => ['nested', 'array'],
             'object_field' => (object)['key' => 'value']
         ];
-        
+
         $this->event->setResult($result);
         $retrievedResult = $this->event->getResult();
         $this->assertIsInt($retrievedResult['int_field']);
@@ -222,4 +221,4 @@ class GetExternalUserDetailEventTest extends TestCase
         $this->assertNull($retrievedResult['null_field']);
         $this->assertIsObject($retrievedResult['object_field']);
     }
-} 
+}

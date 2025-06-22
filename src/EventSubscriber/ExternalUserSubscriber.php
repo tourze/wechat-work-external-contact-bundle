@@ -2,7 +2,7 @@
 
 namespace WechatWorkExternalContactBundle\EventSubscriber;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -30,8 +30,7 @@ class ExternalUserSubscriber
         private readonly ExternalServiceRelationRepository $externalServiceRelationRepository,
         private readonly LoggerInterface $logger,
         private readonly EntityManagerInterface $entityManager,
-    ) {
-    }
+    ) {}
 
     #[AsEventListener(priority: 99)] // 这里的同步，优先级高点比较好
     public function onServerMessageRequest(WechatWorkServerMessageRequestEvent $event): void
@@ -47,9 +46,9 @@ class ExternalUserSubscriber
 
         // 查找对应的服务人员信息
         $user = $this->userLoader->loadUserByUserIdAndCorp($message['UserID'], $event->getMessage()->getCorp());
-        if (!$user) {
+        if ($user === null) {
             // 从逻辑上来讲，到这里的数据，UserID都应该存在的
-            $this->userLoader->createUser(
+            $user = $this->userLoader->createUser(
                 $event->getMessage()->getCorp(),
                 $event->getMessage()->getAgent(),
                 $message['UserID'],
@@ -62,7 +61,7 @@ class ExternalUserSubscriber
             'corp' => $event->getMessage()->getCorp(),
             'externalUserId' => $message['ExternalUserID'],
         ]);
-        if (!$externalUser) {
+        if ($externalUser === null) {
             $externalUser = new ExternalUser();
             $externalUser->setCorp($event->getMessage()->getCorp());
             $externalUser->setExternalUserId($message['ExternalUserID']);
@@ -75,26 +74,26 @@ class ExternalUserSubscriber
             'user' => $user,
             'externalUser' => $externalUser,
         ]);
-        if (!$relation) {
+        if ($relation === null) {
             $relation = new ExternalServiceRelation();
             $relation->setUser($user);
             $relation->setExternalUser($externalUser);
-            $relation->setCorp($user->getCorp());
+            $relation->setCorp($event->getMessage()->getCorp());
         }
 
         $changeType = $message['ChangeType'] ?? '';
         // 根据不同的时间，更新不同的字段喔
         if ('add_external_contact' === $changeType) {
-            $relation->setAddExternalContactTime(Carbon::createFromTimestamp($message['CreateTime'], date_default_timezone_get()));
+            $relation->setAddExternalContactTime(CarbonImmutable::createFromTimestamp($message['CreateTime'], date_default_timezone_get()));
         }
         if ('add_half_external_contact' === $changeType) {
-            $relation->setAddHalfExternalContactTime(Carbon::createFromTimestamp($message['CreateTime'], date_default_timezone_get()));
+            $relation->setAddHalfExternalContactTime(CarbonImmutable::createFromTimestamp($message['CreateTime'], date_default_timezone_get()));
         }
         if ('del_follow_user' === $changeType) {
-            $relation->setDelFollowUserTime(Carbon::createFromTimestamp($message['CreateTime'], date_default_timezone_get()));
+            $relation->setDelFollowUserTime(CarbonImmutable::createFromTimestamp($message['CreateTime'], date_default_timezone_get()));
         }
         if ('del_external_contact' === $changeType) {
-            $relation->setDelExternalContactTime(Carbon::createFromTimestamp($message['CreateTime'], date_default_timezone_get()));
+            $relation->setDelExternalContactTime(CarbonImmutable::createFromTimestamp($message['CreateTime'], date_default_timezone_get()));
         }
         $this->entityManager->persist($externalUser);
         $this->entityManager->persist($relation);

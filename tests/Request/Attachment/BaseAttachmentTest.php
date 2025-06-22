@@ -36,7 +36,7 @@ class BaseAttachmentTest extends TestCase
         // 测试无法直接实例化抽象类
         $this->expectException(\Error::class);
         $this->expectExceptionMessage('Cannot instantiate abstract class');
-        
+
         // 使用eval来避免静态分析错误
         eval('new ' . BaseAttachment::class . '();');
     }
@@ -103,11 +103,11 @@ class BaseAttachmentTest extends TestCase
     {
         // 测试BaseAttachment类结构
         $reflection = new ReflectionClass(BaseAttachment::class);
-        
+
         $this->assertTrue($reflection->isAbstract());
         $this->assertFalse($reflection->isFinal());
         $this->assertTrue($reflection->implementsInterface(PlainArrayInterface::class));
-        
+
         // BaseAttachment是一个简单的抽象类，只实现接口但不定义额外方法
         $this->assertEmpty($reflection->getProperties());
     }
@@ -116,37 +116,36 @@ class BaseAttachmentTest extends TestCase
     {
         // 测试业务场景：多态性
         $attachments = [];
-        
+
         // 创建不同类型的附件
         $image = new Image();
         $image->setMediaId('test_image_media');
-        
+
         $file = new File();
         $file->setMediaId('test_file_media');
-        
+
         $video = new Video();
         $video->setMediaId('test_video_media');
-        
+
         $link = new Link();
         $link->setTitle('测试链接');
         $link->setUrl('https://example.com');
-        
+
         $miniProgram = new MiniProgram();
         $miniProgram->setTitle('测试小程序');
         $miniProgram->setPicMediaId('test_pic_media');
         $miniProgram->setAppId('wx_test_app');
         $miniProgram->setPage('pages/test/index');
-        
+
         $attachments = [$image, $file, $video, $link, $miniProgram];
-        
+
         // 验证都是BaseAttachment的实例
         foreach ($attachments as $attachment) {
             $this->assertInstanceOf(BaseAttachment::class, $attachment);
             $this->assertInstanceOf(PlainArrayInterface::class, $attachment);
-            
+
             // 验证都能调用retrievePlainArray方法
             $array = $attachment->retrievePlainArray();
-            $this->assertIsArray($array);
             $this->assertArrayHasKey('msgtype', $array);
         }
     }
@@ -165,7 +164,7 @@ class BaseAttachmentTest extends TestCase
         foreach ($testCases as [$className, $expectedMsgType]) {
             $reflection = new ReflectionClass($className);
             $this->assertTrue($reflection->isSubclassOf(BaseAttachment::class));
-            
+
             // 每个具体类都应该有对应的msgtype
             $instance = $this->createMockInstanceForTesting($className);
             if ($instance) {
@@ -180,10 +179,10 @@ class BaseAttachmentTest extends TestCase
         // 测试接口契约
         $interface = new ReflectionClass(PlainArrayInterface::class);
         $methods = $interface->getMethods();
-        
+
         $this->assertCount(1, $methods);
         $this->assertSame('retrievePlainArray', $methods[0]->getName());
-        
+
         // 验证BaseAttachment确实实现了这个接口
         $baseAttachment = new ReflectionClass(BaseAttachment::class);
         $this->assertTrue($baseAttachment->implementsInterface(PlainArrayInterface::class));
@@ -194,7 +193,7 @@ class BaseAttachmentTest extends TestCase
         // 测试抽象类无法实例化的另一种方式
         $reflection = new ReflectionClass(BaseAttachment::class);
         $this->assertTrue($reflection->isAbstract());
-        
+
         // 验证尝试通过反射实例化会失败
         $this->expectException(\Error::class);
         $reflection->newInstance();
@@ -210,23 +209,23 @@ class BaseAttachmentTest extends TestCase
                 $instance = new Image();
                 $instance->setMediaId('test_media');
                 return $instance;
-                
+
             case File::class:
                 $instance = new File();
                 $instance->setMediaId('test_media');
                 return $instance;
-                
+
             case Video::class:
                 $instance = new Video();
                 $instance->setMediaId('test_media');
                 return $instance;
-                
+
             case Link::class:
                 $instance = new Link();
                 $instance->setTitle('Test');
                 $instance->setUrl('https://test.com');
                 return $instance;
-                
+
             case MiniProgram::class:
                 $instance = new MiniProgram();
                 $instance->setTitle('Test');
@@ -234,9 +233,9 @@ class BaseAttachmentTest extends TestCase
                 $instance->setAppId('wx_test');
                 $instance->setPage('pages/test');
                 return $instance;
-                
+
             default:
                 return null;
         }
     }
-} 
+}

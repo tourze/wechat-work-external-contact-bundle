@@ -15,10 +15,10 @@ use WechatWorkExternalContactBundle\Entity\ExternalUser;
 use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
 
 #[AsCronTask('25 */8 * * *')]
-#[AsCommand(name: 'wechat-work:external-contact:check-user-avatar', description: '检查用户头像并保存')]
+#[AsCommand(name: self::NAME, description: '检查用户头像并保存')]
 class CheckUserAvatarCommand extends Command
 {
-    public const NAME = 'check-user-avatar';
+    public const NAME = 'wechat-work:external-contact:check-user-avatar';
 
     public function __construct(
         private readonly ExternalUserRepository $externalUserRepository,
@@ -53,7 +53,7 @@ class CheckUserAvatarCommand extends Command
                 $header = $response->getHeaders();
                 if (!isset($header['x-errno']) && (!isset($header['x-info']) || 'notexist:-6101' !== $header['x-info'][0])) {
                     $content = $response->getContent();
-                    $key = uniqid().'.png';
+                    $key = uniqid() . '.png';
                     $this->mountManager->write($key, $content);
                     $url = 'https://cdn.example.com/' . $key;
                 } else {

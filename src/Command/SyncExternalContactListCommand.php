@@ -14,10 +14,10 @@ use WechatWorkExternalContactBundle\Message\SaveExternalContactListItemMessage;
 use WechatWorkExternalContactBundle\Request\GetContactListRequest;
 
 #[AsCronTask('30 4 * * *')]
-#[AsCommand(name: 'wechat-work:sync-external-contact-list', description: '同步获取已服务的外部联系人')]
+#[AsCommand(name: self::NAME, description: '同步获取已服务的外部联系人')]
 class SyncExternalContactListCommand extends Command
 {
-    public const NAME = 'sync-external-contact-list';
+    public const NAME = 'wechat-work:sync-external-contact-list';
 
     public function __construct(
         private readonly AgentRepository $agentRepository,
@@ -44,7 +44,7 @@ class SyncExternalContactListCommand extends Command
                 if (isset($response['info_list'])) {
                     foreach ($response['info_list'] as $item) {
                         $message = new SaveExternalContactListItemMessage();
-                        $message->setAgentId($agent->getId());
+                        $message->setAgentId((string) $agent->getId());
                         $message->setItem($item);
                         $this->messageBus->dispatch($message);
                     }

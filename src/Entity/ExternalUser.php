@@ -8,7 +8,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 use Tourze\Arrayable\ApiArrayInterface;
 use Tourze\Arrayable\PlainArrayInterface;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Column\PictureColumn;
+
 use Tourze\WechatWorkContracts\CorpInterface;
 use Tourze\WechatWorkExternalContactModel\ExternalContactInterface;
 use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
@@ -41,7 +41,6 @@ class ExternalUser implements \Stringable, PlainArrayInterface, ApiArrayInterfac
     #[ORM\Column(type: Types::STRING, length: 120, nullable: true, options: ['comment' => 'UnionID'])]
     private ?string $unionId = null;
 
-    #[PictureColumn]
     #[Groups(['admin_curd'])]
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '头像'])]
     private ?string $avatar = null;
@@ -65,15 +64,15 @@ class ExternalUser implements \Stringable, PlainArrayInterface, ApiArrayInterfac
     #[ORM\Column(length: 120, nullable: true, options: ['comment' => '外部联系人临时ID'])]
     private ?string $tmpOpenId = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '首次添加/进群的时间'])]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '首次添加/进群的时间'])]
     private ?\DateTimeInterface $addTime = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(nullable: true, options: ['comment' => '原始数据'])]
     private ?array $rawData = null;
 
     public function __toString(): string
     {
-        if (!$this->getId()) {
+        if ($this->getId() === null || $this->getId() === 0) {
             return '';
         }
 
@@ -239,7 +238,8 @@ class ExternalUser implements \Stringable, PlainArrayInterface, ApiArrayInterfac
         $this->rawData = $rawData;
 
         return $this;
-    }public function retrievePlainArray(): array
+    }
+    public function retrievePlainArray(): array
     {
         return [
             'id' => $this->getId(),

@@ -25,7 +25,7 @@ class MiniProgramTest extends TestCase
         // 测试标题设置和获取
         $miniProgram = new MiniProgram();
         $title = '企业服务小程序';
-        
+
         $miniProgram->setTitle($title);
         $this->assertSame($title, $miniProgram->getTitle());
     }
@@ -36,7 +36,7 @@ class MiniProgramTest extends TestCase
         $miniProgram = new MiniProgram();
         $specialTitle = '小程序2024版 - 全新体验！@#$%';
         $miniProgram->setTitle($specialTitle);
-        
+
         $this->assertSame($specialTitle, $miniProgram->getTitle());
     }
 
@@ -46,7 +46,7 @@ class MiniProgramTest extends TestCase
         $miniProgram = new MiniProgram();
         $maxTitle = str_repeat('小', 21) . '程'; // 约63字节（每个中文字符3字节）
         $miniProgram->setTitle($maxTitle);
-        
+
         $this->assertSame($maxTitle, $miniProgram->getTitle());
     }
 
@@ -55,7 +55,7 @@ class MiniProgramTest extends TestCase
         // 测试封面媒体ID设置和获取
         $miniProgram = new MiniProgram();
         $picMediaId = 'miniprogram_cover_media_id_123';
-        
+
         $miniProgram->setPicMediaId($picMediaId);
         $this->assertSame($picMediaId, $miniProgram->getPicMediaId());
     }
@@ -66,7 +66,7 @@ class MiniProgramTest extends TestCase
         $miniProgram = new MiniProgram();
         $specialPicMediaId = 'cover_abc-123_test@domain.com';
         $miniProgram->setPicMediaId($specialPicMediaId);
-        
+
         $this->assertSame($specialPicMediaId, $miniProgram->getPicMediaId());
     }
 
@@ -75,7 +75,7 @@ class MiniProgramTest extends TestCase
         // 测试AppID设置和获取
         $miniProgram = new MiniProgram();
         $appId = 'wx1234567890abcdef';
-        
+
         $miniProgram->setAppId($appId);
         $this->assertSame($appId, $miniProgram->getAppId());
     }
@@ -86,7 +86,7 @@ class MiniProgramTest extends TestCase
         $miniProgram = new MiniProgram();
         $realAppId = 'wxabcdef1234567890';
         $miniProgram->setAppId($realAppId);
-        
+
         $this->assertSame($realAppId, $miniProgram->getAppId());
     }
 
@@ -95,7 +95,7 @@ class MiniProgramTest extends TestCase
         // 测试页面路径设置和获取
         $miniProgram = new MiniProgram();
         $page = 'pages/index/index';
-        
+
         $miniProgram->setPage($page);
         $this->assertSame($page, $miniProgram->getPage());
     }
@@ -106,7 +106,7 @@ class MiniProgramTest extends TestCase
         $miniProgram = new MiniProgram();
         $complexPage = 'pages/product/detail?id=123&category=electronics';
         $miniProgram->setPage($complexPage);
-        
+
         $this->assertSame($complexPage, $miniProgram->getPage());
     }
 
@@ -118,12 +118,12 @@ class MiniProgramTest extends TestCase
         $picMediaId = 'test_pic_media_id';
         $appId = 'wx0123456789abcdef';
         $page = 'pages/test/test';
-        
+
         $miniProgram->setTitle($title);
         $miniProgram->setPicMediaId($picMediaId);
         $miniProgram->setAppId($appId);
         $miniProgram->setPage($page);
-        
+
         $expected = [
             'msgtype' => 'miniprogram',
             'miniprogram' => [
@@ -133,7 +133,7 @@ class MiniProgramTest extends TestCase
                 'page' => $page,
             ],
         ];
-        
+
         $this->assertSame($expected, $miniProgram->retrievePlainArray());
     }
 
@@ -141,24 +141,19 @@ class MiniProgramTest extends TestCase
     {
         // 测试数组结构
         $miniProgram = new MiniProgram();
-        $miniProgram->setTitle('结构测试');
-        $miniProgram->setPicMediaId('structure_pic_media');
-        $miniProgram->setAppId('wx_structure_test');
-        $miniProgram->setPage('pages/structure/test');
-        
+        $miniProgram->setTitle('structure_test_title');
+        $miniProgram->setPicMediaId('structure_test_pic_media');
+        $miniProgram->setAppId('structure_test_app_id');
+        $miniProgram->setPage('structure_test_page');
+
         $array = $miniProgram->retrievePlainArray();
-        
-        $this->assertIsArray($array);
+
         $this->assertCount(2, $array);
         $this->assertArrayHasKey('msgtype', $array);
         $this->assertArrayHasKey('miniprogram', $array);
         $this->assertSame('miniprogram', $array['msgtype']);
         $this->assertIsArray($array['miniprogram']);
         $this->assertCount(4, $array['miniprogram']);
-        $this->assertArrayHasKey('title', $array['miniprogram']);
-        $this->assertArrayHasKey('pic_media_id', $array['miniprogram']);
-        $this->assertArrayHasKey('appid', $array['miniprogram']);
-        $this->assertArrayHasKey('page', $array['miniprogram']);
     }
 
     public function test_businessScenario_productCatalog(): void
@@ -169,14 +164,14 @@ class MiniProgramTest extends TestCase
         $miniProgram->setPicMediaId('product_catalog_cover_media');
         $miniProgram->setAppId('wx_product_catalog_2024');
         $miniProgram->setPage('pages/catalog/index');
-        
+
         $array = $miniProgram->retrievePlainArray();
-        
+
         $this->assertSame('miniprogram', $array['msgtype']);
         $this->assertSame('企业产品目录', $array['miniprogram']['title']);
         $this->assertStringContainsString('catalog', $array['miniprogram']['appid']);
         $this->assertStringContainsString('catalog', $array['miniprogram']['page']);
-        
+
         // 验证符合企业微信API要求
         $this->assertArrayHasKey('msgtype', $array);
         $this->assertArrayHasKey('miniprogram', $array);
@@ -190,9 +185,9 @@ class MiniProgramTest extends TestCase
         $miniProgram->setPicMediaId('customer_service_cover');
         $miniProgram->setAppId('wx_customer_service');
         $miniProgram->setPage('pages/service/chat?user_id=12345');
-        
+
         $array = $miniProgram->retrievePlainArray();
-        
+
         $this->assertSame('在线客服', $array['miniprogram']['title']);
         $this->assertStringContainsString('service', $array['miniprogram']['appid']);
         $this->assertStringContainsString('chat', $array['miniprogram']['page']);
@@ -207,9 +202,9 @@ class MiniProgramTest extends TestCase
         $miniProgram->setPicMediaId('welcome_cover_520x416');
         $miniProgram->setAppId('wx_company_welcome');
         $miniProgram->setPage('pages/welcome/index');
-        
+
         $array = $miniProgram->retrievePlainArray();
-        
+
         $this->assertSame('欢迎加入企业', $array['miniprogram']['title']);
         $this->assertStringContainsString('520x416', $array['miniprogram']['pic_media_id']);
         $this->assertStringContainsString('welcome', $array['miniprogram']['appid']);
@@ -220,28 +215,28 @@ class MiniProgramTest extends TestCase
     {
         // 测试多次设置值
         $miniProgram = new MiniProgram();
-        
+
         $miniProgram->setTitle('第一个标题');
         $miniProgram->setPicMediaId('first_pic_media');
         $miniProgram->setAppId('wx_first_app');
         $miniProgram->setPage('pages/first/index');
-        
+
         $this->assertSame('第一个标题', $miniProgram->getTitle());
         $this->assertSame('first_pic_media', $miniProgram->getPicMediaId());
         $this->assertSame('wx_first_app', $miniProgram->getAppId());
         $this->assertSame('pages/first/index', $miniProgram->getPage());
-        
+
         // 重新设置
         $miniProgram->setTitle('第二个标题');
         $miniProgram->setPicMediaId('second_pic_media');
         $miniProgram->setAppId('wx_second_app');
         $miniProgram->setPage('pages/second/index');
-        
+
         $this->assertSame('第二个标题', $miniProgram->getTitle());
         $this->assertSame('second_pic_media', $miniProgram->getPicMediaId());
         $this->assertSame('wx_second_app', $miniProgram->getAppId());
         $this->assertSame('pages/second/index', $miniProgram->getPage());
-        
+
         $array = $miniProgram->retrievePlainArray();
         $this->assertSame('第二个标题', $array['miniprogram']['title']);
         $this->assertSame('second_pic_media', $array['miniprogram']['pic_media_id']);
@@ -257,27 +252,27 @@ class MiniProgramTest extends TestCase
         $originalPicMediaId = 'original_pic_media';
         $originalAppId = 'wx_original_app';
         $originalPage = 'pages/original/index';
-        
+
         $miniProgram->setTitle($originalTitle);
         $miniProgram->setPicMediaId($originalPicMediaId);
         $miniProgram->setAppId($originalAppId);
         $miniProgram->setPage($originalPage);
-        
+
         $array1 = $miniProgram->retrievePlainArray();
         $array2 = $miniProgram->retrievePlainArray();
-        
+
         // 修改返回的数组不应影响原始数据
         $array1['miniprogram']['title'] = '修改后标题';
         $array1['miniprogram']['pic_media_id'] = 'modified_pic_media';
         $array1['miniprogram']['appid'] = 'wx_modified_app';
         $array1['miniprogram']['page'] = 'pages/modified/index';
         $array1['msgtype'] = 'modified_type';
-        
+
         $this->assertSame($originalTitle, $miniProgram->getTitle());
         $this->assertSame($originalPicMediaId, $miniProgram->getPicMediaId());
         $this->assertSame($originalAppId, $miniProgram->getAppId());
         $this->assertSame($originalPage, $miniProgram->getPage());
-        
+
         $this->assertSame($originalTitle, $array2['miniprogram']['title']);
         $this->assertSame($originalPicMediaId, $array2['miniprogram']['pic_media_id']);
         $this->assertSame($originalAppId, $array2['miniprogram']['appid']);
@@ -293,14 +288,14 @@ class MiniProgramTest extends TestCase
         $picMediaId = 'immutable_pic_media';
         $appId = 'wx_immutable_app';
         $page = 'pages/immutable/test';
-        
+
         $miniProgram->setTitle($title);
         $miniProgram->setPicMediaId($picMediaId);
         $miniProgram->setAppId($appId);
         $miniProgram->setPage($page);
-        
+
         $array = $miniProgram->retrievePlainArray();
-        
+
         // 修改数组不应影响miniProgram对象
         $array['miniprogram']['title'] = '改变标题';
         $array['miniprogram']['pic_media_id'] = 'changed_pic_media';
@@ -308,12 +303,12 @@ class MiniProgramTest extends TestCase
         $array['miniprogram']['page'] = 'pages/changed/test';
         $array['msgtype'] = 'changed_type';
         $array['new_key'] = 'new_value';
-        
+
         $this->assertSame($title, $miniProgram->getTitle());
         $this->assertSame($picMediaId, $miniProgram->getPicMediaId());
         $this->assertSame($appId, $miniProgram->getAppId());
         $this->assertSame($page, $miniProgram->getPage());
-        
+
         $newArray = $miniProgram->retrievePlainArray();
         $this->assertSame($title, $newArray['miniprogram']['title']);
         $this->assertSame($picMediaId, $newArray['miniprogram']['pic_media_id']);
@@ -331,29 +326,29 @@ class MiniProgramTest extends TestCase
         $picMediaId = 'idempotent_pic_media';
         $appId = 'wx_idempotent_app';
         $page = 'pages/idempotent/test';
-        
+
         $miniProgram->setTitle($title);
         $miniProgram->setPicMediaId($picMediaId);
         $miniProgram->setAppId($appId);
         $miniProgram->setPage($page);
-        
+
         // 多次调用应该返回相同结果
         $title1 = $miniProgram->getTitle();
         $title2 = $miniProgram->getTitle();
         $this->assertSame($title1, $title2);
-        
+
         $picMediaId1 = $miniProgram->getPicMediaId();
         $picMediaId2 = $miniProgram->getPicMediaId();
         $this->assertSame($picMediaId1, $picMediaId2);
-        
+
         $appId1 = $miniProgram->getAppId();
         $appId2 = $miniProgram->getAppId();
         $this->assertSame($appId1, $appId2);
-        
+
         $page1 = $miniProgram->getPage();
         $page2 = $miniProgram->getPage();
         $this->assertSame($page1, $page2);
-        
+
         $array1 = $miniProgram->retrievePlainArray();
         $array2 = $miniProgram->retrievePlainArray();
         $this->assertSame($array1, $array2);
@@ -363,15 +358,15 @@ class MiniProgramTest extends TestCase
     {
         // 测试PlainArrayInterface接口实现
         $miniProgram = new MiniProgram();
-        $miniProgram->setTitle('接口测试');
-        $miniProgram->setPicMediaId('interface_pic_media');
-        $miniProgram->setAppId('wx_interface_test');
-        $miniProgram->setPage('pages/interface/test');
-        
-        $this->assertTrue(method_exists($miniProgram, 'retrievePlainArray'));
-        $this->assertTrue(is_callable([$miniProgram, 'retrievePlainArray']));
-        
+        $miniProgram->setTitle('interface_test_title');
+        $miniProgram->setPicMediaId('interface_test_pic_media');
+        $miniProgram->setAppId('interface_test_app_id');
+        $miniProgram->setPage('interface_test_page');
+
         $array = $miniProgram->retrievePlainArray();
-        $this->assertIsArray($array);
+        // 移除冗余检查，直接验证返回的数组
+        $this->assertCount(2, $array);
+        $this->assertArrayHasKey('msgtype', $array);
+        $this->assertArrayHasKey('miniprogram', $array);
     }
-} 
+}
