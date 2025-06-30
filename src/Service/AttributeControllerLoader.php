@@ -10,7 +10,7 @@ use Tourze\RoutingAutoLoaderBundle\Service\RoutingAutoLoaderInterface;
 use WechatWorkExternalContactBundle\Controller\GetExternalContactListController;
 use WechatWorkExternalContactBundle\Controller\SendWelcomeMessageController;
 
-#[AutoconfigureTag('routing.loader')]
+#[AutoconfigureTag(name: 'routing.loader')]
 class AttributeControllerLoader extends Loader implements RoutingAutoLoaderInterface
 {
     private AttributeRouteControllerLoader $controllerLoader;

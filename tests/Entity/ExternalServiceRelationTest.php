@@ -11,7 +11,7 @@ use WechatWorkExternalContactBundle\Entity\ExternalUser;
 
 /**
  * ExternalServiceRelation 实体测试用例
- * 
+ *
  * 测试外部联系人服务关系实体的所有功能
  */
 class ExternalServiceRelationTest extends TestCase

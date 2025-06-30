@@ -8,7 +8,7 @@ use WechatWorkExternalContactBundle\Message\SaveExternalContactListItemMessage;
 
 /**
  * SaveExternalContactListItemMessage测试
- * 
+ *
  * 测试关注点：
  * - 消息数据管理
  * - 异步接口实现

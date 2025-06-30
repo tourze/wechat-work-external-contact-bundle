@@ -8,7 +8,6 @@ use Symfony\Component\Serializer\Attribute\Groups;
 use Tourze\Arrayable\ApiArrayInterface;
 use Tourze\Arrayable\PlainArrayInterface;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-
 use Tourze\WechatWorkContracts\CorpInterface;
 use Tourze\WechatWorkExternalContactModel\ExternalContactInterface;
 use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
@@ -29,23 +28,23 @@ class ExternalUser implements \Stringable, PlainArrayInterface, ApiArrayInterfac
     #[ORM\ManyToOne(targetEntity: CorpInterface::class)]
     private ?CorpInterface $corp = null;
 
-    #[Groups(['admin_curd'])]
+    #[Groups(groups: ['admin_curd'])]
     #[ORM\Column(type: Types::STRING, length: 120, nullable: true, options: ['comment' => '昵称'])]
     private ?string $nickname = null;
 
-    #[Groups(['admin_curd'])]
+    #[Groups(groups: ['admin_curd'])]
     #[ORM\Column(type: Types::STRING, length: 120, unique: true, options: ['comment' => '外部UserID'])]
     private ?string $externalUserId = null;
 
-    #[Groups(['admin_curd'])]
+    #[Groups(groups: ['admin_curd'])]
     #[ORM\Column(type: Types::STRING, length: 120, nullable: true, options: ['comment' => 'UnionID'])]
     private ?string $unionId = null;
 
-    #[Groups(['admin_curd'])]
+    #[Groups(groups: ['admin_curd'])]
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '头像'])]
     private ?string $avatar = null;
 
-    #[Groups(['admin_curd'])]
+    #[Groups(groups: ['admin_curd'])]
     #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['comment' => '性别'])]
     private ?int $gender = null;
 

@@ -13,7 +13,7 @@ use WechatWorkBundle\Service\WorkService;
 use WechatWorkExternalContactBundle\Message\SaveExternalContactListItemMessage;
 use WechatWorkExternalContactBundle\Request\GetContactListRequest;
 
-#[AsCronTask('30 4 * * *')]
+#[AsCronTask(expression: '30 4 * * *')]
 #[AsCommand(name: self::NAME, description: '同步获取已服务的外部联系人')]
 class SyncExternalContactListCommand extends Command
 {

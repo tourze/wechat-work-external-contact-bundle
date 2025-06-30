@@ -10,7 +10,7 @@ use WechatWorkExternalContactBundle\Entity\ExternalUser;
 
 /**
  * ExternalUser 实体测试用例
- * 
+ *
  * 测试外部联系人实体的所有功能，包括接口实现
  */
 class ExternalUserTest extends TestCase

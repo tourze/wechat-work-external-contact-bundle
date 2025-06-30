@@ -18,30 +18,8 @@ use WechatWorkExternalContactBundle\Repository\ExternalServiceRelationRepository
 use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
 
 /**
- * 测试用的UserInterface实现
- */
-class TestUser implements UserInterface
-{
-    public function __construct(
-        private readonly string $userId,
-        private readonly ?string $name = null
-    ) {
-    }
-
-    public function getUserId(): ?string
-    {
-        return $this->userId;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-}
-
-/**
  * SaveExternalContactListItemHandler测试
- * 
+ *
  * 测试关注点：
  * - 消息处理逻辑
  * - 外部用户创建和更新
@@ -199,7 +177,9 @@ class SaveExternalContactListItemHandlerTest extends TestCase
         $agent = new Agent();
         $agent->setCorp($corp);
 
-        $user = new TestUser('follow_user_123', 'Follow User');
+        $user = $this->createMock(UserInterface::class);
+        $user->method('getUserId')->willReturn('follow_user_123');
+        $user->method('getName')->willReturn('Follow User');
 
         $item = [
             'external_userid' => 'ext_user_follow',
@@ -253,7 +233,9 @@ class SaveExternalContactListItemHandlerTest extends TestCase
         $externalUser = new ExternalUser();
         $externalUser->setCorp($corp);
 
-        $user = new TestUser('follow_user_456', 'Relation User');
+        $user = $this->createMock(UserInterface::class);
+        $user->method('getUserId')->willReturn('follow_user_456');
+        $user->method('getName')->willReturn('Relation User');
 
         $existingRelation = new ExternalServiceRelation();
         $existingRelation->setUser($user);
@@ -304,7 +286,9 @@ class SaveExternalContactListItemHandlerTest extends TestCase
         $agent = new Agent();
         $agent->setCorp($corp);
 
-        $newUser = new TestUser('new_follow_user', 'New User');
+        $newUser = $this->createMock(UserInterface::class);
+        $newUser->method('getUserId')->willReturn('new_follow_user');
+        $newUser->method('getName')->willReturn('New User');
 
         $item = [
             'external_userid' => 'ext_user_create',
@@ -440,7 +424,9 @@ class SaveExternalContactListItemHandlerTest extends TestCase
         $agent = new Agent();
         $agent->setCorp($corp);
 
-        $user = new TestUser('complete_follow_user', 'Complete User');
+        $user = $this->createMock(UserInterface::class);
+        $user->method('getUserId')->willReturn('complete_follow_user');
+        $user->method('getName')->willReturn('Complete User');
 
         $item = [
             'external_userid' => 'ext_user_complete',

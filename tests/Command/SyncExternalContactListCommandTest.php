@@ -19,7 +19,7 @@ use WechatWorkExternalContactBundle\Message\SaveExternalContactListItemMessage;
 
 /**
  * 同步外部联系人列表命令测试
- * 
+ *
  * 测试关注点：
  * - 联系人列表同步逻辑
  * - 消息派发机制

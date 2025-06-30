@@ -12,13 +12,13 @@ use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
 use Tourze\JsonRPCLogBundle\Attribute\Log;
 use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
 
-#[MethodTag('企业微信')]
-#[MethodDoc('更新企微外部联系人')]
-#[MethodExpose('SaveWechatWorkExternalUser')]
+#[MethodTag(name: '企业微信')]
+#[MethodDoc(summary: '更新企微外部联系人')]
+#[MethodExpose(method: 'SaveWechatWorkExternalUser')]
 #[Log]
 class SaveWechatWorkExternalUser extends LockableProcedure
 {
-    #[MethodParam('外部联系人ID')]
+    #[MethodParam(description: '外部联系人ID')]
     public string $externalUserId;
 
     public ?string $remark = null;

@@ -9,7 +9,7 @@ use WechatWorkExternalContactBundle\Event\GetExternalUserDetailEvent;
 
 /**
  * GetExternalUserDetailEvent测试
- * 
+ *
  * 测试关注点：
  * - 事件数据管理
  * - 用户对象关联

@@ -16,7 +16,7 @@ use WechatWorkExternalContactBundle\Entity\ExternalUser;
  * @method ExternalUser[]    findAll()
  * @method ExternalUser[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-#[AsAlias(ExternalUserLoaderInterface::class)]
+#[AsAlias(id: ExternalUserLoaderInterface::class)]
 class ExternalUserRepository extends ServiceEntityRepository implements ExternalUserLoaderInterface
 {
     public function __construct(ManagerRegistry $registry)

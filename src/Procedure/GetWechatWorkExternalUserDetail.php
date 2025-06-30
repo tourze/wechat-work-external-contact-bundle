@@ -16,18 +16,18 @@ use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
  * @see https://developer.work.weixin.qq.com/document/path/94315
  * @see https://developer.work.weixin.qq.com/document/path/91799
  */
-#[MethodTag('企业微信')]
-#[MethodDoc('获取企微外部联系人详情')]
-#[MethodExpose('GetWechatWorkExternalUserDetail')]
+#[MethodTag(name: '企业微信')]
+#[MethodDoc(summary: '获取企微外部联系人详情')]
+#[MethodExpose(method: 'GetWechatWorkExternalUserDetail')]
 class GetWechatWorkExternalUserDetail extends BaseProcedure
 {
-    #[MethodParam('进入会话的场景值，例如 single_kf_tools')]
+    #[MethodParam(description: '进入会话的场景值，例如 single_kf_tools')]
     public string $entry;
 
-    #[MethodParam('分享Ticket')]
+    #[MethodParam(description: '分享Ticket')]
     public string $shareTicket = '';
 
-    #[MethodParam('外部联系人ID')]
+    #[MethodParam(description: '外部联系人ID')]
     public string $externalUserId;
 
     public function __construct(
@@ -65,6 +65,6 @@ class GetWechatWorkExternalUserDetail extends BaseProcedure
         $event->setResult($externalUser->retrieveApiArray());
         $this->eventDispatcher->dispatch($event);
 
-        return $event->getResult() ?: [];
+        return $event->getResult();
     }
 }

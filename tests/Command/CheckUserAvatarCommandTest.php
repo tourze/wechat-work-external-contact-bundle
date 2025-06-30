@@ -21,7 +21,7 @@ use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
 
 /**
  * 检查用户头像命令测试
- * 
+ *
  * 测试关注点：
  * - 头像URL检查和过滤逻辑
  * - HTTP请求处理和错误响应
