@@ -64,6 +64,9 @@ class MiniProgram extends BaseAttachment
         $this->page = $page;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function retrievePlainArray(): array
     {
         return [

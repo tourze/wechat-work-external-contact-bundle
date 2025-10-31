@@ -64,6 +64,9 @@ class Link extends BaseAttachment
         $this->desc = $desc;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function retrievePlainArray(): array
     {
         $result = [

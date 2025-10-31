@@ -2,7 +2,6 @@
 
 namespace WechatWorkExternalContactBundle\Controller;
 
-use Doctrine\Common\Collections\Criteria;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,23 +9,27 @@ use Symfony\Component\Routing\Attribute\Route;
 use Tourze\WechatWorkContracts\AgentInterface;
 use WechatWorkBundle\Repository\AgentRepository;
 use WechatWorkBundle\Repository\CorpRepository;
-use WechatWorkBundle\Service\WorkService;
+use WechatWorkBundle\Service\WorkServiceInterface;
 use WechatWorkExternalContactBundle\Request\GetExternalContactListRequest;
 
-class GetExternalContactListController extends AbstractController
+final class GetExternalContactListController extends AbstractController
 {
     public function __construct(
         private readonly CorpRepository $corpRepository,
         private readonly AgentRepository $agentRepository,
-        private readonly WorkService $workService,
-    ) {}
+        private readonly WorkServiceInterface $workService,
+    ) {
+    }
 
-    #[Route(path: '/wechat/work/test/get_external_contact_list')]
+    #[Route(path: '/wechat/work/test/get_external_contact_list', methods: ['GET'])]
     public function __invoke(Request $request): Response
     {
         $agent = $this->getAgent($request);
 
         $userId = $request->query->get('userId');
+        if (!is_string($userId)) {
+            throw $this->createNotFoundException('userId parameter is required and must be string');
+        }
 
         $apiRequest = new GetExternalContactListRequest();
         $apiRequest->setAgent($agent);
@@ -38,10 +41,16 @@ class GetExternalContactListController extends AbstractController
 
     private function getAgent(Request $request): ?AgentInterface
     {
-        $corp = $this->corpRepository->find($request->query->get('corpId'));
-        if ($corp === null) {
+        $corpId = $request->query->get('corpId');
+        $corp = null;
+
+        if (is_numeric($corpId)) {
+            $corp = $this->corpRepository->findOneBy(['id' => $corpId]);
+        }
+
+        if (null === $corp) {
             $corp = $this->corpRepository->findOneBy([
-                'corpId' => $request->query->get('corpId'),
+                'corpId' => $corpId,
             ]);
         }
 
@@ -55,6 +64,6 @@ class GetExternalContactListController extends AbstractController
         // 默认拿第一个
         return $this->agentRepository->findOneBy([
             'corp' => $corp,
-        ], ['id' => Criteria::ASC]);
+        ], ['id' => 'ASC']);
     }
 }

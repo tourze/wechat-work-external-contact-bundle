@@ -10,17 +10,23 @@ use Tourze\AsyncContracts\AsyncMessageInterface;
 class SaveExternalContactListItemMessage implements AsyncMessageInterface
 {
     /**
-     * @var array 数据项
+     * @var array<string, mixed> 数据项
      */
     private array $item;
 
     private string $agentId;
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getItem(): array
     {
         return $this->item;
     }
 
+    /**
+     * @param array<string, mixed> $item
+     */
     public function setItem(array $item): void
     {
         $this->item = $item;

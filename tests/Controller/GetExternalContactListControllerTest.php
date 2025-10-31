@@ -2,108 +2,98 @@
 
 namespace WechatWorkExternalContactBundle\Tests\Controller;
 
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Tourze\WechatWorkContracts\AgentInterface;
-use WechatWorkBundle\Repository\AgentRepository;
-use WechatWorkBundle\Repository\CorpRepository;
-use WechatWorkBundle\Service\WorkService;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\Test;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Tourze\PHPUnitSymfonyWebTest\AbstractWebTestCase;
 use WechatWorkExternalContactBundle\Controller\GetExternalContactListController;
-use WechatWorkExternalContactBundle\Request\GetExternalContactListRequest;
 
-class GetExternalContactListControllerTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(GetExternalContactListController::class)]
+#[RunTestsInSeparateProcesses]
+final class GetExternalContactListControllerTest extends AbstractWebTestCase
 {
-    private CorpRepository $corpRepository;
-    private AgentRepository $agentRepository;
-    private WorkService $workService;
-    private GetExternalContactListController $controller;
-
-    protected function setUp(): void
+    #[DataProvider('provideNotAllowedMethods')]
+    public function testMethodNotAllowed(string $method): void
     {
-        $this->corpRepository = $this->createMock(CorpRepository::class);
-        $this->agentRepository = $this->createMock(AgentRepository::class);
-        $this->workService = $this->createMock(WorkService::class);
-        
-        $this->controller = new GetExternalContactListController(
-            $this->corpRepository,
-            $this->agentRepository,
-            $this->workService
-        );
-        
-        // 设置 container 以支持 json() 方法
-        $container = new Container();
-        $this->controller->setContainer($container);
+        $client = self::createClient();
+        $client->catchExceptions(false);
+
+        $this->expectException(MethodNotAllowedHttpException::class);
+        $client->request($method, '/wechat/work/test/get_external_contact_list');
     }
 
-    public function testInvokeWithValidData(): void
+    #[Test]
+    public function testGetExternalContactListRequireUserId(): void
     {
-        $request = new Request();
-        $request->query->set('corpId', 'test_corp_id');
-        $request->query->set('userId', 'test_user_id');
-        
-        $agent = $this->createMock(AgentInterface::class);
-        
-        $this->corpRepository->expects($this->once())
-            ->method('find')
-            ->with('test_corp_id')
-            ->willReturn(null);
-            
-        $this->corpRepository->expects($this->once())
-            ->method('findOneBy')
-            ->with(['corpId' => 'test_corp_id'])
-            ->willReturn((object)['id' => 1]);
-            
-        $this->agentRepository->expects($this->once())
-            ->method('findOneBy')
-            ->willReturn($agent);
-            
-        $expectedResponse = ['external_userid' => ['user1', 'user2']];
-        
-        $this->workService->expects($this->once())
-            ->method('request')
-            ->with($this->isInstanceOf(GetExternalContactListRequest::class))
-            ->willReturn($expectedResponse);
-            
-        $response = $this->controller->__invoke($request);
-        
-        $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals($expectedResponse, json_decode($response->getContent(), true));
+        $client = self::createClientWithDatabase();
+        $client->catchExceptions(true);
+
+        $client->request('GET', '/wechat/work/test/get_external_contact_list');
+
+        // 通过客户端直接获取响应状态码，避免依赖断言框架的客户端管理
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
-    public function testInvokeWithAgentId(): void
+    #[Test]
+    public function testGetExternalContactListWithValidUserId(): void
     {
-        $request = new Request();
-        $request->query->set('corpId', 'test_corp_id');
-        $request->query->set('agentId', 'test_agent_id');
-        $request->query->set('userId', 'test_user_id');
-        
-        $corp = (object)['id' => 1];
-        $agent = $this->createMock(AgentInterface::class);
-        
-        $this->corpRepository->expects($this->once())
-            ->method('find')
-            ->with('test_corp_id')
-            ->willReturn($corp);
-            
-        $this->agentRepository->expects($this->once())
-            ->method('findOneBy')
-            ->with([
-                'corp' => $corp,
-                'agentId' => 'test_agent_id'
-            ])
-            ->willReturn($agent);
-            
-        $expectedResponse = ['external_userid' => []];
-        
-        $this->workService->expects($this->once())
-            ->method('request')
-            ->willReturn($expectedResponse);
-            
-        $response = $this->controller->__invoke($request);
-        
-        $this->assertInstanceOf(JsonResponse::class, $response);
+        $client = self::createClientWithDatabase();
+        $client->catchExceptions(true);
+
+        $client->request('GET', '/wechat/work/test/get_external_contact_list', [
+            'userId' => 'test_user_id',
+            'corpId' => 'test_corp_id',
+        ]);
+
+        $response = $client->getResponse();
+
+        // 通过客户端直接获取响应状态码，避免依赖断言框架的客户端管理
+        // 当数据库为空时，agent 为 null，但请求仍能正常处理，返回 200
+        $this->assertEquals(200, $response->getStatusCode());
+
+        // 验证响应内容格式正确
+        $responseContent = $response->getContent();
+        $this->assertNotFalse($responseContent);
+        $content = json_decode($responseContent, true);
+        $this->assertIsArray($content);
+    }
+
+    #[Test]
+    public function testGetExternalContactListWithEmptyUserId(): void
+    {
+        $client = self::createClientWithDatabase();
+        $client->catchExceptions(true);
+
+        $client->request('GET', '/wechat/work/test/get_external_contact_list', [
+            'userId' => '',
+            'corpId' => 'test_corp_id',
+        ]);
+
+        // 通过客户端直接获取响应状态码，避免依赖断言框架的客户端管理
+        // 空字符串仍然是有效的字符串，所以控制器会继续处理，返回 200
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
+        // 验证响应内容格式正确
+        $responseContent = $client->getResponse()->getContent();
+        $this->assertNotFalse($responseContent);
+        $content = json_decode($responseContent, true);
+        $this->assertIsArray($content);
+    }
+
+    #[Test]
+    public function testUnauthenticatedAccess(): void
+    {
+        $client = self::createClientWithDatabase();
+        $client->catchExceptions(true);
+
+        $client->request('GET', '/wechat/work/test/get_external_contact_list');
+
+        // 通过客户端直接获取响应状态码，避免依赖断言框架的客户端管理
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 }

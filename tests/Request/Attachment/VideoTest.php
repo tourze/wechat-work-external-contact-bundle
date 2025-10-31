@@ -2,58 +2,72 @@
 
 namespace WechatWorkExternalContactBundle\Tests\Request\Attachment;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Tourze\Arrayable\PlainArrayInterface;
-use WechatWorkExternalContactBundle\Request\Attachment\BaseAttachment;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 use WechatWorkExternalContactBundle\Request\Attachment\Video;
 
 /**
  * Video 附件测试
+ *
+ * @internal
  */
-class VideoTest extends TestCase
+#[CoversClass(Video::class)]
+#[RunTestsInSeparateProcesses] final class VideoTest extends AbstractIntegrationTestCase
 {
-    public function test_inheritance(): void
+    protected function onSetUp(): void        // 此测试不需要特殊的设置
     {
-        // 测试继承关系
-        $video = new Video();
-        $this->assertInstanceOf(BaseAttachment::class, $video);
-        $this->assertInstanceOf(PlainArrayInterface::class, $video);
     }
 
-    public function test_mediaId_setterAndGetter(): void
+    public function testInheritance(): void
+    {
+        // 测试继承关系
+        $video = self::getService(Video::class);
+        $this->assertInstanceOf(PlainArrayInterface::class, $video);
+
+        // 测试PlainArrayInterface接口的实际功能
+        $video->setMediaId('test_video_media_id');
+        $array = $video->retrievePlainArray();
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('msgtype', $array);
+        $this->assertArrayHasKey('video', $array);
+    }
+
+    public function testMediaIdSetterAndGetter(): void
     {
         // 测试媒体ID设置和获取
-        $video = new Video();
+        $video = self::getService(Video::class);
         $mediaId = 'video_media_id_123';
 
         $video->setMediaId($mediaId);
         $this->assertSame($mediaId, $video->getMediaId());
     }
 
-    public function test_mediaId_withSpecialCharacters(): void
+    public function testMediaIdWithSpecialCharacters(): void
     {
         // 测试特殊字符媒体ID
-        $video = new Video();
+        $video = self::getService(Video::class);
         $specialMediaId = 'video_abc-123_test@domain.com';
         $video->setMediaId($specialMediaId);
 
         $this->assertSame($specialMediaId, $video->getMediaId());
     }
 
-    public function test_mediaId_withLongString(): void
+    public function testMediaIdWithLongString(): void
     {
         // 测试长字符串媒体ID
-        $video = new Video();
+        $video = self::getService(Video::class);
         $longMediaId = str_repeat('v', 255);
         $video->setMediaId($longMediaId);
 
         $this->assertSame($longMediaId, $video->getMediaId());
     }
 
-    public function test_retrievePlainArray(): void
+    public function testRetrievePlainArray(): void
     {
         // 测试获取普通数组
-        $video = new Video();
+        $video = self::getService(Video::class);
         $mediaId = 'test_video_media_id';
         $video->setMediaId($mediaId);
 
@@ -67,10 +81,10 @@ class VideoTest extends TestCase
         $this->assertSame($expected, $video->retrievePlainArray());
     }
 
-    public function test_retrievePlainArray_structure(): void
+    public function testRetrievePlainArrayStructure(): void
     {
         // 测试数组结构
-        $video = new Video();
+        $video = self::getService(Video::class);
         $video->setMediaId('structure_test_media');
 
         $array = $video->retrievePlainArray();
@@ -84,51 +98,68 @@ class VideoTest extends TestCase
         $this->assertArrayHasKey('media_id', $array['video']);
     }
 
-    public function test_businessScenario_productDemoVideo(): void
+    public function testBusinessScenarioProductDemoVideo(): void
     {
         // 测试业务场景：产品演示视频
-        $video = new Video();
+        $video = self::getService(Video::class);
         $demoVideoMediaId = 'product_demo_2024_media_id';
         $video->setMediaId($demoVideoMediaId);
 
         $array = $video->retrievePlainArray();
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('msgtype', $array);
+        $this->assertArrayHasKey('video', $array);
+        $videoArray = $array['video'];
+        $this->assertIsArray($videoArray);
+        $this->assertArrayHasKey('media_id', $videoArray);
 
         $this->assertSame('video', $array['msgtype']);
-        $this->assertSame($demoVideoMediaId, $array['video']['media_id']);
+        $this->assertSame($demoVideoMediaId, $videoArray['media_id']);
 
         // 验证符合企业微信API要求
         $this->assertArrayHasKey('msgtype', $array);
         $this->assertArrayHasKey('video', $array);
     }
 
-    public function test_businessScenario_trainingVideo(): void
+    public function testBusinessScenarioTrainingVideo(): void
     {
         // 测试业务场景：培训视频
-        $video = new Video();
+        $video = self::getService(Video::class);
         $trainingVideoMediaId = 'training_course_media_456';
         $video->setMediaId($trainingVideoMediaId);
 
         $array = $video->retrievePlainArray();
-        $this->assertSame($trainingVideoMediaId, $array['video']['media_id']);
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('video', $array);
+        $videoArray = $array['video'];
+        $this->assertIsArray($videoArray);
+        $this->assertArrayHasKey('media_id', $videoArray);
+        $this->assertSame($trainingVideoMediaId, $videoArray['media_id']);
     }
 
-    public function test_businessScenario_welcomeVideo(): void
+    public function testBusinessScenarioWelcomeVideo(): void
     {
         // 测试业务场景：欢迎视频
-        $video = new Video();
+        $video = self::getService(Video::class);
         $welcomeVideoMediaId = 'welcome_intro_media_789';
         $video->setMediaId($welcomeVideoMediaId);
 
         $array = $video->retrievePlainArray();
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('msgtype', $array);
+        $this->assertArrayHasKey('video', $array);
+        $videoArray = $array['video'];
+        $this->assertIsArray($videoArray);
+        $this->assertArrayHasKey('media_id', $videoArray);
 
         $this->assertSame('video', $array['msgtype']);
-        $this->assertSame($welcomeVideoMediaId, $array['video']['media_id']);
+        $this->assertSame($welcomeVideoMediaId, $videoArray['media_id']);
     }
 
-    public function test_multipleSetCalls(): void
+    public function testMultipleSetCalls(): void
     {
         // 测试多次设置值
-        $video = new Video();
+        $video = self::getService(Video::class);
 
         $firstMediaId = 'first_video_media_id';
         $secondMediaId = 'second_video_media_id';
@@ -140,13 +171,18 @@ class VideoTest extends TestCase
         $this->assertSame($secondMediaId, $video->getMediaId());
 
         $array = $video->retrievePlainArray();
-        $this->assertSame($secondMediaId, $array['video']['media_id']);
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('video', $array);
+        $videoArray = $array['video'];
+        $this->assertIsArray($videoArray);
+        $this->assertArrayHasKey('media_id', $videoArray);
+        $this->assertSame($secondMediaId, $videoArray['media_id']);
     }
 
-    public function test_retrievePlainArrayDoesNotModifyOriginalData(): void
+    public function testRetrievePlainArrayDoesNotModifyOriginalData(): void
     {
         // 测试获取数组不会修改原始数据
-        $video = new Video();
+        $video = self::getService(Video::class);
         $originalMediaId = 'original_video_media_id';
         $video->setMediaId($originalMediaId);
 
@@ -154,24 +190,36 @@ class VideoTest extends TestCase
         $array2 = $video->retrievePlainArray();
 
         // 修改返回的数组不应影响原始数据
+        $this->assertIsArray($array1);
+        $this->assertArrayHasKey('video', $array1);
+        $this->assertIsArray($array1['video']);
         $array1['video']['media_id'] = 'modified_media_id';
         $array1['msgtype'] = 'modified_type';
 
         $this->assertSame($originalMediaId, $video->getMediaId());
-        $this->assertSame($originalMediaId, $array2['video']['media_id']);
+        $this->assertIsArray($array2);
+        $this->assertArrayHasKey('video', $array2);
+        $this->assertArrayHasKey('msgtype', $array2);
+        $videoArray2 = $array2['video'];
+        $this->assertIsArray($videoArray2);
+        $this->assertArrayHasKey('media_id', $videoArray2);
+        $this->assertSame($originalMediaId, $videoArray2['media_id']);
         $this->assertSame('video', $array2['msgtype']);
     }
 
-    public function test_immutableBehavior(): void
+    public function testImmutableBehavior(): void
     {
         // 测试不可变行为
-        $video = new Video();
+        $video = self::getService(Video::class);
         $mediaId = 'immutable_test_video_media';
         $video->setMediaId($mediaId);
 
         $array = $video->retrievePlainArray();
 
         // 修改数组不应影响video对象
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('video', $array);
+        $this->assertIsArray($array['video']);
         $array['video']['media_id'] = 'changed_media_id';
         $array['msgtype'] = 'changed_type';
         $array['new_key'] = 'new_value';
@@ -179,15 +227,21 @@ class VideoTest extends TestCase
         $this->assertSame($mediaId, $video->getMediaId());
 
         $newArray = $video->retrievePlainArray();
-        $this->assertSame($mediaId, $newArray['video']['media_id']);
+        $this->assertIsArray($newArray);
+        $this->assertArrayHasKey('video', $newArray);
+        $this->assertArrayHasKey('msgtype', $newArray);
+        $videoArrayNew = $newArray['video'];
+        $this->assertIsArray($videoArrayNew);
+        $this->assertArrayHasKey('media_id', $videoArrayNew);
+        $this->assertSame($mediaId, $videoArrayNew['media_id']);
         $this->assertSame('video', $newArray['msgtype']);
         $this->assertArrayNotHasKey('new_key', $newArray);
     }
 
-    public function test_methodCallsAreIdempotent(): void
+    public function testMethodCallsAreIdempotent(): void
     {
         // 测试方法调用是幂等的
-        $video = new Video();
+        $video = self::getService(Video::class);
         $mediaId = 'idempotent_test_video_media';
         $video->setMediaId($mediaId);
 
@@ -201,10 +255,10 @@ class VideoTest extends TestCase
         $this->assertSame($array1, $array2);
     }
 
-    public function test_plainArrayInterfaceImplementation(): void
+    public function testPlainArrayInterfaceImplementation(): void
     {
         // 测试PlainArrayInterface接口实现
-        $video = new Video();
+        $video = self::getService(Video::class);
         $video->setMediaId('interface_test_media');
 
         $array = $video->retrievePlainArray();

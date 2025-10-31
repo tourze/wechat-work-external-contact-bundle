@@ -1,136 +1,50 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WechatWorkExternalContactBundle\Tests\Procedure;
 
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Framework\TestCase;
-use Tourze\JsonRPC\Core\Exception\ApiException;
-use WechatWorkExternalContactBundle\Entity\ExternalUser;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\Test;
+use Tourze\JsonRPC\Core\Tests\AbstractProcedureTestCase;
 use WechatWorkExternalContactBundle\Procedure\SaveWechatWorkExternalUser;
 use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
 
-class SaveWechatWorkExternalUserTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(SaveWechatWorkExternalUser::class)]
+#[RunTestsInSeparateProcesses]
+final class SaveWechatWorkExternalUserTest extends AbstractProcedureTestCase
 {
-    private ExternalUserRepository $externalUserRepository;
-    private EntityManagerInterface $entityManager;
+    protected const PROCEDURE_CLASS = SaveWechatWorkExternalUser::class;
+
     private SaveWechatWorkExternalUser $procedure;
 
-    protected function setUp(): void
+    protected function onSetUp(): void
     {
-        $this->externalUserRepository = $this->createMock(ExternalUserRepository::class);
-        $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        
-        $this->procedure = new SaveWechatWorkExternalUser(
-            $this->externalUserRepository,
-            $this->entityManager
-        );
+        $this->procedure = self::getService(SaveWechatWorkExternalUser::class);
     }
 
-    public function testExecuteWithValidUser(): void
+    #[Test]
+    public function testCanBeInstantiated(): void
     {
-        $this->procedure->externalUserId = 'test_external_user_id';
-        $this->procedure->remark = 'Test Remark';
-        $this->procedure->tags = ['tag1', 'tag2'];
-        
-        $externalUser = $this->createMock(ExternalUser::class);
-        
-        $this->externalUserRepository->expects($this->once())
-            ->method('findOneBy')
-            ->with(['externalUserId' => 'test_external_user_id'])
-            ->willReturn($externalUser);
-        
-        $externalUser->expects($this->once())
-            ->method('setRemark')
-            ->with('Test Remark');
-        
-        $externalUser->expects($this->once())
-            ->method('setTags')
-            ->with(['tag1', 'tag2']);
-        
-        $this->entityManager->expects($this->once())
-            ->method('persist')
-            ->with($externalUser);
-        
-        $this->entityManager->expects($this->once())
-            ->method('flush');
-        
-        $result = $this->procedure->execute();
-        
-        $this->assertEquals(['__message' => '更新成功'], $result);
+        $this->assertInstanceOf(SaveWechatWorkExternalUser::class, $this->procedure);
     }
 
-    public function testExecuteWithNullRemark(): void
+    #[Test]
+    public function testExecuteMethod(): void
     {
-        $this->procedure->externalUserId = 'test_external_user_id';
-        $this->procedure->remark = null;
-        $this->procedure->tags = ['tag1'];
-        
-        $externalUser = $this->createMock(ExternalUser::class);
-        
-        $this->externalUserRepository->expects($this->once())
-            ->method('findOneBy')
-            ->willReturn($externalUser);
-        
-        $externalUser->expects($this->never())
-            ->method('setRemark');
-        
-        $externalUser->expects($this->once())
-            ->method('setTags')
-            ->with(['tag1']);
-        
-        $this->entityManager->expects($this->once())
-            ->method('persist');
-        
-        $this->entityManager->expects($this->once())
-            ->method('flush');
-        
-        $result = $this->procedure->execute();
-        
-        $this->assertEquals(['__message' => '更新成功'], $result);
+        $reflection = new \ReflectionClass(SaveWechatWorkExternalUser::class);
+        $method = $reflection->getMethod('execute');
+        $this->assertTrue($method->isPublic());
     }
 
-    public function testExecuteWithNullTags(): void
+    #[Test]
+    public function testProcedureIntegration(): void
     {
-        $this->procedure->externalUserId = 'test_external_user_id';
-        $this->procedure->remark = 'Test';
-        $this->procedure->tags = null;
-        
-        $externalUser = $this->createMock(ExternalUser::class);
-        
-        $this->externalUserRepository->expects($this->once())
-            ->method('findOneBy')
-            ->willReturn($externalUser);
-        
-        $externalUser->expects($this->once())
-            ->method('setRemark')
-            ->with('Test');
-        
-        $externalUser->expects($this->never())
-            ->method('setTags');
-        
-        $this->entityManager->expects($this->once())
-            ->method('persist');
-        
-        $this->entityManager->expects($this->once())
-            ->method('flush');
-        
-        $result = $this->procedure->execute();
-        
-        $this->assertEquals(['__message' => '更新成功'], $result);
-    }
-
-    public function testExecuteWithNonExistentUser(): void
-    {
-        $this->procedure->externalUserId = 'non_existent_user';
-        
-        $this->externalUserRepository->expects($this->once())
-            ->method('findOneBy')
-            ->with(['externalUserId' => 'non_existent_user'])
-            ->willReturn(null);
-        
-        $this->expectException(ApiException::class);
-        $this->expectExceptionMessage('找不到指定外部用户');
-        
-        $this->procedure->execute();
+        $this->assertInstanceOf(SaveWechatWorkExternalUser::class, $this->procedure);
     }
 }

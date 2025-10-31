@@ -22,6 +22,9 @@ class Image extends BaseAttachment
         $this->mediaId = $mediaId;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function retrievePlainArray(): array
     {
         return [
@@ -32,9 +35,9 @@ class Image extends BaseAttachment
         ];
     }
 
-    public static function createFromMediaId(string $mediaId): static
+    public static function createFromMediaId(string $mediaId): self
     {
-        $image = new static();
+        $image = new self();
         $image->setMediaId($mediaId);
 
         return $image;

@@ -22,6 +22,9 @@ class File extends BaseAttachment
         $this->mediaId = $mediaId;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function retrievePlainArray(): array
     {
         return [

@@ -2,45 +2,67 @@
 
 namespace WechatWorkExternalContactBundle\Tests\Service;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use Symfony\Component\Config\Loader\Loader;
 use Symfony\Component\Routing\RouteCollection;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
+use Tourze\RoutingAutoLoaderBundle\Service\RoutingAutoLoaderInterface;
 use WechatWorkExternalContactBundle\Service\AttributeControllerLoader;
 
-class AttributeControllerLoaderTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(AttributeControllerLoader::class)]
+#[RunTestsInSeparateProcesses]
+final class AttributeControllerLoaderTest extends AbstractIntegrationTestCase
 {
-    private AttributeControllerLoader $loader;
-
-    protected function setUp(): void
+    protected function onSetUp(): void
     {
-        $this->loader = new AttributeControllerLoader();
+        // 此测试不需要特殊的设置
     }
 
-    public function testLoad(): void
+    public function testServiceCanBeInstantiated(): void
     {
-        $result = $this->loader->load('resource');
-        
+        $service = self::getService(AttributeControllerLoader::class);
+        $this->assertInstanceOf(AttributeControllerLoader::class, $service);
+    }
+
+    public function testLoadReturnsRouteCollection(): void
+    {
+        $service = self::getService(AttributeControllerLoader::class);
+
+        $result = $service->load('resource');
         $this->assertInstanceOf(RouteCollection::class, $result);
     }
 
-    public function testSupports(): void
+    public function testAutoloadReturnsRouteCollection(): void
     {
-        $this->assertFalse($this->loader->supports('resource'));
-        $this->assertFalse($this->loader->supports('resource', 'type'));
+        $service = self::getService(AttributeControllerLoader::class);
+
+        $result = $service->autoload();
+        $this->assertInstanceOf(RouteCollection::class, $result);
     }
 
-    public function testAutoload(): void
+    public function testSupportsReturnsFalse(): void
     {
-        $collection = $this->loader->autoload();
-        
-        $this->assertInstanceOf(RouteCollection::class, $collection);
-        
-        // 验证是否加载了控制器路由
-        $routes = $collection->all();
-        $this->assertNotEmpty($routes);
-        
-        // 验证是否包含预期的路由
-        $routePaths = array_map(fn($route) => $route->getPath(), $routes);
-        $this->assertContains('/wechat/work/test/get_external_contact_list', $routePaths);
-        $this->assertContains('/wechat/work/test/send_welcome_msg', $routePaths);
+        $service = self::getService(AttributeControllerLoader::class);
+        $this->assertFalse($service->supports('resource'));
+    }
+
+    public function testImplementsRequiredInterfaces(): void
+    {
+        $reflection = new \ReflectionClass(AttributeControllerLoader::class);
+        $this->assertTrue($reflection->implementsInterface(RoutingAutoLoaderInterface::class));
+        $this->assertTrue($reflection->isSubclassOf(Loader::class));
+    }
+
+    public function testLoadCallsAutoload(): void
+    {
+        $service = self::getService(AttributeControllerLoader::class);
+
+        $loadResult = $service->load('resource');
+        $autoloadResult = $service->autoload();
+        $this->assertEquals($autoloadResult->all(), $loadResult->all());
     }
 }

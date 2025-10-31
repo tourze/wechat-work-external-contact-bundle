@@ -23,19 +23,26 @@ class SaveWechatWorkExternalUser extends LockableProcedure
 
     public ?string $remark = null;
 
+    /**
+     * @var array<string, mixed>|null
+     */
     public ?array $tags = null;
 
     public function __construct(
         private readonly ExternalUserRepository $externalUserRepository,
         private readonly EntityManagerInterface $entityManager,
-    ) {}
+    ) {
+    }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function execute(): array
     {
         $externalUser = $this->externalUserRepository->findOneBy([
             'externalUserId' => $this->externalUserId,
         ]);
-        if ($externalUser === null) {
+        if (null === $externalUser) {
             throw new ApiException('找不到指定外部用户');
         }
 

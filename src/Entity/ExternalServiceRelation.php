@@ -4,6 +4,7 @@ namespace WechatWorkExternalContactBundle\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\WechatWorkContracts\CorpInterface;
 use Tourze\WechatWorkContracts\UserInterface;
@@ -18,10 +19,11 @@ use WechatWorkExternalContactBundle\Repository\ExternalServiceRelationRepository
 class ExternalServiceRelation implements \Stringable
 {
     use TimestampableAware;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
-    private ?int $id = 0;
+    private int $id = 0;
 
     #[ORM\ManyToOne(targetEntity: CorpInterface::class)]
     #[ORM\JoinColumn(nullable: false)]
@@ -35,18 +37,22 @@ class ExternalServiceRelation implements \Stringable
     private ?ExternalUser $externalUser = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '成员添加外部联系人时间'])]
+    #[Assert\Type(type: \DateTimeInterface::class)]
     private ?\DateTimeInterface $addExternalContactTime = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '外部联系人主动添加时间'])]
+    #[Assert\Type(type: \DateTimeInterface::class)]
     private ?\DateTimeInterface $addHalfExternalContactTime = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '成员删除外部联系人时间'])]
+    #[Assert\Type(type: \DateTimeInterface::class)]
     private ?\DateTimeInterface $delExternalContactTime = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '成员被外部联系人删除时间'])]
+    #[Assert\Type(type: \DateTimeInterface::class)]
     private ?\DateTimeInterface $delFollowUserTime = null;
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
@@ -56,11 +62,9 @@ class ExternalServiceRelation implements \Stringable
         return $this->corp;
     }
 
-    public function setCorp(?CorpInterface $corp): self
+    public function setCorp(?CorpInterface $corp): void
     {
         $this->corp = $corp;
-
-        return $this;
     }
 
     public function getUser(): ?UserInterface
@@ -68,11 +72,9 @@ class ExternalServiceRelation implements \Stringable
         return $this->user;
     }
 
-    public function setUser(?UserInterface $user): static
+    public function setUser(?UserInterface $user): void
     {
         $this->user = $user;
-
-        return $this;
     }
 
     public function getExternalUser(): ?ExternalUser
@@ -80,11 +82,9 @@ class ExternalServiceRelation implements \Stringable
         return $this->externalUser;
     }
 
-    public function setExternalUser(?ExternalUser $externalUser): static
+    public function setExternalUser(?ExternalUser $externalUser): void
     {
         $this->externalUser = $externalUser;
-
-        return $this;
     }
 
     public function getAddExternalContactTime(): ?\DateTimeInterface
@@ -92,11 +92,9 @@ class ExternalServiceRelation implements \Stringable
         return $this->addExternalContactTime;
     }
 
-    public function setAddExternalContactTime(?\DateTimeInterface $addExternalContactTime): static
+    public function setAddExternalContactTime(?\DateTimeInterface $addExternalContactTime): void
     {
         $this->addExternalContactTime = $addExternalContactTime;
-
-        return $this;
     }
 
     public function getAddHalfExternalContactTime(): ?\DateTimeInterface
@@ -104,11 +102,9 @@ class ExternalServiceRelation implements \Stringable
         return $this->addHalfExternalContactTime;
     }
 
-    public function setAddHalfExternalContactTime(?\DateTimeInterface $addHalfExternalContactTime): static
+    public function setAddHalfExternalContactTime(?\DateTimeInterface $addHalfExternalContactTime): void
     {
         $this->addHalfExternalContactTime = $addHalfExternalContactTime;
-
-        return $this;
     }
 
     public function getDelExternalContactTime(): ?\DateTimeInterface
@@ -116,11 +112,9 @@ class ExternalServiceRelation implements \Stringable
         return $this->delExternalContactTime;
     }
 
-    public function setDelExternalContactTime(?\DateTimeInterface $delExternalContactTime): static
+    public function setDelExternalContactTime(?\DateTimeInterface $delExternalContactTime): void
     {
         $this->delExternalContactTime = $delExternalContactTime;
-
-        return $this;
     }
 
     public function getDelFollowUserTime(): ?\DateTimeInterface
@@ -128,12 +122,11 @@ class ExternalServiceRelation implements \Stringable
         return $this->delFollowUserTime;
     }
 
-    public function setDelFollowUserTime(?\DateTimeInterface $delFollowUserTime): static
+    public function setDelFollowUserTime(?\DateTimeInterface $delFollowUserTime): void
     {
         $this->delFollowUserTime = $delFollowUserTime;
-
-        return $this;
     }
+
     public function __toString(): string
     {
         return (string) $this->getId();

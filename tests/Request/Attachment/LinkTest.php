@@ -2,126 +2,143 @@
 
 namespace WechatWorkExternalContactBundle\Tests\Request\Attachment;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Tourze\Arrayable\PlainArrayInterface;
-use WechatWorkExternalContactBundle\Request\Attachment\BaseAttachment;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 use WechatWorkExternalContactBundle\Request\Attachment\Link;
 
 /**
  * Link 附件测试
+ *
+ * @internal
  */
-class LinkTest extends TestCase
+#[CoversClass(Link::class)]
+#[RunTestsInSeparateProcesses] final class LinkTest extends AbstractIntegrationTestCase
 {
-    public function test_inheritance(): void
+    protected function onSetUp(): void        // 此测试不需要特殊的设置
     {
-        // 测试继承关系
-        $link = new Link();
-        $this->assertInstanceOf(BaseAttachment::class, $link);
-        $this->assertInstanceOf(PlainArrayInterface::class, $link);
     }
 
-    public function test_title_setterAndGetter(): void
+    public function testInheritance(): void
+    {
+        // 测试继承关系
+        $link = self::getService(Link::class);
+        $this->assertInstanceOf(PlainArrayInterface::class, $link);
+
+        // 测试PlainArrayInterface接口的实际功能
+        $link->setTitle('测试链接');
+        $link->setUrl('https://example.com');
+        $link->setDesc('测试链接描述');
+        $link->setPicUrl('https://example.com/image.jpg');
+        $array = $link->retrievePlainArray();
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('msgtype', $array);
+        $this->assertArrayHasKey('link', $array);
+    }
+
+    public function testTitleSetterAndGetter(): void
     {
         // 测试标题设置和获取
-        $link = new Link();
+        $link = self::getService(Link::class);
         $title = '企业产品介绍';
 
         $link->setTitle($title);
         $this->assertSame($title, $link->getTitle());
     }
 
-    public function test_title_withSpecialCharacters(): void
+    public function testTitleWithSpecialCharacters(): void
     {
         // 测试特殊字符标题
-        $link = new Link();
+        $link = self::getService(Link::class);
         $specialTitle = '产品2024版 - 全新体验！@#$%';
         $link->setTitle($specialTitle);
 
         $this->assertSame($specialTitle, $link->getTitle());
     }
 
-    public function test_title_withMaxLength(): void
+    public function testTitleWithMaxLength(): void
     {
         // 测试最大长度标题（128字节）
-        $link = new Link();
+        $link = self::getService(Link::class);
         $maxTitle = str_repeat('标', 42) . '题'; // 约126字节（每个中文字符3字节）
         $link->setTitle($maxTitle);
 
         $this->assertSame($maxTitle, $link->getTitle());
     }
 
-    public function test_url_setterAndGetter(): void
+    public function testUrlSetterAndGetter(): void
     {
         // 测试URL设置和获取
-        $link = new Link();
+        $link = self::getService(Link::class);
         $url = 'https://company.com/product';
 
         $link->setUrl($url);
         $this->assertSame($url, $link->getUrl());
     }
 
-    public function test_url_withComplexUrl(): void
+    public function testUrlWithComplexUrl(): void
     {
         // 测试复杂URL
-        $link = new Link();
+        $link = self::getService(Link::class);
         $complexUrl = 'https://api.company.com/v1/product?id=123&category=tech&utm_source=wechat';
         $link->setUrl($complexUrl);
 
         $this->assertSame($complexUrl, $link->getUrl());
     }
 
-    public function test_picUrl_setterAndGetter(): void
+    public function testPicUrlSetterAndGetter(): void
     {
         // 测试图片URL设置和获取
-        $link = new Link();
+        $link = self::getService(Link::class);
         $picUrl = 'https://cdn.company.com/images/product.jpg';
 
         $link->setPicUrl($picUrl);
         $this->assertSame($picUrl, $link->getPicUrl());
     }
 
-    public function test_picUrl_withNull(): void
+    public function testPicUrlWithNull(): void
     {
         // 测试null图片URL
-        $link = new Link();
+        $link = self::getService(Link::class);
         $link->setPicUrl(null);
 
         $this->assertNull($link->getPicUrl());
     }
 
-    public function test_desc_setterAndGetter(): void
+    public function testDescSetterAndGetter(): void
     {
         // 测试描述设置和获取
-        $link = new Link();
+        $link = self::getService(Link::class);
         $desc = '这是一个优秀的产品介绍，包含详细的功能说明和使用指南。';
 
         $link->setDesc($desc);
         $this->assertSame($desc, $link->getDesc());
     }
 
-    public function test_desc_withNull(): void
+    public function testDescWithNull(): void
     {
         // 测试null描述
-        $link = new Link();
+        $link = self::getService(Link::class);
         $link->setDesc(null);
 
         $this->assertNull($link->getDesc());
     }
 
-    public function test_desc_withMaxLength(): void
+    public function testDescWithMaxLength(): void
     {
         // 测试最大长度描述（512字节）
-        $link = new Link();
+        $link = self::getService(Link::class);
         $maxDesc = str_repeat('详细描述内容', 25); // 约375字节
         $link->setDesc($maxDesc);
 
         $this->assertSame($maxDesc, $link->getDesc());
     }
 
-    public function test_retrievePlainArray_withRequiredFieldsOnly(): void
+    public function testRetrievePlainArrayWithRequiredFieldsOnly(): void
     {
         // 测试仅必填字段的数组转换
-        $link = new Link();
+        $link = self::getService(Link::class);
         $title = '产品标题';
         $url = 'https://company.com/product';
 
@@ -139,10 +156,10 @@ class LinkTest extends TestCase
         $this->assertSame($expected, $link->retrievePlainArray());
     }
 
-    public function test_retrievePlainArray_withAllFields(): void
+    public function testRetrievePlainArrayWithAllFields(): void
     {
         // 测试所有字段的数组转换
-        $link = new Link();
+        $link = self::getService(Link::class);
         $title = '完整产品介绍';
         $url = 'https://company.com/complete-product';
         $picUrl = 'https://cdn.company.com/product-cover.jpg';
@@ -166,10 +183,10 @@ class LinkTest extends TestCase
         $this->assertSame($expected, $link->retrievePlainArray());
     }
 
-    public function test_retrievePlainArray_withOnlyPicUrl(): void
+    public function testRetrievePlainArrayWithOnlyPicUrl(): void
     {
         // 测试仅有图片URL的数组转换
-        $link = new Link();
+        $link = self::getService(Link::class);
         $title = '有图产品';
         $url = 'https://company.com/with-pic';
         $picUrl = 'https://cdn.company.com/pic.jpg';
@@ -190,10 +207,10 @@ class LinkTest extends TestCase
         $this->assertSame($expected, $link->retrievePlainArray());
     }
 
-    public function test_retrievePlainArray_withOnlyDesc(): void
+    public function testRetrievePlainArrayWithOnlyDesc(): void
     {
         // 测试仅有描述的数组转换
-        $link = new Link();
+        $link = self::getService(Link::class);
         $title = '有描述产品';
         $url = 'https://company.com/with-desc';
         $desc = '产品详细描述信息';
@@ -214,10 +231,10 @@ class LinkTest extends TestCase
         $this->assertSame($expected, $link->retrievePlainArray());
     }
 
-    public function test_retrievePlainArray_structure(): void
+    public function testRetrievePlainArrayStructure(): void
     {
         // 测试数组结构
-        $link = new Link();
+        $link = self::getService(Link::class);
         $link->setTitle('structure_test_title');
         $link->setPicUrl('https://example.com/pic.jpg');
         $link->setDesc('structure_test_description');
@@ -233,10 +250,10 @@ class LinkTest extends TestCase
         $this->assertCount(4, $array['link']);
     }
 
-    public function test_businessScenario_productIntroduction(): void
+    public function testBusinessScenarioProductIntroduction(): void
     {
         // 测试业务场景：产品介绍链接
-        $link = new Link();
+        $link = self::getService(Link::class);
         $link->setTitle('2024年新品发布');
         $link->setUrl('https://company.com/products/2024/new-release');
         $link->setPicUrl('https://cdn.company.com/2024-new-product.jpg');
@@ -244,38 +261,47 @@ class LinkTest extends TestCase
 
         $array = $link->retrievePlainArray();
 
+        $this->assertIsArray($array);
         $this->assertSame('link', $array['msgtype']);
+        $this->assertArrayHasKey('link', $array);
+        $this->assertIsArray($array['link']);
         $this->assertSame('2024年新品发布', $array['link']['title']);
         $this->assertStringContainsString('2024', $array['link']['url']);
         $this->assertArrayHasKey('picurl', $array['link']);
         $this->assertArrayHasKey('desc', $array['link']);
     }
 
-    public function test_businessScenario_newsArticle(): void
+    public function testBusinessScenarioNewsArticle(): void
     {
         // 测试业务场景：新闻文章链接
-        $link = new Link();
+        $link = self::getService(Link::class);
         $link->setTitle('行业最新动态');
         $link->setUrl('https://news.company.com/industry-trends-2024');
         $link->setDesc('了解行业最新发展趋势和市场动态。');
 
         $array = $link->retrievePlainArray();
 
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('link', $array);
+        $this->assertIsArray($array['link']);
         $this->assertSame('行业最新动态', $array['link']['title']);
         $this->assertStringContainsString('news', $array['link']['url']);
         $this->assertArrayNotHasKey('picurl', $array['link']);
         $this->assertArrayHasKey('desc', $array['link']);
     }
 
-    public function test_businessScenario_simpleLink(): void
+    public function testBusinessScenarioSimpleLink(): void
     {
         // 测试业务场景：简单链接
-        $link = new Link();
+        $link = self::getService(Link::class);
         $link->setTitle('官网首页');
         $link->setUrl('https://company.com');
 
         $array = $link->retrievePlainArray();
 
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('link', $array);
+        $this->assertIsArray($array['link']);
         $this->assertSame('官网首页', $array['link']['title']);
         $this->assertSame('https://company.com', $array['link']['url']);
         $this->assertArrayNotHasKey('picurl', $array['link']);
@@ -286,10 +312,10 @@ class LinkTest extends TestCase
         $this->assertArrayHasKey('link', $array);
     }
 
-    public function test_multipleSetCalls(): void
+    public function testMultipleSetCalls(): void
     {
         // 测试多次设置值
-        $link = new Link();
+        $link = self::getService(Link::class);
 
         $link->setTitle('第一个标题');
         $link->setUrl('https://first.com');
@@ -313,14 +339,17 @@ class LinkTest extends TestCase
         $this->assertSame('第二个描述', $link->getDesc());
 
         $array = $link->retrievePlainArray();
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('link', $array);
+        $this->assertIsArray($array['link']);
         $this->assertSame('第二个标题', $array['link']['title']);
         $this->assertSame('https://second.com', $array['link']['url']);
     }
 
-    public function test_resetToNull(): void
+    public function testResetToNull(): void
     {
         // 测试重置可选字段为null
-        $link = new Link();
+        $link = self::getService(Link::class);
 
         $link->setTitle('初始标题');
         $link->setUrl('https://initial.com');
@@ -337,16 +366,19 @@ class LinkTest extends TestCase
         $this->assertNull($link->getDesc());
 
         $array = $link->retrievePlainArray();
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('link', $array);
+        $this->assertIsArray($array['link']);
         $this->assertArrayHasKey('title', $array['link']);
         $this->assertArrayHasKey('url', $array['link']);
         $this->assertArrayNotHasKey('picurl', $array['link']);
         $this->assertArrayNotHasKey('desc', $array['link']);
     }
 
-    public function test_retrievePlainArrayDoesNotModifyOriginalData(): void
+    public function testRetrievePlainArrayDoesNotModifyOriginalData(): void
     {
         // 测试获取数组不会修改原始数据
-        $link = new Link();
+        $link = self::getService(Link::class);
         $originalTitle = '原始标题';
         $originalUrl = 'https://original.com';
         $originalPicUrl = 'https://original-pic.com';
@@ -361,6 +393,9 @@ class LinkTest extends TestCase
         $array2 = $link->retrievePlainArray();
 
         // 修改返回的数组不应影响原始数据
+        $this->assertIsArray($array1);
+        $this->assertArrayHasKey('link', $array1);
+        $this->assertIsArray($array1['link']);
         $array1['link']['title'] = '修改后标题';
         $array1['link']['url'] = 'https://modified.com';
         $array1['link']['picurl'] = 'https://modified-pic.com';
@@ -372,6 +407,9 @@ class LinkTest extends TestCase
         $this->assertSame($originalPicUrl, $link->getPicUrl());
         $this->assertSame($originalDesc, $link->getDesc());
 
+        $this->assertIsArray($array2);
+        $this->assertArrayHasKey('link', $array2);
+        $this->assertIsArray($array2['link']);
         $this->assertSame($originalTitle, $array2['link']['title']);
         $this->assertSame($originalUrl, $array2['link']['url']);
         $this->assertSame($originalPicUrl, $array2['link']['picurl']);
@@ -379,10 +417,10 @@ class LinkTest extends TestCase
         $this->assertSame('link', $array2['msgtype']);
     }
 
-    public function test_immutableBehavior(): void
+    public function testImmutableBehavior(): void
     {
         // 测试不可变行为
-        $link = new Link();
+        $link = self::getService(Link::class);
         $title = '不可变测试';
         $url = 'https://immutable.com';
         $picUrl = 'https://immutable-pic.com';
@@ -396,6 +434,9 @@ class LinkTest extends TestCase
         $array = $link->retrievePlainArray();
 
         // 修改数组不应影响link对象
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('link', $array);
+        $this->assertIsArray($array['link']);
         $array['link']['title'] = '改变标题';
         $array['link']['url'] = 'https://changed.com';
         $array['link']['picurl'] = 'https://changed-pic.com';
@@ -409,6 +450,9 @@ class LinkTest extends TestCase
         $this->assertSame($desc, $link->getDesc());
 
         $newArray = $link->retrievePlainArray();
+        $this->assertIsArray($newArray);
+        $this->assertArrayHasKey('link', $newArray);
+        $this->assertIsArray($newArray['link']);
         $this->assertSame($title, $newArray['link']['title']);
         $this->assertSame($url, $newArray['link']['url']);
         $this->assertSame($picUrl, $newArray['link']['picurl']);
@@ -417,10 +461,10 @@ class LinkTest extends TestCase
         $this->assertArrayNotHasKey('new_key', $newArray);
     }
 
-    public function test_methodCallsAreIdempotent(): void
+    public function testMethodCallsAreIdempotent(): void
     {
         // 测试方法调用是幂等的
-        $link = new Link();
+        $link = self::getService(Link::class);
         $title = '幂等测试';
         $url = 'https://idempotent.com';
         $picUrl = 'https://idempotent-pic.com';
@@ -453,10 +497,10 @@ class LinkTest extends TestCase
         $this->assertSame($array1, $array2);
     }
 
-    public function test_plainArrayInterfaceImplementation(): void
+    public function testPlainArrayInterfaceImplementation(): void
     {
         // 测试PlainArrayInterface接口实现
-        $link = new Link();
+        $link = self::getService(Link::class);
         $link->setTitle('interface_test_title');
         $link->setPicUrl('https://example.com/pic.jpg');
         $link->setDesc('interface_test_description');

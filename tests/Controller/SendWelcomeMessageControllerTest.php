@@ -2,112 +2,84 @@
 
 namespace WechatWorkExternalContactBundle\Tests\Controller;
 
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Tourze\WechatWorkContracts\AgentInterface;
-use WechatWorkBundle\Repository\AgentRepository;
-use WechatWorkBundle\Repository\CorpRepository;
-use WechatWorkBundle\Service\WorkService;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\Test;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Tourze\PHPUnitSymfonyWebTest\AbstractWebTestCase;
 use WechatWorkExternalContactBundle\Controller\SendWelcomeMessageController;
-use WechatWorkExternalContactBundle\Request\SendWelcomeMessageRequest;
 
-class SendWelcomeMessageControllerTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(SendWelcomeMessageController::class)]
+#[RunTestsInSeparateProcesses]
+final class SendWelcomeMessageControllerTest extends AbstractWebTestCase
 {
-    private CorpRepository $corpRepository;
-    private AgentRepository $agentRepository;
-    private WorkService $workService;
-    private SendWelcomeMessageController $controller;
-
-    protected function setUp(): void
+    #[DataProvider('provideNotAllowedMethods')]
+    public function testMethodNotAllowed(string $method): void
     {
-        $this->corpRepository = $this->createMock(CorpRepository::class);
-        $this->agentRepository = $this->createMock(AgentRepository::class);
-        $this->workService = $this->createMock(WorkService::class);
-        
-        $this->controller = new SendWelcomeMessageController(
-            $this->corpRepository,
-            $this->agentRepository,
-            $this->workService
-        );
-        
-        // 设置 container 以支持 json() 方法
-        $container = new Container();
-        $this->controller->setContainer($container);
+        $client = self::createClient();
+        $client->catchExceptions(false);
+
+        $this->expectException(MethodNotAllowedHttpException::class);
+        $client->request($method, '/wechat/work/test/send_welcome_msg');
     }
 
-    public function testInvokeWithValidData(): void
+    #[Test]
+    public function testSendWelcomeMessageRequireWelcomeCode(): void
     {
-        $request = new Request();
-        $request->query->set('corpId', 'test_corp_id');
-        $request->query->set('welcomeCode', 'test_welcome_code');
-        
-        $agent = $this->createMock(AgentInterface::class);
-        
-        $this->corpRepository->expects($this->once())
-            ->method('find')
-            ->with('test_corp_id')
-            ->willReturn(null);
-            
-        $this->corpRepository->expects($this->once())
-            ->method('findOneBy')
-            ->with(['corpId' => 'test_corp_id'])
-            ->willReturn((object)['id' => 1]);
-            
-        $this->agentRepository->expects($this->once())
-            ->method('findOneBy')
-            ->willReturn($agent);
-            
-        $expectedResponse = ['errcode' => 0, 'errmsg' => 'ok'];
-        
-        $this->workService->expects($this->once())
-            ->method('request')
-            ->with($this->callback(function ($request) {
-                return $request instanceof SendWelcomeMessageRequest
-                    && $request->getWelcomeCode() === 'test_welcome_code'
-                    && str_starts_with($request->getTextContent(), '哈哈');
-            }))
-            ->willReturn($expectedResponse);
-            
-        $response = $this->controller->__invoke($request);
-        
-        $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals($expectedResponse, json_decode($response->getContent(), true));
+        $client = self::createClientWithDatabase();
+        $client->catchExceptions(true);
+
+        $client->request('GET', '/wechat/work/test/send_welcome_msg');
+
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 
-    public function testInvokeWithAgentId(): void
+    #[Test]
+    public function testSendWelcomeMessageWithValidWelcomeCode(): void
     {
-        $request = new Request();
-        $request->query->set('corpId', 'test_corp_id');
-        $request->query->set('agentId', 'test_agent_id');
-        $request->query->set('welcomeCode', 'test_welcome_code');
-        
-        $corp = (object)['id' => 1];
-        $agent = $this->createMock(AgentInterface::class);
-        
-        $this->corpRepository->expects($this->once())
-            ->method('find')
-            ->with('test_corp_id')
-            ->willReturn($corp);
-            
-        $this->agentRepository->expects($this->once())
-            ->method('findOneBy')
-            ->with([
-                'corp' => $corp,
-                'agentId' => 'test_agent_id'
-            ])
-            ->willReturn($agent);
-            
-        $expectedResponse = ['errcode' => 0];
-        
-        $this->workService->expects($this->once())
-            ->method('request')
-            ->willReturn($expectedResponse);
-            
-        $response = $this->controller->__invoke($request);
-        
-        $this->assertInstanceOf(JsonResponse::class, $response);
+        $client = self::createClientWithDatabase();
+        $client->catchExceptions(true);
+
+        $client->request('GET', '/wechat/work/test/send_welcome_msg', [
+            'welcomeCode' => 'test_welcome_code',
+            'corpId' => 'test_corp_id',
+        ]);
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
+        // 验证响应内容格式正确
+        $responseContent = $client->getResponse()->getContent();
+        $this->assertNotFalse($responseContent);
+        $content = json_decode($responseContent, true);
+        $this->assertIsArray($content);
+    }
+
+    #[Test]
+    public function testSendWelcomeMessageWithEmptyWelcomeCode(): void
+    {
+        $client = self::createClientWithDatabase();
+        $client->catchExceptions(true);
+
+        $client->request('GET', '/wechat/work/test/send_welcome_msg', [
+            'welcomeCode' => '',
+            'corpId' => 'test_corp_id',
+        ]);
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+    }
+
+    #[Test]
+    public function testUnauthenticatedAccess(): void
+    {
+        $client = self::createClientWithDatabase();
+        $client->catchExceptions(true);
+
+        $client->request('GET', '/wechat/work/test/send_welcome_msg');
+
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
     }
 }

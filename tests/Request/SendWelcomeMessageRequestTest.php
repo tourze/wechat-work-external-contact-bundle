@@ -2,183 +2,206 @@
 
 namespace WechatWorkExternalContactBundle\Tests\Request;
 
-use HttpClientBundle\Request\ApiRequest;
-use PHPUnit\Framework\TestCase;
+use HttpClientBundle\Request\RequestInterface;
+use HttpClientBundle\Tests\Request\RequestTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\WechatWorkContracts\AgentInterface;
 use WechatWorkExternalContactBundle\Request\Attachment\BaseAttachment;
 use WechatWorkExternalContactBundle\Request\SendWelcomeMessageRequest;
 
 /**
  * SendWelcomeMessageRequest 测试
+ *
+ * @internal
  */
-class SendWelcomeMessageRequestTest extends TestCase
+#[CoversClass(SendWelcomeMessageRequest::class)]
+final class SendWelcomeMessageRequestTest extends RequestTestCase
 {
-    public function test_inheritance(): void
+    private SendWelcomeMessageRequest $request;
+
+    protected function setUp(): void
     {
-        // 测试继承关系
-        $request = new SendWelcomeMessageRequest();
-        $this->assertInstanceOf(ApiRequest::class, $request);
+        parent::setUp();
+        $this->request = new SendWelcomeMessageRequest();
     }
 
-    public function test_usesAgentAwareTrait(): void
+    public function testInheritance(): void
+    {
+        // 测试基本功能
+        $this->assertNotNull($this->request);
+        $this->assertSame('/cgi-bin/externalcontact/send_welcome_msg', $this->request->getRequestPath());
+    }
+
+    public function testUsesAgentAwareTrait(): void
     {
         // 测试使用AgentAware trait
-        $request = new SendWelcomeMessageRequest();
+        // 测试默认值
+        $this->assertNull($this->request->getAgent());
+
+        // 测试设置和获取agent
+        $agent = $this->createMock(AgentInterface::class);
+        $this->request->setAgent($agent);
+        $this->assertSame($agent, $this->request->getAgent());
+
+        // 测试设置null
+        $this->request->setAgent(null);
+        $this->assertNull($this->request->getAgent());
+
+        // 测试多次设置
+        $agent2 = $this->createMock(AgentInterface::class);
+        $this->request->setAgent($agent2);
+        $this->assertSame($agent2, $this->request->getAgent());
+        $this->assertNotSame($agent, $this->request->getAgent());
     }
 
-    public function test_getRequestPath(): void
+    public function testGetRequestPath(): void
     {
         // 测试请求路径
-        $request = new SendWelcomeMessageRequest();
-        $this->assertSame('/cgi-bin/externalcontact/send_welcome_msg', $request->getRequestPath());
+        $this->assertSame('/cgi-bin/externalcontact/send_welcome_msg', $this->request->getRequestPath());
     }
 
-    public function test_welcomeCode_setterAndGetter(): void
+    public function testWelcomeCodeSetterAndGetter(): void
     {
         // 测试欢迎码设置和获取
-        $request = new SendWelcomeMessageRequest();
         $welcomeCode = 'welcome_code_123456';
 
-        $request->setWelcomeCode($welcomeCode);
-        $this->assertSame($welcomeCode, $request->getWelcomeCode());
+        $this->request->setWelcomeCode($welcomeCode);
+        $this->assertSame($welcomeCode, $this->request->getWelcomeCode());
     }
 
-    public function test_welcomeCode_withSpecialCharacters(): void
+    public function testWelcomeCodeWithSpecialCharacters(): void
     {
         // 测试特殊字符欢迎码
-        $request = new SendWelcomeMessageRequest();
         $specialCode = 'welcome_abc-123_test@domain.com';
-        $request->setWelcomeCode($specialCode);
+        $this->request->setWelcomeCode($specialCode);
 
-        $this->assertSame($specialCode, $request->getWelcomeCode());
+        $this->assertSame($specialCode, $this->request->getWelcomeCode());
     }
 
-    public function test_welcomeCode_withLongString(): void
+    public function testWelcomeCodeWithLongString(): void
     {
         // 测试长字符串欢迎码
-        $request = new SendWelcomeMessageRequest();
         $longCode = str_repeat('a', 255);
-        $request->setWelcomeCode($longCode);
+        $this->request->setWelcomeCode($longCode);
 
-        $this->assertSame($longCode, $request->getWelcomeCode());
+        $this->assertSame($longCode, $this->request->getWelcomeCode());
     }
 
-    public function test_textContent_setterAndGetter(): void
+    public function testTextContentSetterAndGetter(): void
     {
         // 测试文本内容设置和获取
-        $request = new SendWelcomeMessageRequest();
         $textContent = '欢迎加入我们的企业！';
 
-        $request->setTextContent($textContent);
-        $this->assertSame($textContent, $request->getTextContent());
+        $this->request->setTextContent($textContent);
+        $this->assertSame($textContent, $this->request->getTextContent());
     }
 
-    public function test_textContent_withNull(): void
+    public function testTextContentWithNull(): void
     {
         // 测试null文本内容
-        $request = new SendWelcomeMessageRequest();
-        $request->setTextContent(null);
+        $this->request->setTextContent(null);
 
-        $this->assertNull($request->getTextContent());
+        $this->assertNull($this->request->getTextContent());
     }
 
-    public function test_textContent_withEmptyString(): void
+    public function testTextContentWithEmptyString(): void
     {
         // 测试空字符串文本内容
-        $request = new SendWelcomeMessageRequest();
-        $request->setTextContent('');
+        $this->request->setTextContent('');
 
-        $this->assertSame('', $request->getTextContent());
+        $this->assertSame('', $this->request->getTextContent());
     }
 
-    public function test_textContent_withMaxLength(): void
+    public function testTextContentWithMaxLength(): void
     {
         // 测试最大长度文本内容（4000字节）
-        $request = new SendWelcomeMessageRequest();
         $maxContent = str_repeat('你好', 1000); // 每个中文字符3字节，约3000字节
-        $request->setTextContent($maxContent);
+        $this->request->setTextContent($maxContent);
 
-        $this->assertSame($maxContent, $request->getTextContent());
+        $this->assertSame($maxContent, $this->request->getTextContent());
     }
 
-    public function test_attachments_setterAndGetter(): void
+    public function testAttachmentsSetterAndGetter(): void
     {
         // 测试附件设置和获取
-        $request = new SendWelcomeMessageRequest();
-
         // 创建模拟附件
         $attachment1 = $this->createMockAttachment(['type' => 'image', 'media_id' => 'media123']);
         $attachment2 = $this->createMockAttachment(['type' => 'file', 'media_id' => 'file456']);
         $attachments = [$attachment1, $attachment2];
 
-        $request->setAttachments($attachments);
-        $this->assertSame($attachments, $request->getAttachments());
+        $this->request->setAttachments($attachments);
+        $this->assertSame($attachments, $this->request->getAttachments());
     }
 
-    public function test_attachments_withNull(): void
+    public function testAttachmentsWithNull(): void
     {
         // 测试null附件
-        $request = new SendWelcomeMessageRequest();
-        $request->setAttachments(null);
+        $this->request->setAttachments(null);
 
-        $this->assertNull($request->getAttachments());
+        $this->assertNull($this->request->getAttachments());
     }
 
-    public function test_attachments_withEmptyArray(): void
+    public function testAttachmentsWithEmptyArray(): void
     {
         // 测试空数组附件
-        $request = new SendWelcomeMessageRequest();
-        $request->setAttachments([]);
+        $this->request->setAttachments([]);
 
-        $this->assertSame([], $request->getAttachments());
+        $this->assertSame([], $this->request->getAttachments());
     }
 
-    public function test_defaultValues(): void
+    public function testDefaultValues(): void
     {
         // 测试默认值
-        $request = new SendWelcomeMessageRequest();
-
-        $this->assertNull($request->getTextContent());
-        $this->assertNull($request->getAttachments());
+        $this->assertNull($this->request->getTextContent());
+        $this->assertNull($this->request->getAttachments());
     }
 
-    public function test_getRequestOptions_withMinimalParams(): void
+    public function testGetRequestOptionsWithMinimalParams(): void
     {
         // 测试最小参数的请求选项
-        $request = new SendWelcomeMessageRequest();
         $welcomeCode = 'minimal_welcome_code';
-        $request->setWelcomeCode($welcomeCode);
+        $this->request->setWelcomeCode($welcomeCode);
 
-        $options = $request->getRequestOptions();
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
         $this->assertArrayHasKey('json', $options);
-        $this->assertArrayHasKey('welcome_code', $options['json']);
-        $this->assertSame($welcomeCode, $options['json']['welcome_code']);
-        $this->assertArrayNotHasKey('text', $options['json']);
-        $this->assertArrayNotHasKey('attachments', $options['json']);
+
+        $jsonData = $options['json'];
+        $this->assertIsArray($jsonData);
+        $this->assertArrayHasKey('welcome_code', $jsonData);
+        $this->assertSame($welcomeCode, $jsonData['welcome_code']);
+        $this->assertArrayNotHasKey('text', $jsonData);
+        $this->assertArrayNotHasKey('attachments', $jsonData);
     }
 
-    public function test_getRequestOptions_withTextContent(): void
+    public function testGetRequestOptionsWithTextContent(): void
     {
         // 测试带文本内容的请求选项
-        $request = new SendWelcomeMessageRequest();
         $welcomeCode = 'text_welcome_code';
         $textContent = '感谢您的加入！';
 
-        $request->setWelcomeCode($welcomeCode);
-        $request->setTextContent($textContent);
+        $this->request->setWelcomeCode($welcomeCode);
+        $this->request->setTextContent($textContent);
 
-        $options = $request->getRequestOptions();
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
 
-        $this->assertArrayHasKey('welcome_code', $options['json']);
-        $this->assertArrayHasKey('text', $options['json']);
-        $this->assertSame($welcomeCode, $options['json']['welcome_code']);
-        $this->assertArrayHasKey('content', $options['json']['text']);
-        $this->assertSame($textContent, $options['json']['text']['content']);
+        $jsonData = $options['json'];
+        $this->assertIsArray($jsonData);
+        $this->assertArrayHasKey('welcome_code', $jsonData);
+        $this->assertArrayHasKey('text', $jsonData);
+        $this->assertSame($welcomeCode, $jsonData['welcome_code']);
+
+        $textData = $jsonData['text'];
+        $this->assertIsArray($textData);
+        $this->assertArrayHasKey('content', $textData);
+        $this->assertSame($textContent, $textData['content']);
     }
 
-    public function test_getRequestOptions_withAttachments(): void
+    public function testGetRequestOptionsWithAttachments(): void
     {
         // 测试带附件的请求选项
-        $request = new SendWelcomeMessageRequest();
         $welcomeCode = 'attachment_welcome_code';
 
         $attachment1Data = ['type' => 'image', 'media_id' => 'image123'];
@@ -187,164 +210,211 @@ class SendWelcomeMessageRequestTest extends TestCase
         $attachment1 = $this->createMockAttachment($attachment1Data);
         $attachment2 = $this->createMockAttachment($attachment2Data);
 
-        $request->setWelcomeCode($welcomeCode);
-        $request->setAttachments([$attachment1, $attachment2]);
+        $this->request->setWelcomeCode($welcomeCode);
+        $this->request->setAttachments([$attachment1, $attachment2]);
 
-        $options = $request->getRequestOptions();
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
 
-        $this->assertArrayHasKey('welcome_code', $options['json']);
-        $this->assertArrayHasKey('attachments', $options['json']);
-        $this->assertSame($welcomeCode, $options['json']['welcome_code']);
-        $this->assertCount(2, $options['json']['attachments']);
-        $this->assertSame($attachment1Data, $options['json']['attachments'][0]);
-        $this->assertSame($attachment2Data, $options['json']['attachments'][1]);
+        $jsonData = $options['json'];
+        $this->assertIsArray($jsonData);
+        $this->assertArrayHasKey('welcome_code', $jsonData);
+        $this->assertArrayHasKey('attachments', $jsonData);
+        $this->assertSame($welcomeCode, $jsonData['welcome_code']);
+
+        $attachmentsData = $jsonData['attachments'];
+        $this->assertIsArray($attachmentsData);
+        $this->assertCount(2, $attachmentsData);
+        $this->assertSame($attachment1Data, $attachmentsData[0]);
+        $this->assertSame($attachment2Data, $attachmentsData[1]);
     }
 
-    public function test_getRequestOptions_withAllParams(): void
+    public function testGetRequestOptionsWithAllParams(): void
     {
         // 测试所有参数的请求选项
-        $request = new SendWelcomeMessageRequest();
         $welcomeCode = 'full_welcome_code';
         $textContent = '欢迎加入团队！期待与您的合作。';
 
         $attachmentData = ['type' => 'miniprogram', 'appid' => 'miniapp123'];
         $attachment = $this->createMockAttachment($attachmentData);
 
-        $request->setWelcomeCode($welcomeCode);
-        $request->setTextContent($textContent);
-        $request->setAttachments([$attachment]);
+        $this->request->setWelcomeCode($welcomeCode);
+        $this->request->setTextContent($textContent);
+        $this->request->setAttachments([$attachment]);
 
-        $options = $request->getRequestOptions();
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
 
-        $this->assertArrayHasKey('welcome_code', $options['json']);
-        $this->assertArrayHasKey('text', $options['json']);
-        $this->assertArrayHasKey('attachments', $options['json']);
+        $jsonData = $options['json'];
+        $this->assertIsArray($jsonData);
+        $this->assertArrayHasKey('welcome_code', $jsonData);
+        $this->assertArrayHasKey('text', $jsonData);
+        $this->assertArrayHasKey('attachments', $jsonData);
 
-        $this->assertSame($welcomeCode, $options['json']['welcome_code']);
-        $this->assertSame($textContent, $options['json']['text']['content']);
-        $this->assertCount(1, $options['json']['attachments']);
-        $this->assertSame($attachmentData, $options['json']['attachments'][0]);
+        $this->assertSame($welcomeCode, $jsonData['welcome_code']);
+
+        $textData = $jsonData['text'];
+        $this->assertIsArray($textData);
+        $this->assertSame($textContent, $textData['content']);
+
+        $attachmentsData = $jsonData['attachments'];
+        $this->assertIsArray($attachmentsData);
+        $this->assertCount(1, $attachmentsData);
+        $this->assertSame($attachmentData, $attachmentsData[0]);
     }
 
-    public function test_getRequestOptions_withNullTextContent(): void
+    public function testGetRequestOptionsWithNullTextContent(): void
     {
         // 测试null文本内容的请求选项
-        $request = new SendWelcomeMessageRequest();
-        $request->setWelcomeCode('test_code');
-        $request->setTextContent(null);
+        $this->request->setWelcomeCode('test_code');
+        $this->request->setTextContent(null);
 
-        $options = $request->getRequestOptions();
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
 
-        $this->assertArrayNotHasKey('text', $options['json']);
+        $jsonData = $options['json'];
+        $this->assertIsArray($jsonData);
+        $this->assertArrayNotHasKey('text', $jsonData);
     }
 
-    public function test_getRequestOptions_withEmptyTextContent(): void
+    public function testGetRequestOptionsWithEmptyTextContent(): void
     {
         // 测试空文本内容的请求选项
-        $request = new SendWelcomeMessageRequest();
-        $request->setWelcomeCode('test_code');
-        $request->setTextContent('');
+        $this->request->setWelcomeCode('test_code');
+        $this->request->setTextContent('');
 
-        $options = $request->getRequestOptions();
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
 
-        $this->assertArrayHasKey('text', $options['json']);
-        $this->assertSame('', $options['json']['text']['content']);
+        $jsonData = $options['json'];
+        $this->assertIsArray($jsonData);
+        $this->assertArrayHasKey('text', $jsonData);
+
+        $textData = $jsonData['text'];
+        $this->assertIsArray($textData);
+        $this->assertArrayHasKey('content', $textData);
+        $this->assertSame('', $textData['content']);
     }
 
-    public function test_getRequestOptions_withNullAttachments(): void
+    public function testGetRequestOptionsWithNullAttachments(): void
     {
         // 测试null附件的请求选项
-        $request = new SendWelcomeMessageRequest();
-        $request->setWelcomeCode('test_code');
-        $request->setAttachments(null);
+        $this->request->setWelcomeCode('test_code');
+        $this->request->setAttachments(null);
 
-        $options = $request->getRequestOptions();
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
 
-        $this->assertArrayNotHasKey('attachments', $options['json']);
+        $jsonData = $options['json'];
+        $this->assertIsArray($jsonData);
+        $this->assertArrayNotHasKey('attachments', $jsonData);
     }
 
-    public function test_getRequestOptions_withEmptyAttachments(): void
+    public function testGetRequestOptionsWithEmptyAttachments(): void
     {
         // 测试空附件的请求选项
-        $request = new SendWelcomeMessageRequest();
-        $request->setWelcomeCode('test_code');
-        $request->setAttachments([]);
+        $this->request->setWelcomeCode('test_code');
+        $this->request->setAttachments([]);
 
-        $options = $request->getRequestOptions();
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
 
-        $this->assertArrayHasKey('attachments', $options['json']);
-        $this->assertSame([], $options['json']['attachments']);
+        $jsonData = $options['json'];
+        $this->assertIsArray($jsonData);
+        $this->assertArrayHasKey('attachments', $jsonData);
+        $this->assertSame([], $jsonData['attachments']);
     }
 
-    public function test_getRequestOptions_structure(): void
+    public function testGetRequestOptionsStructure(): void
     {
         // 测试请求选项结构
-        $request = new SendWelcomeMessageRequest();
-        $request->setWelcomeCode('structure_test_code');
-        $request->setTextContent('测试文本');
+        $this->request->setWelcomeCode('structure_test_code');
+        $this->request->setTextContent('测试文本');
 
-        $options = $request->getRequestOptions();
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
         $this->assertCount(1, $options);
         $this->assertArrayHasKey('json', $options);
-        $this->assertGreaterThanOrEqual(2, count($options['json']));
+
+        $jsonData = $options['json'];
+        $this->assertIsArray($jsonData);
+        $this->assertGreaterThanOrEqual(2, count($jsonData));
     }
 
-    public function test_inheritsFromApiRequest(): void
+    public function testInheritsFromApiRequest(): void
     {
         // 测试继承自ApiRequest的核心方法
-        $request = new SendWelcomeMessageRequest();
 
-
-        // 验证是ApiRequest的实例
-        $this->assertInstanceOf(ApiRequest::class, $request);
+        // 验证核心功能
+        $this->assertNotNull($this->request);
+        $this->assertSame('/cgi-bin/externalcontact/send_welcome_msg', $this->request->getRequestPath());
     }
 
-    public function test_businessScenario_basicWelcomeMessage(): void
+    public function testBusinessScenarioBasicWelcomeMessage(): void
     {
         // 测试业务场景：基本欢迎消息
-        $request = new SendWelcomeMessageRequest();
         $welcomeCode = 'new_customer_welcome_2024';
         $textContent = '欢迎加入我们的客户群！有任何问题请随时联系我们。';
 
-        $request->setWelcomeCode($welcomeCode);
-        $request->setTextContent($textContent);
+        $this->request->setWelcomeCode($welcomeCode);
+        $this->request->setTextContent($textContent);
 
-        $this->assertSame('/cgi-bin/externalcontact/send_welcome_msg', $request->getRequestPath());
-        $this->assertSame($welcomeCode, $request->getWelcomeCode());
-        $this->assertSame($textContent, $request->getTextContent());
+        $this->assertSame('/cgi-bin/externalcontact/send_welcome_msg', $this->request->getRequestPath());
+        $this->assertSame($welcomeCode, $this->request->getWelcomeCode());
+        $this->assertSame($textContent, $this->request->getTextContent());
 
-        $options = $request->getRequestOptions();
-        $this->assertSame($welcomeCode, $options['json']['welcome_code']);
-        $this->assertSame($textContent, $options['json']['text']['content']);
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
+
+        $jsonData = $options['json'];
+        $this->assertIsArray($jsonData);
+        $this->assertSame($welcomeCode, $jsonData['welcome_code']);
+
+        $textData = $jsonData['text'];
+        $this->assertIsArray($textData);
+        $this->assertSame($textContent, $textData['content']);
     }
 
-    public function test_businessScenario_welcomeWithImage(): void
+    public function testBusinessScenarioWelcomeWithImage(): void
     {
         // 测试业务场景：带图片的欢迎消息
-        $request = new SendWelcomeMessageRequest();
         $welcomeCode = 'image_welcome_code';
         $textContent = '欢迎加入我们！';
 
         $imageAttachmentData = ['type' => 'image', 'media_id' => 'welcome_image_media_id'];
         $imageAttachment = $this->createMockAttachment($imageAttachmentData);
 
-        $request->setWelcomeCode($welcomeCode);
-        $request->setTextContent($textContent);
-        $request->setAttachments([$imageAttachment]);
+        $this->request->setWelcomeCode($welcomeCode);
+        $this->request->setTextContent($textContent);
+        $this->request->setAttachments([$imageAttachment]);
 
-        $options = $request->getRequestOptions();
-        $this->assertArrayHasKey('attachments', $options['json']);
-        $this->assertCount(1, $options['json']['attachments']);
-        $this->assertSame($imageAttachmentData, $options['json']['attachments'][0]);
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
+
+        $jsonData = $options['json'];
+        $this->assertIsArray($jsonData);
+        $this->assertArrayHasKey('attachments', $jsonData);
+
+        $attachmentsData = $jsonData['attachments'];
+        $this->assertIsArray($attachmentsData);
+        $this->assertCount(1, $attachmentsData);
+        $this->assertSame($imageAttachmentData, $attachmentsData[0]);
 
         // 验证API路径符合发送欢迎消息要求
-        $this->assertStringContainsString('send_welcome_msg', $request->getRequestPath());
+        $this->assertStringContainsString('send_welcome_msg', $this->request->getRequestPath());
     }
 
-    public function test_businessScenario_welcomeWithMultipleAttachments(): void
+    public function testBusinessScenarioWelcomeWithMultipleAttachments(): void
     {
         // 测试业务场景：带多个附件的欢迎消息
-        $request = new SendWelcomeMessageRequest();
         $welcomeCode = 'multi_attachment_welcome';
         $textContent = '欢迎！以下是一些有用的资料：';
 
@@ -356,255 +426,341 @@ class SendWelcomeMessageRequestTest extends TestCase
         $linkAttachment = $this->createMockAttachment($linkData);
         $miniprogramAttachment = $this->createMockAttachment($miniprogramData);
 
-        $request->setWelcomeCode($welcomeCode);
-        $request->setTextContent($textContent);
-        $request->setAttachments([$fileAttachment, $linkAttachment, $miniprogramAttachment]);
+        $this->request->setWelcomeCode($welcomeCode);
+        $this->request->setTextContent($textContent);
+        $this->request->setAttachments([$fileAttachment, $linkAttachment, $miniprogramAttachment]);
 
-        $this->assertCount(3, $request->getAttachments());
+        $attachments = $this->request->getAttachments();
+        $this->assertNotNull($attachments);
+        $this->assertCount(3, $attachments);
 
-        $options = $request->getRequestOptions();
-        $this->assertCount(3, $options['json']['attachments']);
-        $this->assertSame($fileData, $options['json']['attachments'][0]);
-        $this->assertSame($linkData, $options['json']['attachments'][1]);
-        $this->assertSame($miniprogramData, $options['json']['attachments'][2]);
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
+
+        $jsonData = $options['json'];
+        $this->assertIsArray($jsonData);
+
+        $attachmentsData = $jsonData['attachments'];
+        $this->assertIsArray($attachmentsData);
+        $this->assertCount(3, $attachmentsData);
+        $this->assertSame($fileData, $attachmentsData[0]);
+        $this->assertSame($linkData, $attachmentsData[1]);
+        $this->assertSame($miniprogramData, $attachmentsData[2]);
     }
 
-    public function test_businessScenario_onlyWelcomeCode(): void
+    public function testBusinessScenarioOnlyWelcomeCode(): void
     {
         // 测试业务场景：仅有欢迎码（无内容和附件）
-        $request = new SendWelcomeMessageRequest();
         $welcomeCode = 'minimal_welcome_scenario';
 
-        $request->setWelcomeCode($welcomeCode);
+        $this->request->setWelcomeCode($welcomeCode);
 
-        $this->assertSame($welcomeCode, $request->getWelcomeCode());
-        $this->assertNull($request->getTextContent());
-        $this->assertNull($request->getAttachments());
+        $this->assertSame($welcomeCode, $this->request->getWelcomeCode());
+        $this->assertNull($this->request->getTextContent());
+        $this->assertNull($this->request->getAttachments());
 
-        $options = $request->getRequestOptions();
-        $this->assertArrayHasKey('welcome_code', $options['json']);
-        $this->assertArrayNotHasKey('text', $options['json']);
-        $this->assertArrayNotHasKey('attachments', $options['json']);
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
+
+        $jsonData = $options['json'];
+        $this->assertIsArray($jsonData);
+        $this->assertArrayHasKey('welcome_code', $jsonData);
+        $this->assertArrayNotHasKey('text', $jsonData);
+        $this->assertArrayNotHasKey('attachments', $jsonData);
     }
 
-    public function test_businessScenario_maxAttachments(): void
+    public function testBusinessScenarioMaxAttachments(): void
     {
         // 测试业务场景：最大附件数量（9个）
-        $request = new SendWelcomeMessageRequest();
         $welcomeCode = 'max_attachments_welcome';
 
         $attachments = [];
-        for ($i = 1; $i <= 9; $i++) {
+        for ($i = 1; $i <= 9; ++$i) {
             $attachmentData = ['type' => 'image', 'media_id' => "media_id_{$i}"];
             $attachments[] = $this->createMockAttachment($attachmentData);
         }
 
-        $request->setWelcomeCode($welcomeCode);
-        $request->setAttachments($attachments);
+        $this->request->setWelcomeCode($welcomeCode);
+        $this->request->setAttachments($attachments);
 
-        $this->assertCount(9, $request->getAttachments());
+        $attachments = $this->request->getAttachments();
+        $this->assertNotNull($attachments);
+        $this->assertCount(9, $attachments);
 
-        $options = $request->getRequestOptions();
-        $this->assertCount(9, $options['json']['attachments']);
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
+
+        $jsonData = $options['json'];
+        $this->assertIsArray($jsonData);
+
+        $attachmentsData = $jsonData['attachments'];
+        $this->assertIsArray($attachmentsData);
+        $this->assertCount(9, $attachmentsData);
 
         // 验证使用POST方法符合企业微信API规范
-        $this->assertStringContainsString('externalcontact', $request->getRequestPath());
+        $this->assertStringContainsString('externalcontact', $this->request->getRequestPath());
     }
 
-    public function test_multipleSetCalls(): void
+    public function testMultipleSetCalls(): void
     {
         // 测试多次设置值
-        $request = new SendWelcomeMessageRequest();
 
         $firstCode = 'first_welcome_code';
         $firstText = 'First welcome text';
         $firstAttachment = $this->createMockAttachment(['type' => 'image', 'media_id' => 'first_media']);
 
-        $request->setWelcomeCode($firstCode);
-        $request->setTextContent($firstText);
-        $request->setAttachments([$firstAttachment]);
+        $this->request->setWelcomeCode($firstCode);
+        $this->request->setTextContent($firstText);
+        $this->request->setAttachments([$firstAttachment]);
 
-        $this->assertSame($firstCode, $request->getWelcomeCode());
-        $this->assertSame($firstText, $request->getTextContent());
-        $this->assertCount(1, $request->getAttachments());
+        $this->assertSame($firstCode, $this->request->getWelcomeCode());
+        $this->assertSame($firstText, $this->request->getTextContent());
+        $attachments = $this->request->getAttachments();
+        $this->assertIsArray($attachments);
+        $this->assertCount(1, $attachments);
 
         // 重新设置
         $secondCode = 'second_welcome_code';
         $secondText = 'Second welcome text';
         $secondAttachment = $this->createMockAttachment(['type' => 'file', 'media_id' => 'second_media']);
 
-        $request->setWelcomeCode($secondCode);
-        $request->setTextContent($secondText);
-        $request->setAttachments([$secondAttachment]);
+        $this->request->setWelcomeCode($secondCode);
+        $this->request->setTextContent($secondText);
+        $this->request->setAttachments([$secondAttachment]);
 
-        $this->assertSame($secondCode, $request->getWelcomeCode());
-        $this->assertSame($secondText, $request->getTextContent());
-        $this->assertCount(1, $request->getAttachments());
+        $this->assertSame($secondCode, $this->request->getWelcomeCode());
+        $this->assertSame($secondText, $this->request->getTextContent());
+        $attachments = $this->request->getAttachments();
+        $this->assertIsArray($attachments);
+        $this->assertCount(1, $attachments);
 
-        $options = $request->getRequestOptions();
-        $this->assertSame($secondCode, $options['json']['welcome_code']);
-        $this->assertSame($secondText, $options['json']['text']['content']);
-        $this->assertCount(1, $options['json']['attachments']);
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertIsArray($options);
+        $this->assertArrayHasKey('json', $options);
+
+        $jsonData = $options['json'];
+        $this->assertIsArray($jsonData);
+        $this->assertSame($secondCode, $jsonData['welcome_code']);
+
+        $textData = $jsonData['text'];
+        $this->assertIsArray($textData);
+        $this->assertSame($secondText, $textData['content']);
+
+        $attachmentsData = $jsonData['attachments'];
+        $this->assertIsArray($attachmentsData);
+        $this->assertCount(1, $attachmentsData);
     }
 
-    public function test_resetToNull(): void
+    public function testResetToNull(): void
     {
         // 测试重置为null
-        $request = new SendWelcomeMessageRequest();
 
-        $request->setWelcomeCode('initial_code');
-        $request->setTextContent('initial text');
-        $request->setAttachments([
-            $this->createMockAttachment(['type' => 'image', 'media_id' => 'initial_media'])
+        $this->request->setWelcomeCode('initial_code');
+        $this->request->setTextContent('initial text');
+        $this->request->setAttachments([
+            $this->createMockAttachment(['type' => 'image', 'media_id' => 'initial_media']),
         ]);
 
         // 重置可null的属性
-        $request->setTextContent(null);
-        $request->setAttachments(null);
+        $this->request->setTextContent(null);
+        $this->request->setAttachments(null);
 
-        $this->assertSame('initial_code', $request->getWelcomeCode()); // welcomeCode不能为null
-        $this->assertNull($request->getTextContent());
-        $this->assertNull($request->getAttachments());
+        $this->assertSame('initial_code', $this->request->getWelcomeCode()); // welcomeCode不能为null
+        $this->assertNull($this->request->getTextContent());
+        $this->assertNull($this->request->getAttachments());
 
-        $options = $request->getRequestOptions();
-        $this->assertArrayHasKey('welcome_code', $options['json']); // welcomeCode仍然存在
-        $this->assertArrayNotHasKey('text', $options['json']);
-        $this->assertArrayNotHasKey('attachments', $options['json']);
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
+
+        $jsonData = $options['json'];
+        $this->assertIsArray($jsonData);
+        $this->assertArrayHasKey('welcome_code', $jsonData); // welcomeCode仍然存在
+        $this->assertArrayNotHasKey('text', $jsonData);
+        $this->assertArrayNotHasKey('attachments', $jsonData);
     }
 
-    public function test_requestOptionsDoesNotModifyOriginalData(): void
+    public function testRequestOptionsDoesNotModifyOriginalData(): void
     {
         // 测试获取请求选项不会修改原始数据
-        $request = new SendWelcomeMessageRequest();
         $originalCode = 'original_welcome_code';
         $originalText = 'original text content';
         $originalAttachment = $this->createMockAttachment(['type' => 'image', 'media_id' => 'original_media']);
 
-        $request->setWelcomeCode($originalCode);
-        $request->setTextContent($originalText);
-        $request->setAttachments([$originalAttachment]);
+        $this->request->setWelcomeCode($originalCode);
+        $this->request->setTextContent($originalText);
+        $this->request->setAttachments([$originalAttachment]);
 
-        $options1 = $request->getRequestOptions();
-        $options2 = $request->getRequestOptions();
+        $options1 = $this->request->getRequestOptions();
+        $options2 = $this->request->getRequestOptions();
 
         // 修改返回的数组不应影响原始数据
+        $this->assertIsArray($options1);
+        $this->assertArrayHasKey('json', $options1);
+        $this->assertIsArray($options1['json']);
         $options1['json']['welcome_code'] = 'modified_code';
+        $this->assertIsArray($options1['json']['text']);
         $options1['json']['text']['content'] = 'modified text';
+        $this->assertIsArray($options1['json']['attachments']);
         $options1['json']['attachments'][0] = ['modified' => 'attachment'];
 
-        $this->assertSame($originalCode, $request->getWelcomeCode());
-        $this->assertSame($originalText, $request->getTextContent());
-        $this->assertCount(1, $request->getAttachments());
+        $this->assertSame($originalCode, $this->request->getWelcomeCode());
+        $this->assertSame($originalText, $this->request->getTextContent());
+        $attachments = $this->request->getAttachments();
+        $this->assertNotNull($attachments);
+        $this->assertCount(1, $attachments);
 
-        $this->assertSame($originalCode, $options2['json']['welcome_code']);
-        $this->assertSame($originalText, $options2['json']['text']['content']);
-        $this->assertCount(1, $options2['json']['attachments']);
+        $this->assertNotNull($options2);
+        $this->assertArrayHasKey('json', $options2);
+
+        $jsonData2 = $options2['json'];
+        $this->assertIsArray($jsonData2);
+        $this->assertSame($originalCode, $jsonData2['welcome_code']);
+
+        $textData2 = $jsonData2['text'];
+        $this->assertIsArray($textData2);
+        $this->assertSame($originalText, $textData2['content']);
+
+        $attachmentsData2 = $jsonData2['attachments'];
+        $this->assertIsArray($attachmentsData2);
+        $this->assertCount(1, $attachmentsData2);
     }
 
-    public function test_immutableBehavior(): void
+    public function testImmutableBehavior(): void
     {
         // 测试不可变行为
-        $request = new SendWelcomeMessageRequest();
         $welcomeCode = 'test_welcome_code';
         $textContent = 'test content';
         $attachment = $this->createMockAttachment(['type' => 'test', 'media_id' => 'test_media']);
 
-        $request->setWelcomeCode($welcomeCode);
-        $request->setTextContent($textContent);
-        $request->setAttachments([$attachment]);
+        $this->request->setWelcomeCode($welcomeCode);
+        $this->request->setTextContent($textContent);
+        $this->request->setAttachments([$attachment]);
 
-        $options = $request->getRequestOptions();
+        $options = $this->request->getRequestOptions();
 
         // 修改选项不应影响request对象
+        $this->assertIsArray($options);
+        $this->assertArrayHasKey('json', $options);
+        $this->assertIsArray($options['json']);
         $options['json']['welcome_code'] = 'changed_code';
+        $this->assertIsArray($options['json']['text']);
         $options['json']['text']['content'] = 'changed content';
+        $this->assertIsArray($options['json']['attachments']);
         $options['json']['attachments'] = [];
         $options['json']['new_param'] = 'new_value';
 
-        $this->assertSame($welcomeCode, $request->getWelcomeCode());
-        $this->assertSame($textContent, $request->getTextContent());
-        $this->assertCount(1, $request->getAttachments());
+        $this->assertSame($welcomeCode, $this->request->getWelcomeCode());
+        $this->assertSame($textContent, $this->request->getTextContent());
+        $attachments = $this->request->getAttachments();
+        $this->assertNotNull($attachments);
+        $this->assertCount(1, $attachments);
 
-        $newOptions = $request->getRequestOptions();
-        $this->assertSame($welcomeCode, $newOptions['json']['welcome_code']);
-        $this->assertSame($textContent, $newOptions['json']['text']['content']);
-        $this->assertCount(1, $newOptions['json']['attachments']);
-        $this->assertArrayNotHasKey('new_param', $newOptions['json']);
+        $newOptions = $this->request->getRequestOptions();
+        $this->assertNotNull($newOptions);
+        $this->assertArrayHasKey('json', $newOptions);
+
+        $newJsonData = $newOptions['json'];
+        $this->assertIsArray($newJsonData);
+        $this->assertSame($welcomeCode, $newJsonData['welcome_code']);
+
+        $newTextData = $newJsonData['text'];
+        $this->assertIsArray($newTextData);
+        $this->assertSame($textContent, $newTextData['content']);
+
+        $newAttachmentsData = $newJsonData['attachments'];
+        $this->assertIsArray($newAttachmentsData);
+        $this->assertCount(1, $newAttachmentsData);
+        $this->assertArrayNotHasKey('new_param', $newJsonData);
     }
 
-    public function test_methodCallsAreIdempotent(): void
+    public function testMethodCallsAreIdempotent(): void
     {
         // 测试方法调用是幂等的
-        $request = new SendWelcomeMessageRequest();
         $welcomeCode = 'idempotent_code';
         $textContent = 'idempotent content';
         $attachment = $this->createMockAttachment(['type' => 'test', 'media_id' => 'idempotent_media']);
 
-        $request->setWelcomeCode($welcomeCode);
-        $request->setTextContent($textContent);
-        $request->setAttachments([$attachment]);
+        $this->request->setWelcomeCode($welcomeCode);
+        $this->request->setTextContent($textContent);
+        $this->request->setAttachments([$attachment]);
 
         // 多次调用应该返回相同结果
-        $path1 = $request->getRequestPath();
-        $path2 = $request->getRequestPath();
+        $path1 = $this->request->getRequestPath();
+        $path2 = $this->request->getRequestPath();
         $this->assertSame($path1, $path2);
 
-        $options1 = $request->getRequestOptions();
-        $options2 = $request->getRequestOptions();
+        $options1 = $this->request->getRequestOptions();
+        $options2 = $this->request->getRequestOptions();
         $this->assertSame($options1, $options2);
 
-        $code1 = $request->getWelcomeCode();
-        $code2 = $request->getWelcomeCode();
+        $code1 = $this->request->getWelcomeCode();
+        $code2 = $this->request->getWelcomeCode();
         $this->assertSame($code1, $code2);
 
-        $text1 = $request->getTextContent();
-        $text2 = $request->getTextContent();
+        $text1 = $this->request->getTextContent();
+        $text2 = $this->request->getTextContent();
         $this->assertSame($text1, $text2);
 
-        $attachments1 = $request->getAttachments();
-        $attachments2 = $request->getAttachments();
+        $attachments1 = $this->request->getAttachments();
+        $attachments2 = $this->request->getAttachments();
         $this->assertSame($attachments1, $attachments2);
     }
 
-    public function test_agentAwareTraitIntegration(): void
+    public function testAgentAwareTraitIntegration(): void
     {
         // 测试AgentAware trait集成
-        $request = new SendWelcomeMessageRequest();
-
-        // 测试agent相关方法存在
 
         // 这些方法应该可以正常调用
+        $this->assertNull($this->request->getAgent());
+
+        // 测试设置和获取agent
+        $agent = $this->createMock(AgentInterface::class);
+        $this->request->setAgent($agent);
+        $this->assertSame($agent, $this->request->getAgent());
+
+        // 测试agent在请求期间持久化
+        $this->assertSame($agent, $this->request->getAgent());
+        $this->assertSame($agent, $this->request->getAgent());
     }
 
-    public function test_requestStructure(): void
+    public function testRequestStructure(): void
     {
         // 测试请求结构
-        $request = new SendWelcomeMessageRequest();
 
         // 验证基本方法
-        $this->assertSame('/cgi-bin/externalcontact/send_welcome_msg', $request->getRequestPath());
+        $this->assertSame('/cgi-bin/externalcontact/send_welcome_msg', $this->request->getRequestPath());
 
         // 设置必要的属性后验证
-        $request->setWelcomeCode('test_welcome_code');
-        $options = $request->getRequestOptions();
+        $this->request->setWelcomeCode('test_welcome_code');
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
         $this->assertIsArray($options);
         $this->assertArrayHasKey('json', $options);
+
+        $jsonData = $options['json'];
+        $this->assertIsArray($jsonData);
     }
 
-    public function test_agentInterfaceImplementation(): void
+    public function testAgentInterfaceImplementation(): void
     {
         // 测试AgentInterface接口实现，移除冗余检查
-        $this->assertTrue(true); // 避免risky test警告
-        $request = new SendWelcomeMessageRequest();
 
         // 验证基本功能
-        $this->assertInstanceOf(SendWelcomeMessageRequest::class, $request);
+        $this->assertNotNull($this->request);
+        $this->assertSame('/cgi-bin/externalcontact/send_welcome_msg', $this->request->getRequestPath());
     }
 
     /**
      * 创建模拟附件对象
+     * @param array<string, mixed> $data
+     * @return BaseAttachment
      */
-    private function createMockAttachment(array $data)
+    private function createMockAttachment(array $data): BaseAttachment
     {
         $mock = $this->createMock(BaseAttachment::class);
         $mock->method('retrievePlainArray')->willReturn($data);

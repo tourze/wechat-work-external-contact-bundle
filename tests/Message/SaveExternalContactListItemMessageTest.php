@@ -2,33 +2,41 @@
 
 namespace WechatWorkExternalContactBundle\Tests\Message;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Tourze\AsyncContracts\AsyncMessageInterface;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 use WechatWorkExternalContactBundle\Message\SaveExternalContactListItemMessage;
 
 /**
  * SaveExternalContactListItemMessage测试
- *
  * 测试关注点：
  * - 消息数据管理
  * - 异步接口实现
  * - 属性访问器
  * - 数据完整性
+ *
+ * @internal
  */
-class SaveExternalContactListItemMessageTest extends TestCase
+#[CoversClass(SaveExternalContactListItemMessage::class)]
+#[RunTestsInSeparateProcesses] final class SaveExternalContactListItemMessageTest extends AbstractIntegrationTestCase
 {
-    private SaveExternalContactListItemMessage $message;
-
-    protected function setUp(): void
+    protected function onSetUp(): void        // 在集成测试中，应该从容器获取服务而不是直接实例化
     {
-        $this->message = new SaveExternalContactListItemMessage();
+        $this->message = self::getService(SaveExternalContactListItemMessage::class);
     }
+
+    private SaveExternalContactListItemMessage $message;
 
     public function testMessageCreation(): void
     {
-        // 测试消息创建
-        $this->assertInstanceOf(SaveExternalContactListItemMessage::class, $this->message);
-        $this->assertInstanceOf(AsyncMessageInterface::class, $this->message);
+        // 测试消息创建和基本功能
+        $this->assertNotNull($this->message);
+
+        // 设置数据后测试获取
+        $testItem = ['test' => 'data'];
+        $this->message->setItem($testItem);
+        $this->assertEquals($testItem, $this->message->getItem());
     }
 
     public function testItemProperty(): void
@@ -40,7 +48,7 @@ class SaveExternalContactListItemMessageTest extends TestCase
             'avatar' => 'https://example.com/avatar.png',
             'type' => 1,
             'gender' => 1,
-            'unionid' => 'union_123'
+            'unionid' => 'union_123',
         ];
 
         $this->message->setItem($item);
@@ -64,8 +72,8 @@ class SaveExternalContactListItemMessageTest extends TestCase
                 'external_corp_name' => '外部公司',
                 'wechat_channels' => [
                     'nickname' => '微信号昵称',
-                    'status' => 1
-                ]
+                    'status' => 1,
+                ],
             ],
             'follow_info' => [
                 [
@@ -75,14 +83,14 @@ class SaveExternalContactListItemMessageTest extends TestCase
                     'createtime' => 1640995200,
                     'tags' => [
                         ['group_name' => '客户类型', 'tag_name' => 'VIP客户'],
-                        ['group_name' => '行业', 'tag_name' => '互联网']
+                        ['group_name' => '行业', 'tag_name' => '互联网'],
                     ],
                     'remark_corp_name' => '备注企业名',
                     'remark_mobiles' => ['13800138000'],
                     'oper_userid' => 'oper_user_1',
-                    'add_way' => 1
-                ]
-            ]
+                    'add_way' => 1,
+                ],
+            ],
         ];
 
         $this->message->setItem($item);
@@ -92,6 +100,7 @@ class SaveExternalContactListItemMessageTest extends TestCase
         $this->assertEquals('ext_user_456', $retrievedItem['external_userid']);
         $this->assertEquals('李四', $retrievedItem['name']);
 
+        $this->assertIsArray($retrievedItem['follow_info']);
         $this->assertCount(1, $retrievedItem['follow_info']);
     }
 
@@ -112,7 +121,7 @@ class SaveExternalContactListItemMessageTest extends TestCase
             'agent_test_123',
             'AGENT_UPPER_CASE',
             'agent-with-dashes',
-            'agent.with.dots'
+            'agent.with.dots',
         ];
 
         foreach ($agentIds as $agentId) {
@@ -135,9 +144,9 @@ class SaveExternalContactListItemMessageTest extends TestCase
                 [
                     'userid' => 'follow_complete_user',
                     'remark' => '完整测试备注',
-                    'createtime' => time()
-                ]
-            ]
+                    'createtime' => time(),
+                ],
+            ],
         ];
 
         $agentId = 'complete_agent_123';
@@ -181,7 +190,7 @@ class SaveExternalContactListItemMessageTest extends TestCase
             'bool_field' => true,
             'null_field' => null,
             'array_field' => ['nested', 'array'],
-            'object_field' => (object)['key' => 'value']
+            'object_field' => (object) ['key' => 'value'],
         ];
 
         $this->message->setItem($item);
@@ -210,8 +219,6 @@ class SaveExternalContactListItemMessageTest extends TestCase
     public function testAsyncMessageInterface(): void
     {
         // 测试异步消息接口实现
-        $this->assertInstanceOf(AsyncMessageInterface::class, $this->message);
-
         // 验证接口方法存在（通过反射）
         $reflection = new \ReflectionClass($this->message);
         $interfaces = $reflection->getInterfaceNames();

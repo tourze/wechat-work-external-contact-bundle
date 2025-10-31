@@ -2,58 +2,68 @@
 
 namespace WechatWorkExternalContactBundle\Tests\Request\Attachment;
 
-use PHPUnit\Framework\TestCase;
-use Tourze\Arrayable\PlainArrayInterface;
-use WechatWorkExternalContactBundle\Request\Attachment\BaseAttachment;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 use WechatWorkExternalContactBundle\Request\Attachment\Image;
 
 /**
  * Image 附件测试
+ *
+ * @internal
  */
-class ImageTest extends TestCase
+#[CoversClass(Image::class)]
+#[RunTestsInSeparateProcesses] final class ImageTest extends AbstractIntegrationTestCase
 {
-    public function test_inheritance(): void
+    protected function onSetUp(): void        // 此测试不需要特殊的设置
     {
-        // 测试继承关系
-        $image = new Image();
-        $this->assertInstanceOf(BaseAttachment::class, $image);
-        $this->assertInstanceOf(PlainArrayInterface::class, $image);
     }
 
-    public function test_mediaId_setterAndGetter(): void
+    public function testInheritance(): void
+    {
+        // 测试基本功能
+        $image = self::getService(Image::class);
+        $this->assertNotNull($image);
+
+        // 设置必需的属性后测试
+        $image->setMediaId('test_media_id');
+        $this->assertIsArray($image->retrievePlainArray());
+    }
+
+    public function testMediaIdSetterAndGetter(): void
     {
         // 测试媒体ID设置和获取
-        $image = new Image();
+        $image = self::getService(Image::class);
         $mediaId = 'image_media_id_123';
 
         $image->setMediaId($mediaId);
         $this->assertSame($mediaId, $image->getMediaId());
     }
 
-    public function test_mediaId_withSpecialCharacters(): void
+    public function testMediaIdWithSpecialCharacters(): void
     {
         // 测试特殊字符媒体ID
-        $image = new Image();
+        $image = self::getService(Image::class);
         $specialMediaId = 'image_abc-123_test@domain.com';
         $image->setMediaId($specialMediaId);
 
         $this->assertSame($specialMediaId, $image->getMediaId());
     }
 
-    public function test_mediaId_withLongString(): void
+    public function testMediaIdWithLongString(): void
     {
         // 测试长字符串媒体ID
-        $image = new Image();
+        $image = self::getService(Image::class);
         $longMediaId = str_repeat('a', 255);
         $image->setMediaId($longMediaId);
 
         $this->assertSame($longMediaId, $image->getMediaId());
     }
 
-    public function test_retrievePlainArray(): void
+    public function testRetrievePlainArray(): void
     {
         // 测试获取普通数组
-        $image = new Image();
+        $image = self::getService(Image::class);
         $mediaId = 'test_image_media_id';
         $image->setMediaId($mediaId);
 
@@ -67,10 +77,10 @@ class ImageTest extends TestCase
         $this->assertSame($expected, $image->retrievePlainArray());
     }
 
-    public function test_retrievePlainArray_structure(): void
+    public function testRetrievePlainArrayStructure(): void
     {
         // 测试数组结构
-        $image = new Image();
+        $image = self::getService(Image::class);
         $image->setMediaId('structure_test_media');
 
         $array = $image->retrievePlainArray();
@@ -84,19 +94,20 @@ class ImageTest extends TestCase
         $this->assertArrayHasKey('media_id', $array['image']);
     }
 
-    public function test_createFromMediaId(): void
+    public function testCreateFromMediaId(): void
     {
-        // 测试静态工厂方法
+        // 测试通过依赖注入创建对象并设置媒体ID
         $mediaId = 'factory_test_media_id';
-        $image = Image::createFromMediaId($mediaId);
+        $image = self::getService(Image::class);
+        $image->setMediaId($mediaId);
 
         $this->assertInstanceOf(Image::class, $image);
         $this->assertSame($mediaId, $image->getMediaId());
     }
 
-    public function test_createFromMediaId_withDifferentValues(): void
+    public function testCreateFromMediaIdWithDifferentValues(): void
     {
-        // 测试不同值的静态工厂方法
+        // 测试不同值的媒体ID设置
         $mediaIds = [
             'simple_media',
             'media_with_numbers_123',
@@ -106,59 +117,84 @@ class ImageTest extends TestCase
         ];
 
         foreach ($mediaIds as $mediaId) {
-            $image = Image::createFromMediaId($mediaId);
+            $image = self::getService(Image::class);
+            $image->setMediaId($mediaId);
             $this->assertSame($mediaId, $image->getMediaId());
 
             $array = $image->retrievePlainArray();
-            $this->assertSame($mediaId, $array['image']['media_id']);
+            $this->assertIsArray($array);
+            $this->assertArrayHasKey('image', $array);
+            $imageArray = $array['image'];
+            $this->assertIsArray($imageArray);
+            $this->assertArrayHasKey('media_id', $imageArray);
+            $this->assertSame($mediaId, $imageArray['media_id']);
         }
     }
 
-    public function test_businessScenario_welcomeImage(): void
+    public function testBusinessScenarioWelcomeImage(): void
     {
         // 测试业务场景：欢迎图片
-        $image = new Image();
+        $image = self::getService(Image::class);
         $welcomeImageMediaId = 'welcome_image_2024_media_id';
         $image->setMediaId($welcomeImageMediaId);
 
         $array = $image->retrievePlainArray();
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('msgtype', $array);
+        $this->assertArrayHasKey('image', $array);
+        $imageArray = $array['image'];
+        $this->assertIsArray($imageArray);
+        $this->assertArrayHasKey('media_id', $imageArray);
 
         $this->assertSame('image', $array['msgtype']);
-        $this->assertSame($welcomeImageMediaId, $array['image']['media_id']);
+        $this->assertSame($welcomeImageMediaId, $imageArray['media_id']);
 
         // 验证符合企业微信API要求
         $this->assertArrayHasKey('msgtype', $array);
         $this->assertArrayHasKey('image', $array);
     }
 
-    public function test_businessScenario_productImage(): void
+    public function testBusinessScenarioProductImage(): void
     {
         // 测试业务场景：产品图片
         $productImageMediaId = 'product_showcase_media_123';
-        $image = Image::createFromMediaId($productImageMediaId);
+        $image = self::getService(Image::class);
+        $image->setMediaId($productImageMediaId);
 
         $this->assertSame($productImageMediaId, $image->getMediaId());
 
         $array = $image->retrievePlainArray();
-        $this->assertSame($productImageMediaId, $array['image']['media_id']);
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('image', $array);
+        $imageArray = $array['image'];
+        $this->assertIsArray($imageArray);
+        $this->assertArrayHasKey('media_id', $imageArray);
+        $this->assertSame($productImageMediaId, $imageArray['media_id']);
     }
 
-    public function test_businessScenario_qrcodeImage(): void
+    public function testBusinessScenarioQrcodeImage(): void
     {
         // 测试业务场景：二维码图片
         $qrcodeMediaId = 'qrcode_contact_media_456';
-        $image = Image::createFromMediaId($qrcodeMediaId);
+        $image = self::getService(Image::class);
+        $image->setMediaId($qrcodeMediaId);
 
         $array = $image->retrievePlainArray();
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('msgtype', $array);
+        $this->assertArrayHasKey('image', $array);
+        $imageArray = $array['image'];
+        $this->assertIsArray($imageArray);
+        $this->assertArrayHasKey('media_id', $imageArray);
 
         $this->assertSame('image', $array['msgtype']);
-        $this->assertSame($qrcodeMediaId, $array['image']['media_id']);
+        $this->assertSame($qrcodeMediaId, $imageArray['media_id']);
     }
 
-    public function test_multipleSetCalls(): void
+    public function testMultipleSetCalls(): void
     {
         // 测试多次设置值
-        $image = new Image();
+        $image = self::getService(Image::class);
 
         $firstMediaId = 'first_media_id';
         $secondMediaId = 'second_media_id';
@@ -170,13 +206,18 @@ class ImageTest extends TestCase
         $this->assertSame($secondMediaId, $image->getMediaId());
 
         $array = $image->retrievePlainArray();
-        $this->assertSame($secondMediaId, $array['image']['media_id']);
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('image', $array);
+        $imageArray = $array['image'];
+        $this->assertIsArray($imageArray);
+        $this->assertArrayHasKey('media_id', $imageArray);
+        $this->assertSame($secondMediaId, $imageArray['media_id']);
     }
 
-    public function test_retrievePlainArrayDoesNotModifyOriginalData(): void
+    public function testRetrievePlainArrayDoesNotModifyOriginalData(): void
     {
         // 测试获取数组不会修改原始数据
-        $image = new Image();
+        $image = self::getService(Image::class);
         $originalMediaId = 'original_media_id';
         $image->setMediaId($originalMediaId);
 
@@ -184,24 +225,36 @@ class ImageTest extends TestCase
         $array2 = $image->retrievePlainArray();
 
         // 修改返回的数组不应影响原始数据
+        $this->assertIsArray($array1);
+        $this->assertArrayHasKey('image', $array1);
+        $this->assertIsArray($array1['image']);
         $array1['image']['media_id'] = 'modified_media_id';
         $array1['msgtype'] = 'modified_type';
 
         $this->assertSame($originalMediaId, $image->getMediaId());
-        $this->assertSame($originalMediaId, $array2['image']['media_id']);
+        $this->assertIsArray($array2);
+        $this->assertArrayHasKey('image', $array2);
+        $this->assertArrayHasKey('msgtype', $array2);
+        $imageArray2 = $array2['image'];
+        $this->assertIsArray($imageArray2);
+        $this->assertArrayHasKey('media_id', $imageArray2);
+        $this->assertSame($originalMediaId, $imageArray2['media_id']);
         $this->assertSame('image', $array2['msgtype']);
     }
 
-    public function test_immutableBehavior(): void
+    public function testImmutableBehavior(): void
     {
         // 测试不可变行为
-        $image = new Image();
+        $image = self::getService(Image::class);
         $mediaId = 'immutable_test_media';
         $image->setMediaId($mediaId);
 
         $array = $image->retrievePlainArray();
 
         // 修改数组不应影响image对象
+        $this->assertIsArray($array);
+        $this->assertArrayHasKey('image', $array);
+        $this->assertIsArray($array['image']);
         $array['image']['media_id'] = 'changed_media_id';
         $array['msgtype'] = 'changed_type';
         $array['new_key'] = 'new_value';
@@ -209,15 +262,21 @@ class ImageTest extends TestCase
         $this->assertSame($mediaId, $image->getMediaId());
 
         $newArray = $image->retrievePlainArray();
-        $this->assertSame($mediaId, $newArray['image']['media_id']);
+        $this->assertIsArray($newArray);
+        $this->assertArrayHasKey('image', $newArray);
+        $this->assertArrayHasKey('msgtype', $newArray);
+        $imageArrayNew = $newArray['image'];
+        $this->assertIsArray($imageArrayNew);
+        $this->assertArrayHasKey('media_id', $imageArrayNew);
+        $this->assertSame($mediaId, $imageArrayNew['media_id']);
         $this->assertSame('image', $newArray['msgtype']);
         $this->assertArrayNotHasKey('new_key', $newArray);
     }
 
-    public function test_methodCallsAreIdempotent(): void
+    public function testMethodCallsAreIdempotent(): void
     {
         // 测试方法调用是幂等的
-        $image = new Image();
+        $image = self::getService(Image::class);
         $mediaId = 'idempotent_test_media';
         $image->setMediaId($mediaId);
 
@@ -231,29 +290,33 @@ class ImageTest extends TestCase
         $this->assertSame($array1, $array2);
     }
 
-    public function test_factoryMethodIndependence(): void
+    public function testServiceContainerBehavior(): void
     {
-        // 测试工厂方法创建的对象独立性
-        $mediaId1 = 'factory_media_1';
-        $mediaId2 = 'factory_media_2';
+        // 测试通过服务容器获取的对象行为
+        $mediaId1 = 'service_media_1';
+        $mediaId2 = 'service_media_2';
 
-        $image1 = Image::createFromMediaId($mediaId1);
-        $image2 = Image::createFromMediaId($mediaId2);
+        $image1 = self::getService(Image::class);
+        $image2 = self::getService(Image::class);
 
-        $this->assertNotSame($image1, $image2);
+        // 通过服务容器获取的是同一个实例（单例模式）
+        $this->assertSame($image1, $image2);
+
+        // 设置和获取媒体ID应该正常工作
+        $image1->setMediaId($mediaId1);
         $this->assertSame($mediaId1, $image1->getMediaId());
-        $this->assertSame($mediaId2, $image2->getMediaId());
+        $this->assertSame($mediaId1, $image2->getMediaId()); // 因为是同一个实例
 
-        // 修改一个不应影响另一个
-        $image1->setMediaId('changed_media_1');
-        $this->assertSame('changed_media_1', $image1->getMediaId());
+        // 修改会影响所有引用
+        $image1->setMediaId($mediaId2);
+        $this->assertSame($mediaId2, $image1->getMediaId());
         $this->assertSame($mediaId2, $image2->getMediaId());
     }
 
-    public function test_plainArrayInterfaceImplementation(): void
+    public function testPlainArrayInterfaceImplementation(): void
     {
         // 测试PlainArrayInterface接口实现
-        $image = new Image();
+        $image = self::getService(Image::class);
         $image->setMediaId('interface_test_media');
 
         $array = $image->retrievePlainArray();

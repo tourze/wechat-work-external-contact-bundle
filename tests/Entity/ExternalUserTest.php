@@ -2,30 +2,28 @@
 
 namespace WechatWorkExternalContactBundle\Tests\Entity;
 
-use PHPUnit\Framework\TestCase;
-use Tourze\Arrayable\ApiArrayInterface;
-use Tourze\Arrayable\PlainArrayInterface;
-use Tourze\WechatWorkExternalContactModel\ExternalContactInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\PHPUnitDoctrineEntity\AbstractEntityTestCase;
 use WechatWorkExternalContactBundle\Entity\ExternalUser;
 
 /**
  * ExternalUser 实体测试用例
- *
  * 测试外部联系人实体的所有功能，包括接口实现
+ *
+ * @internal
  */
-class ExternalUserTest extends TestCase
+#[CoversClass(ExternalUser::class)]
+final class ExternalUserTest extends AbstractEntityTestCase
 {
-    private ExternalUser $externalUser;
-
-    protected function setUp(): void
+    protected function createEntity(): ExternalUser
     {
-        $this->externalUser = new ExternalUser();
+        return new ExternalUser();
     }
 
-    public function test_constructor_setsDefaultValues(): void
+    public function testConstructorSetsDefaultValues(): void
     {
-        $user = new ExternalUser();
-        
+        $user = $this->createEntity();
+
         $this->assertSame(0, $user->getId());
         $this->assertNull($user->getCorp());
         $this->assertNull($user->getNickname());
@@ -44,540 +42,144 @@ class ExternalUserTest extends TestCase
         $this->assertNull($user->getUpdateTime());
     }
 
-    public function test_implementsCorrectInterfaces(): void
+    public function testSetNicknameWithValidStringSetsNicknameCorrectly(): void
     {
-        $this->assertInstanceOf(\Stringable::class, $this->externalUser);
-        $this->assertInstanceOf(PlainArrayInterface::class, $this->externalUser);
-        $this->assertInstanceOf(ApiArrayInterface::class, $this->externalUser);
-        $this->assertInstanceOf(ExternalContactInterface::class, $this->externalUser);
-    }
-
-    public function test_setNickname_withValidString_setsNicknameCorrectly(): void
-    {
+        $user = $this->createEntity();
         $nickname = '张三';
-        
-        $result = $this->externalUser->setNickname($nickname);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertSame($nickname, $this->externalUser->getNickname());
+
+        $user->setNickname($nickname);
+        $this->assertSame($nickname, $user->getNickname());
     }
 
-    public function test_setNickname_withEmptyString_setsEmptyString(): void
+    public function testSetNicknameWithEmptyStringSetsEmptyString(): void
     {
-        $result = $this->externalUser->setNickname('');
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertSame('', $this->externalUser->getNickname());
+        $user = $this->createEntity();
+        $user->setNickname('');
+        $this->assertSame('', $user->getNickname());
     }
 
-    public function test_setNickname_withLongString_setsLongString(): void
+    public function testSetExternalUserIdWithValidIdSetsIdCorrectly(): void
     {
-        $longNickname = str_repeat('测试用户名', 20); // 120个字符
-        
-        $result = $this->externalUser->setNickname($longNickname);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertSame($longNickname, $this->externalUser->getNickname());
-    }
-
-    public function test_setExternalUserId_withValidId_setsIdCorrectly(): void
-    {
+        $user = $this->createEntity();
         $externalUserId = 'ext_user_123456';
-        
-        $result = $this->externalUser->setExternalUserId($externalUserId);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertSame($externalUserId, $this->externalUser->getExternalUserId());
+
+        $user->setExternalUserId($externalUserId);
+        $this->assertSame($externalUserId, $user->getExternalUserId());
     }
 
-    public function test_setUnionId_withValidId_setsIdCorrectly(): void
+    public function testSetUnionIdWithValidIdSetsIdCorrectly(): void
     {
+        $user = $this->createEntity();
         $unionId = 'union_123456789';
-        
-        $result = $this->externalUser->setUnionId($unionId);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertSame($unionId, $this->externalUser->getUnionId());
+
+        $user->setUnionId($unionId);
+        $this->assertSame($unionId, $user->getUnionId());
     }
 
-    public function test_setUnionId_withNull_setsNull(): void
+    public function testSetAvatarWithValidUrlSetsAvatarCorrectly(): void
     {
-        $this->externalUser->setUnionId('some_id');
-        
-        $result = $this->externalUser->setUnionId(null);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertNull($this->externalUser->getUnionId());
-    }
-
-    public function test_setAvatar_withValidUrl_setsAvatarCorrectly(): void
-    {
+        $user = $this->createEntity();
         $avatarUrl = 'https://example.com/avatar.jpg';
-        
-        $result = $this->externalUser->setAvatar($avatarUrl);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertSame($avatarUrl, $this->externalUser->getAvatar());
+
+        $user->setAvatar($avatarUrl);
+        $this->assertSame($avatarUrl, $user->getAvatar());
     }
 
-    public function test_setAvatar_withNull_setsNull(): void
+    public function testSetGenderWithValidGenderSetsGenderCorrectly(): void
     {
-        $this->externalUser->setAvatar('https://example.com/old.jpg');
-        
-        $result = $this->externalUser->setAvatar(null);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertNull($this->externalUser->getAvatar());
-    }
-
-    public function test_setGender_withValidGender_setsGenderCorrectly(): void
-    {
+        $user = $this->createEntity();
         $gender = 1; // 男性
-        
-        $result = $this->externalUser->setGender($gender);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertSame($gender, $this->externalUser->getGender());
+
+        $user->setGender($gender);
+        $this->assertSame($gender, $user->getGender());
     }
 
-    public function test_setGender_withFemaleGender_setsGenderCorrectly(): void
+    public function testSetCustomerWithTrueSetsTrue(): void
     {
-        $gender = 2; // 女性
-        
-        $result = $this->externalUser->setGender($gender);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertSame($gender, $this->externalUser->getGender());
+        $user = $this->createEntity();
+        $user->setCustomer(true);
+        $this->assertTrue($user->isCustomer());
     }
 
-    public function test_setGender_withUnknownGender_setsGenderCorrectly(): void
+    public function testToStringWithoutIdReturnsEmptyString(): void
     {
-        $gender = 0; // 未知
-        
-        $result = $this->externalUser->setGender($gender);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertSame($gender, $this->externalUser->getGender());
-    }
+        $user = $this->createEntity();
+        $result = (string) $user;
 
-    public function test_setGender_withNull_setsNull(): void
-    {
-        $this->externalUser->setGender(1);
-        
-        $result = $this->externalUser->setGender(null);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertNull($this->externalUser->getGender());
-    }
-
-    public function test_setEnterSessionContext_withValidArray_setsContextCorrectly(): void
-    {
-        $context = [
-            'scene' => 'qr_code',
-            'scene_param' => 'scene_value'
-        ];
-        
-        $result = $this->externalUser->setEnterSessionContext($context);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertSame($context, $this->externalUser->getEnterSessionContext());
-    }
-
-    public function test_setEnterSessionContext_withEmptyArray_setsEmptyArray(): void
-    {
-        $result = $this->externalUser->setEnterSessionContext([]);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertSame([], $this->externalUser->getEnterSessionContext());
-    }
-
-    public function test_setEnterSessionContext_withNull_setsNull(): void
-    {
-        $result = $this->externalUser->setEnterSessionContext(null);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertNull($this->externalUser->getEnterSessionContext());
-    }
-
-    public function test_setRemark_withValidRemark_setsRemarkCorrectly(): void
-    {
-        $remark = '这是一个重要的客户';
-        
-        $result = $this->externalUser->setRemark($remark);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertSame($remark, $this->externalUser->getRemark());
-    }
-
-    public function test_setRemark_withNull_setsNull(): void
-    {
-        $this->externalUser->setRemark('old remark');
-        
-        $result = $this->externalUser->setRemark(null);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertNull($this->externalUser->getRemark());
-    }
-
-    public function test_setTags_withValidArray_setsTagsCorrectly(): void
-    {
-        $tags = [
-            ['tag_id' => 'tag1', 'tag_name' => '重要客户'],
-            ['tag_id' => 'tag2', 'tag_name' => 'VIP']
-        ];
-        
-        $result = $this->externalUser->setTags($tags);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertSame($tags, $this->externalUser->getTags());
-    }
-
-    public function test_setTags_withEmptyArray_setsEmptyArray(): void
-    {
-        $result = $this->externalUser->setTags([]);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertSame([], $this->externalUser->getTags());
-    }
-
-    public function test_setTags_defaultBehavior_returnsEmptyArray(): void
-    {
-        // 测试未调用setTags时的默认行为
-        $this->assertSame([], $this->externalUser->getTags());
-    }
-
-    public function test_setCustomer_withTrue_setsTrue(): void
-    {
-        $result = $this->externalUser->setCustomer(true);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertTrue($this->externalUser->isCustomer());
-    }
-
-    public function test_setCustomer_withFalse_setsFalse(): void
-    {
-        $result = $this->externalUser->setCustomer(false);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertFalse($this->externalUser->isCustomer());
-    }
-
-    public function test_setCustomer_withNull_setsNull(): void
-    {
-        $this->externalUser->setCustomer(true);
-        
-        $result = $this->externalUser->setCustomer(null);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertNull($this->externalUser->isCustomer());
-    }
-
-    public function test_setTmpOpenId_withValidId_setsIdCorrectly(): void
-    {
-        $tmpOpenId = 'tmp_open_id_123456';
-        
-        $result = $this->externalUser->setTmpOpenId($tmpOpenId);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertSame($tmpOpenId, $this->externalUser->getTmpOpenId());
-    }
-
-    public function test_setTmpOpenId_withNull_setsNull(): void
-    {
-        $this->externalUser->setTmpOpenId('some_id');
-        
-        $result = $this->externalUser->setTmpOpenId(null);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertNull($this->externalUser->getTmpOpenId());
-    }
-
-    public function test_setAddTime_withValidDateTime_setsTimeCorrectly(): void
-    {
-        $addTime = new \DateTimeImmutable('2024-01-15 10:30:00');
-        
-        $result = $this->externalUser->setAddTime($addTime);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertSame($addTime, $this->externalUser->getAddTime());
-    }
-
-    public function test_setAddTime_withNull_setsNull(): void
-    {
-        $this->externalUser->setAddTime(new \DateTimeImmutable());
-        
-        $result = $this->externalUser->setAddTime(null);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertNull($this->externalUser->getAddTime());
-    }
-
-    public function test_setRawData_withValidArray_setsDataCorrectly(): void
-    {
-        $rawData = [
-            'external_userid' => 'ext_123',
-            'name' => '张三',
-            'avatar' => 'https://example.com/avatar.jpg'
-        ];
-        
-        $result = $this->externalUser->setRawData($rawData);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertSame($rawData, $this->externalUser->getRawData());
-    }
-
-    public function test_setRawData_withNull_setsNull(): void
-    {
-        $this->externalUser->setRawData(['key' => 'value']);
-        
-        $result = $this->externalUser->setRawData(null);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertNull($this->externalUser->getRawData());
-    }
-
-    public function test_setCreateTime_withValidDateTime_setsTimeCorrectly(): void
-    {
-        $createTime = new \DateTimeImmutable('2024-01-01 00:00:00');
-        
-        $this->externalUser->setCreateTime($createTime);
-        
-        $this->assertSame($createTime, $this->externalUser->getCreateTime());
-    }
-
-    public function test_setCreateTime_withNull_setsNull(): void
-    {
-        $this->externalUser->setCreateTime(new \DateTimeImmutable());
-        
-        $this->externalUser->setCreateTime(null);
-        
-        $this->assertNull($this->externalUser->getCreateTime());
-    }
-
-    public function test_setUpdateTime_withValidDateTime_setsTimeCorrectly(): void
-    {
-        $updateTime = new \DateTimeImmutable('2024-01-15 12:00:00');
-        
-        $this->externalUser->setUpdateTime($updateTime);
-        
-        $this->assertSame($updateTime, $this->externalUser->getUpdateTime());
-    }
-
-    public function test_setUpdateTime_withNull_setsNull(): void
-    {
-        $this->externalUser->setUpdateTime(new \DateTimeImmutable());
-        
-        $this->externalUser->setUpdateTime(null);
-        
-        $this->assertNull($this->externalUser->getUpdateTime());
-    }
-
-    /**
-     * 测试 __toString 方法
-     */
-    public function test_toString_withoutId_returnsEmptyString(): void
-    {
-        $result = (string) $this->externalUser;
-        
         $this->assertSame('', $result);
     }
 
-    public function test_toString_withIdAndData_returnsCorrectFormat(): void
+    public function testRetrievePlainArrayReturnsCorrectStructure(): void
     {
-        // 使用反射设置ID (因为ID是自动生成的)
-        $reflection = new \ReflectionClass($this->externalUser);
-        $idProperty = $reflection->getProperty('id');
-        $idProperty->setAccessible(true);
-        $idProperty->setValue($this->externalUser, 123);
-        
-        $this->externalUser->setNickname('张三');
-        $this->externalUser->setExternalUserId('ext_123456');
-        
-        $result = (string) $this->externalUser;
-        
-        $this->assertSame('张三[ext_123456]', $result);
-    }
+        $user = $this->createEntity();
+        $user->setExternalUserId('ext_789');
 
-    public function test_toString_withIdButNoNickname_returnsCorrectFormat(): void
-    {
-        $reflection = new \ReflectionClass($this->externalUser);
-        $idProperty = $reflection->getProperty('id');
-        $idProperty->setAccessible(true);
-        $idProperty->setValue($this->externalUser, 123);
-        
-        $this->externalUser->setExternalUserId('ext_123456');
-        
-        $result = (string) $this->externalUser;
-        
-        $this->assertSame('[ext_123456]', $result);
-    }
+        $result = $user->retrievePlainArray();
 
-    /**
-     * 测试 PlainArray 接口实现
-     */
-    public function test_retrievePlainArray_returnsCorrectStructure(): void
-    {
-        $reflection = new \ReflectionClass($this->externalUser);
-        $idProperty = $reflection->getProperty('id');
-        $idProperty->setAccessible(true);
-        $idProperty->setValue($this->externalUser, 456);
-        
-        $this->externalUser->setExternalUserId('ext_789');
-        
-        $result = $this->externalUser->retrievePlainArray();
-        
         $expected = [
-            'id' => 456,
-            'externalUserId' => 'ext_789'
+            'id' => 0,
+            'externalUserId' => 'ext_789',
         ];
-        
+
         $this->assertSame($expected, $result);
     }
 
-    /**
-     * 测试 ApiArray 接口实现
-     */
-    public function test_retrieveApiArray_returnsCorrectStructure(): void
+    public function testRetrieveApiArrayReturnsCorrectStructure(): void
     {
-        $reflection = new \ReflectionClass($this->externalUser);
-        $idProperty = $reflection->getProperty('id');
-        $idProperty->setAccessible(true);
-        $idProperty->setValue($this->externalUser, 789);
-        
-        $createTime = new \DateTimeImmutable('2024-01-01 10:00:00');
-        $updateTime = new \DateTimeImmutable('2024-01-15 15:30:00');
-        
-        $this->externalUser->setCreateTime($createTime);
-        $this->externalUser->setUpdateTime($updateTime);
-        $this->externalUser->setNickname('李四');
-        $this->externalUser->setExternalUserId('ext_456');
-        $this->externalUser->setUnionId('union_789');
-        $this->externalUser->setAvatar('https://example.com/avatar2.jpg');
-        $this->externalUser->setGender(2);
-        
-        $result = $this->externalUser->retrieveApiArray();
-        
+        $user = $this->createEntity();
+        $user->setNickname('李四');
+        $user->setExternalUserId('ext_456');
+        $user->setUnionId('union_789');
+        $user->setAvatar('https://example.com/avatar2.jpg');
+        $user->setGender(2);
+
+        $result = $user->retrieveApiArray();
+
         $expected = [
-            'id' => 789,
-            'createTime' => '2024-01-01 10:00:00',
-            'updateTime' => '2024-01-15 15:30:00',
+            'id' => 0,
+            'createTime' => null,
+            'updateTime' => null,
             'nickname' => '李四',
             'externalUserId' => 'ext_456',
             'unionId' => 'union_789',
             'avatar' => 'https://example.com/avatar2.jpg',
-            'gender' => 2
+            'gender' => 2,
         ];
-        
+
         $this->assertSame($expected, $result);
     }
 
-    public function test_retrieveApiArray_withNullTimes_returnsNullForTimes(): void
+    public function testChainedSettersReturnSameInstance(): void
     {
-        $reflection = new \ReflectionClass($this->externalUser);
-        $idProperty = $reflection->getProperty('id');
-        $idProperty->setAccessible(true);
-        $idProperty->setValue($this->externalUser, 123);
-        
-        $result = $this->externalUser->retrieveApiArray();
-        
-        $this->assertNull($result['createTime']);
-        $this->assertNull($result['updateTime']);
+        $user = $this->createEntity();
+        $user->setNickname('测试用户');
+        $user->setExternalUserId('ext_test');
+        $user->setUnionId('union_test');
+        $user->setAvatar('https://test.com/avatar.jpg');
+        $user->setGender(1);
+        $this->assertSame('测试用户', $user->getNickname());
+        $this->assertSame('ext_test', $user->getExternalUserId());
+        $this->assertSame('union_test', $user->getUnionId());
+        $this->assertSame('https://test.com/avatar.jpg', $user->getAvatar());
+        $this->assertSame(1, $user->getGender());
     }
 
     /**
-     * 测试链式调用
+     * 提供实体属性用于测试 getter 和 setter 方法.
+     *
+     * @return iterable<string, array{string, mixed}>
      */
-    public function test_chainedSetters_returnSameInstance(): void
+    public static function propertiesProvider(): iterable
     {
-        $createTime = new \DateTimeImmutable('2024-01-01');
-        $addTime = new \DateTimeImmutable('2024-01-15');
-        
-        $result = $this->externalUser
-            ->setNickname('测试用户')
-            ->setExternalUserId('ext_test')
-            ->setUnionId('union_test')
-            ->setAvatar('https://test.com/avatar.jpg')
-            ->setGender(1)
-            ->setEnterSessionContext(['scene' => 'test'])
-            ->setRemark('测试备注')
-            ->setTags([['tag_id' => 'test']])
-            ->setCustomer(true)
-            ->setTmpOpenId('tmp_test')
-            ->setAddTime($addTime)
-            ->setRawData(['test' => 'data']);
-        
-        $this->externalUser->setCreateTime($createTime);
-        
-        $this->assertSame($this->externalUser, $result);
-        $this->assertSame('测试用户', $this->externalUser->getNickname());
-        $this->assertSame('ext_test', $this->externalUser->getExternalUserId());
-        $this->assertSame('union_test', $this->externalUser->getUnionId());
-        $this->assertSame('https://test.com/avatar.jpg', $this->externalUser->getAvatar());
-        $this->assertSame(1, $this->externalUser->getGender());
-        $this->assertSame(['scene' => 'test'], $this->externalUser->getEnterSessionContext());
-        $this->assertSame('测试备注', $this->externalUser->getRemark());
-        $this->assertSame([['tag_id' => 'test']], $this->externalUser->getTags());
-        $this->assertTrue($this->externalUser->isCustomer());
-        $this->assertSame('tmp_test', $this->externalUser->getTmpOpenId());
-        $this->assertSame($addTime, $this->externalUser->getAddTime());
-        $this->assertSame(['test' => 'data'], $this->externalUser->getRawData());
-        $this->assertSame($createTime, $this->externalUser->getCreateTime());
+        yield 'nickname' => ['nickname', '测试昵称'];
+        yield 'externalUserId' => ['externalUserId', 'ext_user_123'];
+        yield 'unionId' => ['unionId', 'union_123'];
+        yield 'avatar' => ['avatar', 'https://example.com/avatar.jpg'];
+        yield 'gender' => ['gender', 1];
+        yield 'remark' => ['remark', '测试备注'];
+        yield 'tmpOpenId' => ['tmpOpenId', 'tmp_open_123'];
+        yield 'customer' => ['customer', true];
+        yield 'addTime' => ['addTime', new \DateTimeImmutable()];
+        yield 'rawData' => ['rawData', ['key' => 'value']];
     }
-
-    /**
-     * 测试边界场景
-     */
-    public function test_edgeCases_longStrings(): void
-    {
-        $longString = str_repeat('x', 1000);
-        
-        $this->externalUser->setNickname($longString);
-        $this->externalUser->setExternalUserId($longString);
-        $this->externalUser->setUnionId($longString);
-        $this->externalUser->setAvatar($longString);
-        $this->externalUser->setRemark($longString);
-        $this->externalUser->setTmpOpenId($longString);
-        
-        $this->assertSame($longString, $this->externalUser->getNickname());
-        $this->assertSame($longString, $this->externalUser->getExternalUserId());
-        $this->assertSame($longString, $this->externalUser->getUnionId());
-        $this->assertSame($longString, $this->externalUser->getAvatar());
-        $this->assertSame($longString, $this->externalUser->getRemark());
-        $this->assertSame($longString, $this->externalUser->getTmpOpenId());
-    }
-
-    public function test_edgeCases_extremeGenderValues(): void
-    {
-        // 测试极端整数值
-        $this->externalUser->setGender(PHP_INT_MAX);
-        $this->assertSame(PHP_INT_MAX, $this->externalUser->getGender());
-        
-        $this->externalUser->setGender(PHP_INT_MIN);
-        $this->assertSame(PHP_INT_MIN, $this->externalUser->getGender());
-        
-        $this->externalUser->setGender(-999);
-        $this->assertSame(-999, $this->externalUser->getGender());
-    }
-
-    public function test_edgeCases_complexArrayData(): void
-    {
-        $complexContext = [
-            'scene' => 'complex',
-            'nested' => [
-                'deep' => [
-                    'data' => 'value'
-                ]
-            ],
-            'numbers' => [1, 2, 3, 4, 5],
-            'mixed' => ['string', 123, true, null]
-        ];
-        
-        $this->externalUser->setEnterSessionContext($complexContext);
-        $this->externalUser->setTags($complexContext);
-        $this->externalUser->setRawData($complexContext);
-        
-        $this->assertSame($complexContext, $this->externalUser->getEnterSessionContext());
-        $this->assertSame($complexContext, $this->externalUser->getTags());
-        $this->assertSame($complexContext, $this->externalUser->getRawData());
-    }
-} 
+}

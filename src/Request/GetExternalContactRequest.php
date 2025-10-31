@@ -25,6 +25,9 @@ class GetExternalContactRequest extends ApiRequest
         return '/cgi-bin/externalcontact/get';
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getRequestOptions(): ?array
     {
         return [

@@ -29,6 +29,9 @@ class GetContactListRequest extends ApiRequest
         return '/cgi-bin/externalcontact/contact_list';
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getRequestOptions(): ?array
     {
         $json = [];

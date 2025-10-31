@@ -3,6 +3,7 @@ services:
   _defaults:
     autowire: true      # Automatically injects dependencies in your services.
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    public: true
 
   WechatWorkExternalContactBundle\Command\:
     resource: '../../Command/'
@@ -18,6 +19,12 @@ services:
     resource: '../../Repository/'
   WechatWorkExternalContactBundle\Service\:
     resource: '../../Service/'
+  WechatWorkExternalContactBundle\Message\:
+    resource: '../../Message/'
+  WechatWorkExternalContactBundle\Event\:
+    resource: '../../Event/'
+  WechatWorkExternalContactBundle\Request\:
+    resource: '../../Request/'
 
   wechat-work-external-contact-bundle.property-accessor:
     class: Symfony\Component\PropertyAccess\PropertyAccessor

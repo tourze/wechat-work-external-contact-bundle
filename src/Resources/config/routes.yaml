@@ -1,3 +1,0 @@
-wechat_work_external_contact_controllers:
-  resource: '../../Controller/'
-  type: attribute

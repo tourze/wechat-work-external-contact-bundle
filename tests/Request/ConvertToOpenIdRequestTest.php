@@ -2,46 +2,60 @@
 
 namespace WechatWorkExternalContactBundle\Tests\Request;
 
-use HttpClientBundle\Request\ApiRequest;
-use PHPUnit\Framework\TestCase;
+use HttpClientBundle\Request\RequestInterface;
+use HttpClientBundle\Tests\Request\RequestTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\WechatWorkContracts\AgentInterface;
 use WechatWorkExternalContactBundle\Request\ConvertToOpenIdRequest;
 
 /**
  * ConvertToOpenIdRequest 测试
+ *
+ * @internal
  */
-class ConvertToOpenIdRequestTest extends TestCase
+#[CoversClass(ConvertToOpenIdRequest::class)]
+final class ConvertToOpenIdRequestTest extends RequestTestCase
 {
-    public function test_inheritance(): void
+    private ConvertToOpenIdRequest $request;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->request = new ConvertToOpenIdRequest();
+    }
+
+    public function testInheritance(): void
     {
         // 测试继承关系
-        $request = new ConvertToOpenIdRequest();
-        $this->assertInstanceOf(ApiRequest::class, $request);
+        $this->assertInstanceOf(RequestInterface::class, $this->request);
+
+        // 测试Agent功能的实际使用
+        $agent = $this->createMock(AgentInterface::class);
+        $this->request->setAgent($agent);
+        $this->assertSame($agent, $this->request->getAgent());
     }
 
-    public function test_externalUserId_setterAndGetter(): void
+    public function testExternalUserIdSetterAndGetter(): void
     {
         // 测试外部用户ID设置和获取
-        $request = new ConvertToOpenIdRequest();
         $externalUserId = 'wxExternalUserId123';
 
-        $request->setExternalUserId($externalUserId);
-        $this->assertSame($externalUserId, $request->getExternalUserId());
+        $this->request->setExternalUserId($externalUserId);
+        $this->assertSame($externalUserId, $this->request->getExternalUserId());
     }
 
-    public function test_requestPath(): void
+    public function testRequestPath(): void
     {
         // 测试请求路径
-        $request = new ConvertToOpenIdRequest();
-        $this->assertSame('/cgi-bin/externalcontact/convert_to_openid', $request->getRequestPath());
+        $this->assertSame('/cgi-bin/externalcontact/convert_to_openid', $this->request->getRequestPath());
     }
 
-    public function test_requestOptions(): void
+    public function testRequestOptions(): void
     {
         // 测试获取请求选项
-        $request = new ConvertToOpenIdRequest();
         $externalUserId = 'wxExternalUser456';
 
-        $request->setExternalUserId($externalUserId);
+        $this->request->setExternalUserId($externalUserId);
 
         $expected = [
             'json' => [
@@ -49,188 +63,227 @@ class ConvertToOpenIdRequestTest extends TestCase
             ],
         ];
 
-        $this->assertSame($expected, $request->getRequestOptions());
+        $this->assertSame($expected, $this->request->getRequestOptions());
     }
 
-    public function test_requestOptionsStructure(): void
+    public function testRequestOptionsStructure(): void
     {
         // 测试请求选项结构
-        $request = new ConvertToOpenIdRequest();
-        $request->setExternalUserId('test_external_user');
+        $this->request->setExternalUserId('test_external_user');
 
-        $options = $request->getRequestOptions();
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
         $this->assertArrayHasKey('json', $options);
-        $this->assertArrayHasKey('external_userid', $options['json']);
-        $this->assertCount(1, $options['json']);
+        $json = $options['json'];
+        $this->assertIsArray($json);
+        $this->assertArrayHasKey('external_userid', $json);
+        $this->assertCount(1, $json);
     }
 
-    public function test_businessScenario_wechatPaymentIntegration(): void
+    public function testBusinessScenarioWechatPaymentIntegration(): void
     {
         // 测试业务场景：微信支付集成
-        $request = new ConvertToOpenIdRequest();
         $wechatExternalUserId = 'wx_external_customer_12345';
 
-        $request->setExternalUserId($wechatExternalUserId);
+        $this->request->setExternalUserId($wechatExternalUserId);
 
-        $this->assertSame($wechatExternalUserId, $request->getExternalUserId());
+        $this->assertSame($wechatExternalUserId, $this->request->getExternalUserId());
 
-        $options = $request->getRequestOptions();
-        $this->assertSame($wechatExternalUserId, $options['json']['external_userid']);
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
+        $json = $options['json'];
+        $this->assertIsArray($json);
+        $this->assertArrayHasKey('external_userid', $json);
+        $this->assertSame($wechatExternalUserId, $json['external_userid']);
 
         // 验证用于支付相关接口的转换
-        $this->assertSame('/cgi-bin/externalcontact/convert_to_openid', $request->getRequestPath());
+        $this->assertSame('/cgi-bin/externalcontact/convert_to_openid', $this->request->getRequestPath());
     }
 
-    public function test_businessScenario_miniProgramIntegration(): void
+    public function testBusinessScenarioMiniProgramIntegration(): void
     {
         // 测试业务场景：小程序集成
-        $request = new ConvertToOpenIdRequest();
         $miniProgramUserId = 'wx_miniprogram_user_789';
 
-        $request->setExternalUserId($miniProgramUserId);
+        $this->request->setExternalUserId($miniProgramUserId);
 
-        $options = $request->getRequestOptions();
-        $this->assertSame($miniProgramUserId, $options['json']['external_userid']);
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
+        $json = $options['json'];
+        $this->assertIsArray($json);
+        $this->assertArrayHasKey('external_userid', $json);
+        $this->assertSame($miniProgramUserId, $json['external_userid']);
     }
 
-    public function test_businessScenario_thirdPartyServiceIntegration(): void
+    public function testBusinessScenarioThirdPartyServiceIntegration(): void
     {
         // 测试业务场景：第三方服务集成
-        $request = new ConvertToOpenIdRequest();
         $thirdPartyUserId = 'wx_third_party_user_abc';
 
-        $request->setExternalUserId($thirdPartyUserId);
+        $this->request->setExternalUserId($thirdPartyUserId);
 
-        $this->assertSame($thirdPartyUserId, $request->getExternalUserId());
+        $this->assertSame($thirdPartyUserId, $this->request->getExternalUserId());
 
         // 验证API路径符合第三方服务要求
-        $this->assertStringContainsString('convert_to_openid', $request->getRequestPath());
+        $this->assertStringContainsString('convert_to_openid', $this->request->getRequestPath());
     }
 
-    public function test_specialCharacters_inExternalUserId(): void
+    public function testSpecialCharactersInExternalUserId(): void
     {
         // 测试外部用户ID中的特殊字符
-        $request = new ConvertToOpenIdRequest();
         $specialExternalUserId = 'wx_user-123_test@domain.com';
 
-        $request->setExternalUserId($specialExternalUserId);
+        $this->request->setExternalUserId($specialExternalUserId);
 
-        $this->assertSame($specialExternalUserId, $request->getExternalUserId());
+        $this->assertSame($specialExternalUserId, $this->request->getExternalUserId());
 
-        $options = $request->getRequestOptions();
-        $this->assertSame($specialExternalUserId, $options['json']['external_userid']);
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
+        $json = $options['json'];
+        $this->assertIsArray($json);
+        $this->assertArrayHasKey('external_userid', $json);
+        $this->assertSame($specialExternalUserId, $json['external_userid']);
     }
 
-    public function test_longExternalUserId(): void
+    public function testLongExternalUserId(): void
     {
         // 测试长外部用户ID
-        $request = new ConvertToOpenIdRequest();
         $longExternalUserId = 'wx_' . str_repeat('a', 100);
 
-        $request->setExternalUserId($longExternalUserId);
+        $this->request->setExternalUserId($longExternalUserId);
 
-        $this->assertSame($longExternalUserId, $request->getExternalUserId());
+        $this->assertSame($longExternalUserId, $this->request->getExternalUserId());
     }
 
-    public function test_unicodeCharacters(): void
+    public function testUnicodeCharacters(): void
     {
         // 测试Unicode字符
-        $request = new ConvertToOpenIdRequest();
         $unicodeExternalUserId = 'wx_外部用户_123_测试';
 
-        $request->setExternalUserId($unicodeExternalUserId);
+        $this->request->setExternalUserId($unicodeExternalUserId);
 
-        $this->assertSame($unicodeExternalUserId, $request->getExternalUserId());
+        $this->assertSame($unicodeExternalUserId, $this->request->getExternalUserId());
 
-        $options = $request->getRequestOptions();
-        $this->assertSame($unicodeExternalUserId, $options['json']['external_userid']);
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
+        $json = $options['json'];
+        $this->assertIsArray($json);
+        $this->assertArrayHasKey('external_userid', $json);
+        $this->assertSame($unicodeExternalUserId, $json['external_userid']);
     }
 
-    public function test_multipleSetOperations(): void
+    public function testMultipleSetOperations(): void
     {
         // 测试多次设置值
-        $request = new ConvertToOpenIdRequest();
 
         $firstExternalUserId = 'wx_first_external_user';
         $secondExternalUserId = 'wx_second_external_user';
 
-        $request->setExternalUserId($firstExternalUserId);
-        $this->assertSame($firstExternalUserId, $request->getExternalUserId());
+        $this->request->setExternalUserId($firstExternalUserId);
+        $this->assertSame($firstExternalUserId, $this->request->getExternalUserId());
 
-        $request->setExternalUserId($secondExternalUserId);
-        $this->assertSame($secondExternalUserId, $request->getExternalUserId());
+        $this->request->setExternalUserId($secondExternalUserId);
+        $this->assertSame($secondExternalUserId, $this->request->getExternalUserId());
 
-        $options = $request->getRequestOptions();
-        $this->assertSame($secondExternalUserId, $options['json']['external_userid']);
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
+        $json = $options['json'];
+        $this->assertIsArray($json);
+        $this->assertArrayHasKey('external_userid', $json);
+        $this->assertSame($secondExternalUserId, $json['external_userid']);
     }
 
-    public function test_idempotentMethodCalls(): void
+    public function testIdempotentMethodCalls(): void
     {
         // 测试方法调用是幂等的
-        $request = new ConvertToOpenIdRequest();
         $externalUserId = 'wx_idempotent_external_user';
 
-        $request->setExternalUserId($externalUserId);
+        $this->request->setExternalUserId($externalUserId);
 
         // 多次调用应该返回相同结果
-        $this->assertSame($externalUserId, $request->getExternalUserId());
-        $this->assertSame($externalUserId, $request->getExternalUserId());
+        $this->assertSame($externalUserId, $this->request->getExternalUserId());
+        $this->assertSame($externalUserId, $this->request->getExternalUserId());
 
-        $options1 = $request->getRequestOptions();
-        $options2 = $request->getRequestOptions();
+        $options1 = $this->request->getRequestOptions();
+        $options2 = $this->request->getRequestOptions();
         $this->assertSame($options1, $options2);
 
-        $path1 = $request->getRequestPath();
-        $path2 = $request->getRequestPath();
+        $path1 = $this->request->getRequestPath();
+        $path2 = $this->request->getRequestPath();
         $this->assertSame($path1, $path2);
     }
 
-    public function test_immutableRequestOptions(): void
+    public function testImmutableRequestOptions(): void
     {
         // 测试获取请求选项不会修改原始数据
-        $request = new ConvertToOpenIdRequest();
         $originalExternalUserId = 'wx_original_external_user';
 
-        $request->setExternalUserId($originalExternalUserId);
+        $this->request->setExternalUserId($originalExternalUserId);
 
-        $options1 = $request->getRequestOptions();
-        $options2 = $request->getRequestOptions();
+        $options1 = $this->request->getRequestOptions();
+        $options2 = $this->request->getRequestOptions();
 
         // 修改返回的数组不应影响原始数据
+        $this->assertIsArray($options1);
+        $this->assertArrayHasKey('json', $options1);
+        $this->assertIsArray($options1['json']);
         $options1['json']['external_userid'] = 'wx_modified_external_user';
         $options1['json']['new_field'] = 'new_value';
         $options1['new_key'] = 'new_value';
 
-        $this->assertSame($originalExternalUserId, $request->getExternalUserId());
-        $this->assertSame($originalExternalUserId, $options2['json']['external_userid']);
-        $this->assertArrayNotHasKey('new_field', $options2['json']);
+        $this->assertSame($originalExternalUserId, $this->request->getExternalUserId());
+        $this->assertNotNull($options2);
+        $this->assertArrayHasKey('json', $options2);
+        $json2 = $options2['json'];
+        $this->assertIsArray($json2);
+        $this->assertArrayHasKey('external_userid', $json2);
+        $this->assertSame($originalExternalUserId, $json2['external_userid']);
+        $this->assertArrayNotHasKey('new_field', $json2);
         $this->assertArrayNotHasKey('new_key', $options2);
     }
 
-    public function test_agentAwareTrait(): void
+    public function testAgentAwareTrait(): void
     {
         // 测试AgentAware特性
-        $request = new ConvertToOpenIdRequest();
 
-        // 测试trait提供的方法存在
+        // 测试trait提供的功能
+        // 测试默认值
+        $this->assertNull($this->request->getAgent());
+
+        // 测试设置和获取agent
+        $agent = $this->createMock(AgentInterface::class);
+        $this->request->setAgent($agent);
+        $this->assertSame($agent, $this->request->getAgent());
+
+        // 测试设置 null
+        $this->request->setAgent(null);
+        $this->assertNull($this->request->getAgent());
     }
 
-    public function test_emptyStringValue(): void
+    public function testEmptyStringValue(): void
     {
         // 测试空字符串值
-        $request = new ConvertToOpenIdRequest();
-        $request->setExternalUserId('');
+        $this->request->setExternalUserId('');
 
-        $this->assertSame('', $request->getExternalUserId());
+        $this->assertSame('', $this->request->getExternalUserId());
 
-        $options = $request->getRequestOptions();
-        $this->assertSame('', $options['json']['external_userid']);
+        $options = $this->request->getRequestOptions();
+        $this->assertNotNull($options);
+        $this->assertArrayHasKey('json', $options);
+        $json = $options['json'];
+        $this->assertIsArray($json);
+        $this->assertArrayHasKey('external_userid', $json);
+        $this->assertSame('', $json['external_userid']);
     }
 
-    public function test_wechatExternalUserIdFormats(): void
+    public function testWechatExternalUserIdFormats(): void
     {
         // 测试微信外部用户ID格式
-        $request = new ConvertToOpenIdRequest();
         $formats = [
             'wx_basic_format',
             'wxExternalUserId123456',
@@ -239,48 +292,69 @@ class ConvertToOpenIdRequestTest extends TestCase
         ];
 
         foreach ($formats as $format) {
-            $request->setExternalUserId($format);
-            $this->assertSame($format, $request->getExternalUserId());
+            $this->request->setExternalUserId($format);
+            $this->assertSame($format, $this->request->getExternalUserId());
 
-            $options = $request->getRequestOptions();
-            $this->assertSame($format, $options['json']['external_userid']);
+            $options = $this->request->getRequestOptions();
+            $this->assertNotNull($options);
+            $this->assertArrayHasKey('json', $options);
+            $json = $options['json'];
+            $this->assertIsArray($json);
+            $this->assertArrayHasKey('external_userid', $json);
+            $this->assertSame($format, $json['external_userid']);
         }
     }
 
-    public function test_apiPathCorrectness(): void
+    public function testApiPathCorrectness(): void
     {
         // 测试API路径正确性
-        $request = new ConvertToOpenIdRequest();
-        $path = $request->getRequestPath();
+        $path = $this->request->getRequestPath();
 
         $this->assertStringContainsString('externalcontact', $path);
         $this->assertStringContainsString('convert_to_openid', $path);
         $this->assertStringStartsWith('/cgi-bin/', $path);
     }
 
-    public function test_requestDataIntegrity(): void
+    public function testRequestDataIntegrity(): void
     {
         // 测试请求数据完整性
-        $request = new ConvertToOpenIdRequest();
         $externalUserId = 'wx_integrity_test_user';
 
-        $request->setExternalUserId($externalUserId);
+        $this->request->setExternalUserId($externalUserId);
 
-        $options = $request->getRequestOptions();
+        $options = $this->request->getRequestOptions();
 
         // 验证请求数据结构完整性
+        $this->assertNotNull($options);
         $this->assertArrayHasKey('json', $options);
-        $this->assertArrayHasKey('external_userid', $options['json']);
-        $this->assertSame($externalUserId, $options['json']['external_userid']);
+        $json = $options['json'];
+        $this->assertIsArray($json);
+        $this->assertArrayHasKey('external_userid', $json);
+        $this->assertSame($externalUserId, $json['external_userid']);
 
         // 验证只包含必要的字段
         $this->assertCount(1, $options);
-        $this->assertCount(1, $options['json']);
+        $this->assertCount(1, $json);
     }
 
-    public function test_agentInterfaceImplementation(): void
+    public function testAgentInterfaceImplementation(): void
     {
-        // 测试AgentInterface接口实现已在其他测试中覆盖
-        $this->assertTrue(true); // 避免risky test警告
+        // 测试AgentInterface接口实现的完整功能
+
+        // 测试初始状态
+        $this->assertNull($this->request->getAgent());
+
+        // 测试设置和获取不同类型的agent
+        $agent1 = $this->createMock(AgentInterface::class);
+        $agent2 = $this->createMock(AgentInterface::class);
+
+        $this->request->setAgent($agent1);
+        $this->assertSame($agent1, $this->request->getAgent());
+
+        $this->request->setAgent($agent2);
+        $this->assertSame($agent2, $this->request->getAgent());
+
+        $this->request->setAgent(null);
+        $this->assertNull($this->request->getAgent());
     }
 }

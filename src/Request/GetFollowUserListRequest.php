@@ -19,6 +19,9 @@ class GetFollowUserListRequest extends ApiRequest
         return '/cgi-bin/externalcontact/get_follow_user_list';
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getRequestOptions(): ?array
     {
         return [

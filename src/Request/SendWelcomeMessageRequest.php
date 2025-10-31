@@ -29,7 +29,7 @@ class SendWelcomeMessageRequest extends ApiRequest
     private ?string $textContent = null;
 
     /**
-     * @var BaseAttachment[]|array|null 附件，最多可添加9个附件
+     * @var array<int, BaseAttachment>|null 附件，最多可添加9个附件
      */
     private ?array $attachments = null;
 
@@ -38,6 +38,9 @@ class SendWelcomeMessageRequest extends ApiRequest
         return '/cgi-bin/externalcontact/send_welcome_msg';
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getRequestOptions(): ?array
     {
         $json = [
@@ -84,11 +87,17 @@ class SendWelcomeMessageRequest extends ApiRequest
         $this->textContent = $textContent;
     }
 
+    /**
+     * @return array<int, BaseAttachment>|null
+     */
     public function getAttachments(): ?array
     {
         return $this->attachments;
     }
 
+    /**
+     * @param array<int, BaseAttachment>|null $attachments
+     */
     public function setAttachments(?array $attachments): void
     {
         $this->attachments = $attachments;

@@ -36,6 +36,7 @@ class AttributeControllerLoader extends Loader implements RoutingAutoLoaderInter
         $collection = new RouteCollection();
         $collection->addCollection($this->controllerLoader->load(GetExternalContactListController::class));
         $collection->addCollection($this->controllerLoader->load(SendWelcomeMessageController::class));
+
         return $collection;
     }
 }

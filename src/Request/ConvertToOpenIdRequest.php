@@ -27,6 +27,9 @@ class ConvertToOpenIdRequest extends ApiRequest
         return '/cgi-bin/externalcontact/convert_to_openid';
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getRequestOptions(): ?array
     {
         return [
