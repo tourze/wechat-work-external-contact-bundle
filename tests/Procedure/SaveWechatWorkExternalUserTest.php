@@ -19,8 +19,6 @@ use WechatWorkExternalContactBundle\Repository\ExternalUserRepository;
 #[RunTestsInSeparateProcesses]
 final class SaveWechatWorkExternalUserTest extends AbstractProcedureTestCase
 {
-    protected const PROCEDURE_CLASS = SaveWechatWorkExternalUser::class;
-
     private SaveWechatWorkExternalUser $procedure;
 
     protected function onSetUp(): void
